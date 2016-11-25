@@ -267,7 +267,8 @@ namespace ObscureWare.Console
         public void PrintAsSimpleTable(string[] header, string[][] rows, ConsoleFontColor tableHeaderColor, ConsoleFontColor tableRowColor)
         {
             int[] rowSizes = this.CalculateRequiredRowSizes(header, rows);
-            if (rowSizes.All(rs => rs <= this._console.WindowWidth))
+            int expectedWidth = rowSizes.Sum();
+            if (expectedWidth <= this._console.WindowWidth)
             {
                 // cool, table fits to the screen
                 int index = 0;
@@ -281,7 +282,34 @@ namespace ObscureWare.Console
             }
             else
             {
-                throw new NotImplementedException(); // TODO: oversized tables...
+                float scale = (float)_console.WindowWidth / (float)expectedWidth;
+                for (int i = 0; i < rowSizes.Length; i++)
+                {
+                    rowSizes[i] = (int)Math.Floor(rowSizes[i] * scale); // TODO:probably round would be as good... gonna check
+                }
+
+                int index = 0;
+                string formatter = string.Join(" ", rowSizes.Select(size => $"{{{index++},-{size - 1}}}"));
+                this._console.WriteLine(tableHeaderColor, string.Format(formatter, header));
+                foreach (string[] row in rows)
+                {
+                    string[] result = new string[rowSizes.Length];
+                    for (int i = 0; i < rowSizes.Length; i++)
+                    {
+                        if (row.Length > i) // taking care for assymetric array, btw
+                        {
+                            if (row[i].Length <= rowSizes[i] - 1)
+                            {
+                                result[i] = row[i];
+                            }
+                            else
+                            {
+                                result[i] = row[i].Substring(0, rowSizes[i] - 1);
+                            }
+                        }
+                    }
+                    this._console.WriteLine(tableRowColor, string.Format(formatter, result));
+                }
             }
         }
 
