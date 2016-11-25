@@ -64,9 +64,25 @@ namespace ObscureWare.Console
             WriteText(text);
         }
 
-        public void WriteText(string text)
+        private void WriteText(string text)
         {
             System.Console.Write(text);
+        }
+
+        void IConsole.WriteText(string text)
+        {
+            this.WriteText(text);
+        }
+
+        public void WriteLine(ConsoleFontColor colors, string text)
+        {
+            this.SetColors(colors.ForeColor, colors.BgColor);
+            System.Console.WriteLine(text);
+        }
+
+        public void WriteLine(string text)
+        {
+            System.Console.WriteLine(text);
         }
 
         public void SetColors(Color foreColor, Color bgColor)
@@ -80,18 +96,40 @@ namespace ObscureWare.Console
             System.Console.Clear();
         }
 
+        public void WriteText(ConsoleFontColor colors, string text)
+        {
+            this.SetColors(colors.ForeColor, colors.BgColor);
+            System.Console.Write(text);
+        }
+
         public void PositionCursor(int x, int y)
         {
             System.Console.SetCursorPosition(x, y);
         }
 
         public void WriteText(char character)
-            {
+        {
             System.Console.Write(character);
         }
 
         public int WindowHeight { get; }
+
         public int WindowWidth { get; }
+
+        public string ReadLine()
+        {
+            return System.Console.ReadLine();
+        }
+
+        public void WriteLine()
+        {
+            System.Console.WriteLine();
+        }
+
+        public void SetColors(ConsoleFontColor style)
+        {
+            this.SetColors(style.ForeColor, style.BgColor);
+        }
 
         public void ReplaceConsoleColor(ConsoleColor color, Color rgbColor)
         {

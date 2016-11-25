@@ -256,5 +256,54 @@ namespace ObscureWare.Console
             //    sb.AppendLine("\t| " + string.Join(" | ", textColumns.Select(col => col.GetDisplayValue(value))) + " |");
             //}
         }
+
+        /// <summary>
+        /// Prints data as simple, frame-less table
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="rows"></param>
+        /// <param name="tableHeaderColor"></param>
+        /// <param name="tableRowColor"></param>
+        public void PrintAsSimpleTable(string[] header, string[][] rows, ConsoleFontColor tableHeaderColor, ConsoleFontColor tableRowColor)
+        {
+            int[] rowSizes = this.CalculateRequiredRowSizes(header, rows);
+            if (rowSizes.All(rs => rs <= this._console.WindowWidth))
+            {
+                // cool, table fits to the screen
+                int index = 0;
+                string formatter = string.Join(" ", rowSizes.Select(size => $"{{{index++},-{size}}}"));
+                this._console.WriteLine(tableHeaderColor, string.Format(formatter, header));
+                foreach (string[] row in rows)
+                {
+                    // TODO: add missing cells...
+                    this._console.WriteLine(tableRowColor, string.Format(formatter, row));
+                }
+            }
+            else
+            {
+                throw new NotImplementedException(); // TODO: oversized tables...
+            }
+        }
+
+        private int[] CalculateRequiredRowSizes(string[] header, string[][] rows)
+        {
+            int [] result = new int[header.Length];
+
+            // headers room
+            for (int i = 0; i < header.Length; ++i)
+            {
+                result[i] = Math.Max(result[i], header[i].Length + 1); // + 1 for column spacing
+
+                foreach (string[] row in rows)
+                {
+                    if (i < row.Length) // some data might be missing, headers no
+                    {
+                        result[i] = Math.Max(result[i], (row[i]?.Length + 1) ?? 1); // + 1 for column spacing
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

@@ -24,10 +24,28 @@
         void Clear();
 
         /// <summary>
+        /// Writes given text at current cursor position using given colors
+        /// </summary>
+        /// <param name="text"></param>
+        void WriteText(ConsoleFontColor colors, string text);
+
+        /// <summary>
         /// Writes given text at current cursor position using most recent colors
         /// </summary>
         /// <param name="text"></param>
         void WriteText(string text);
+
+        /// <summary>
+        /// Writes given line of text at current cursor position using given colors
+        /// </summary>
+        /// <param name="text"></param>
+        void WriteLine(ConsoleFontColor colors, string text);
+
+        /// <summary>
+        /// Writes given text at current cursor position using most recent colors
+        /// </summary>
+        /// <param name="text"></param>
+        void WriteLine(string text);
 
         /// <summary>
         /// Sets pair of colors to be used by following <see cref="WriteText*"/> calls
@@ -62,5 +80,14 @@
         /// Gets horizontal size of console Window
         /// </summary>
         int WindowWidth { get; }
+
+        /// <summary>
+        /// Reads one text line synchronously.
+        /// </summary>
+        /// <returns></returns>
+        string ReadLine();
+        void WriteLine();
+
+        void SetColors(ConsoleFontColor style);
     }
 }
