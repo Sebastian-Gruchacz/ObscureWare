@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
-
-namespace ObscureWare.Console
+﻿namespace ObscureWare.Console
 {
     using System;
     using System.Collections.Generic;
@@ -332,6 +329,26 @@ namespace ObscureWare.Console
             }
 
             return result;
+        }
+
+        public void PrintAsSimpleTable<T>(DataTable<T> table, ConsoleFontColor tableHeaderColor, ConsoleFontColor tableRowColor)
+        {
+            this.PrintAsSimpleTable(table.Header, table.GetRows().ToArray(), tableHeaderColor, tableRowColor);
+        }
+
+        public DataTable<T> BuildTable<T>(string[] header, IEnumerable<T> dataSource, Func<T, string[]> dataGenerator)
+        {
+            DataTable<T> table = new DataTable<T>();
+            table.Header = new string[] { @"A.Id" }.Concat(header).ToArray();
+
+            uint i = 1;
+            foreach (T src in dataSource)
+            {
+                table.AddRow(src, new string[] { i.ToAlphaEnum() + '.' }.Concat(dataGenerator.Invoke(src)).ToArray());
+                i++;
+            }
+
+            return table;
         }
     }
 }
