@@ -13,7 +13,8 @@ namespace Obscureware.Console.Commands
     public class CommandEngine
     {
         private CommandEngineStyles _styles;
-        // NO default public constructor
+
+        // NO default public constructor - by design
         private CommandEngine(Type[] commands)
         {
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
@@ -59,6 +60,12 @@ namespace Obscureware.Console.Commands
 
             // ...
             string cmdName = commandLineArguments[0];
+            if (this.IsGlobalHelpRequested(cmdName))
+            {
+                this.PrintGlobalHelp(commandLineArguments.Skip(1));
+                return false;
+            }
+
             IConsoleCommand cmd = this.FindCommand(cmdName);
             if (cmd == null)
             {
@@ -67,9 +74,9 @@ namespace Obscureware.Console.Commands
                 return false;
             }
 
-            if (commandLineArguments.Length > 1)
+            if (commandLineArguments.Length > 1) // TODO: first or any? And ignore all the other syntax...
             {
-                if (this.IsHelpRequest(commandLineArguments[1]))
+                if (this.IsCommandHelpRequested(commandLineArguments[1]))
                 {
                     this.PrintCommandHelp(cmd, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
                     return false;
@@ -93,17 +100,29 @@ namespace Obscureware.Console.Commands
             return true;
         }
 
+
+
+        private bool IsGlobalHelpRequested(string cmdName)
+        {
+            return cmdName.Equals("help", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private bool IsCommandHelpRequested(string commandLineArgument)
+        {
+            throw new NotImplementedException();
+        }
+
         private IConsoleCommand FindCommand(string cmdName)
         {
             throw new NotImplementedException();
         }
 
-        private void PrintCommandHelp(IConsoleCommand cmd, IEnumerable<string> skip)
+        private void PrintGlobalHelp(IEnumerable<string> skip)
         {
             throw new NotImplementedException();
         }
 
-        private bool IsHelpRequest(string commandLineArgument)
+        private void PrintCommandHelp(IConsoleCommand cmd, IEnumerable<string> skip)
         {
             throw new NotImplementedException();
         }
