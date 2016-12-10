@@ -4,21 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CFB16C5C-EE36-4ACE-9513-0AD18DFF9D00}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{C72CD243-E0BF-4F13-803B-0C1DF97B9008}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleApplication1</RootNamespace>
-    <AssemblyName>ConsoleApplication1</AssemblyName>
+    <RootNamespace>Obscureware.Console.Commands</RootNamespace>
+    <AssemblyName>Obscureware.Console.Commands</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -28,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -48,20 +41,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandsDemo.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="CommandDescriptionAttribute.cs" />
+    <Compile Include="CommandEngine.cs" />
+    <Compile Include="CommandEngineStyles.cs" />
+    <Compile Include="CommandFlagAttribute.cs" />
+    <Compile Include="CommandCaseSensitivenes.cs" />
+    <Compile Include="CommandDescriptorForAttribute.cs" />
+    <Compile Include="CommandNameAttribute.cs" />
+    <Compile Include="CommandModel.cs" />
+    <Compile Include="CommandOptionArgumentMode.cs" />
+    <Compile Include="CommandSwitchAttribute.cs" />
+    <Compile Include="CommandUnnamedOptionAttribute.cs" />
+    <Compile Include="ICommandOutput.cs" />
+    <Compile Include="IConsoleCommand.cs" />
+    <Compile Include="MandatoryAttribute.cs" />
+    <Compile Include="OutputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnnamedOptionsMode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Obscureware.Console.Commands\Obscureware.Console.Commands.csproj">
-      <Project>{C72CD243-E0BF-4F13-803B-0C1DF97B9008}</Project>
-      <Name>Obscureware.Console.Commands</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">
-      <Project>{e55bfaa2-62a4-4052-8351-548fbe5b02ba}</Project>
+      <Project>{E55BFAA2-62A4-4052-8351-548FBE5B02BA}</Project>
       <Name>ObscureWare.Console</Name>
     </ProjectReference>
   </ItemGroup>
