@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using ObscureWare.Console;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Internals
 {
+    using System.Collections.Generic;
+    using ObscureWare.Console;
+
     public class OutputManager : ICommandOutput
     {
         private readonly IConsole _consoleInstance;

@@ -1,16 +1,18 @@
-﻿using System.Reflection;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Internals
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
 
     internal class ModelBuilder
     {
+        public string CommandName { get; private set; }
+
         private readonly Type _modelType;
 
-        public ModelBuilder(Type modelType)
+        public ModelBuilder(Type modelType, string commandName)
         {
+            CommandName = commandName;
             if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
             _modelType = modelType;

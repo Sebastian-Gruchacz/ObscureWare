@@ -1,5 +1,6 @@
 ﻿namespace Obscureware.Console.Commands
 {
+    using Obscureware.Console.Commands.Internals;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using ObscureWare.Console;
@@ -13,29 +14,16 @@
     {
         private CommandEngineStyles _styles;
         private static readonly string[] InlineHelpCommands = new[] { "?", "help", "h" };
-        private readonly Dictionary<string, CommandInfo> _commands;
+
+        private readonly CommandManager _commandManager;
+        private CommandCaseSensitivenes _commandsSensitivenes;
 
 
         // NO default public constructor - by design
         private CommandEngine(Type[] commands)
         {
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
-
-            this._commands = this.CheckCommands(commands);
-        }
-
-        private Dictionary<string, CommandInfo> CheckCommands(Type[] commands)
-        {
-            Dictionary<string, CommandInfo> result = new Dictionary<string, CommandInfo>();
-
-            ConsoleCommandBuilder builder = new ConsoleCommandBuilder();
-            foreach (var commandType in commands)
-            {
-                Tuple<string, ModelBuilder, IConsoleCommand> cmd = builder.ValidateAndBuildCommand(commandType);
-                result.Add(cmd.Item1.ToUpper(), new CommandInfo(cmd.Item3, cmd.Item2));
-            }
-
-            return result;
+            _commandManager = new CommandManager(commands);
         }
 
         public string[] FlagCharacters { get; set; }
@@ -59,6 +47,16 @@
             }
         }
 
+        public CommandCaseSensitivenes CommandsSensitivenes
+        {
+            get { return _commandsSensitivenes; }
+            set
+            {
+                _commandsSensitivenes = value;
+                this._commandManager.CommandsSensitivenes = value;
+            }
+        }
+
 
         // https://en.wikipedia.org/wiki/Command-line_interface
 
@@ -78,11 +76,11 @@
             string cmdName = commandLineArguments[0];
             if (this.IsGlobalHelpRequested(cmdName))
             {
-                this.PrintGlobalHelp(commandLineArguments.Skip(1));
+                this.PrintGlobalHelp(consoleInstance, commandLineArguments.Skip(1));
                 return false;
             }
 
-            CommandInfo cmd = this.FindCommand(cmdName);
+            CommandInfo cmd = _commandManager.FindCommand(cmdName);
             if (cmd == null)
             {
                 consoleInstance.WriteLine(this.Styles.Warning, "Unknown command.");
@@ -132,20 +130,23 @@
             return false;
         }
 
-        private CommandInfo FindCommand(string cmdName)
+        private void PrintGlobalHelp(IConsole console, IEnumerable<string> skip)
         {
-            CommandInfo cmd;
-            if (this._commands.TryGetValue(cmdName.ToUpper(), out cmd))
+            console.WriteLine(this.Styles.HelpHeader, "Available commands:");
+
+            foreach (var cmdInfo in _commandManager.GetAll())
             {
-                return cmd;
+                console.WriteLine(this.Styles.HelpDefinition, cmdInfo.ModelBuilder.CommandName);
+
+                // TODO: expose and print description in nice way...
             }
 
-            return null;
-        }
-
-        private void PrintGlobalHelp(IEnumerable<string> skip)
-        {
-            throw new NotImplementedException();
+            console.WriteLine();
+            console.WriteLine(this.Styles.Default, $"All command names are case {this.CommandsSensitivenes.ToString().ToLower()}.");
+            console.WriteText(this.Styles.Default, "To receive syntax help about particular command use \"");
+            console.WriteText(this.Styles.HelpDefinition, "<commandName> -h");
+            console.WriteLine(this.Styles.Default, "\" syntax.");
+            console.WriteLine();
         }
 
         private void PrintHelpOnHelp(IConsole console)

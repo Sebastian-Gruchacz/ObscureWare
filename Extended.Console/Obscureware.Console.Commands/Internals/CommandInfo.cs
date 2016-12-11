@@ -1,7 +1,5 @@
-﻿namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Internals
 {
-    using System;
-
     internal class CommandInfo
     {
         public IConsoleCommand Command { get; private set; }

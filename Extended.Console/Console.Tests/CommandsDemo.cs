@@ -24,6 +24,7 @@ namespace ConsoleApplication1
             engine.OptionArgumentMode = CommandOptionArgumentMode.Separated;
             //engine.OptionArgumentJoinCharacater = ':'; // not used because of: CommandOptionArgumentMode.Separated
             engine.AllowFlagsAsOneArgument = false;
+            engine.CommandsSensitivenes = CommandCaseSensitivenes.Insensitive;
             engine.UnnamedOptionsMode = UnnamedOptionsMode.EndOnly; // TODO: let the command decide ?
             //engine.Styles = new CommandEngineStyles
             //{
