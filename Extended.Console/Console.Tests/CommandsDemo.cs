@@ -31,6 +31,9 @@ namespace ConsoleApplication1
             //};
 
             bool executedProperly = engine.ExecuteCommand(context, console, new[] {"dir", @"\f", "-m", "CurrentDir", "*.*" });
+            engine.ExecuteCommand(context, console, new[] {"diraa" });
+            engine.ExecuteCommand(context, console, new[] { "help" });
+            engine.ExecuteCommand(context, console, new[] { "dir", "-h" });
         }
     }
 
@@ -90,26 +93,22 @@ namespace ConsoleApplication1
     public class DirCommandModel : CommandModel
     {
         [Mandatory(false)]
-        [CommandFlag(false, "f", "F")]
+        [CommandFlag(false, "d", "D")]
         // TODO: Name Attribute? Or just use activation letters for help/syntax display?
-        [CommandDescription("When set specifies whether Folders shall be enabled too.")]
+        [CommandDescription("When set specifies whether directories shall be listed too.")]
         public bool IncludeFolders { get; set; }
 
         [Mandatory()]
         [CommandSwitch(typeof(ListMode), "m", DefaultValue = ListMode.CurrentDir)]
-        [CommandDescription("Specifies which directory shall be listed.")]
+        [CommandDescription("Specifies which predefined directory location shall be listed.")]
         // TODO: list help for switches.
         public ListMode Mode { get; set; }
 
         [Mandatory(false)]
-        [CommandUnnamedOption(0)]
+        [CommandValueFlag(ValueFlagType.Text, "f", "F")]
+        //[CommandUnnamedOption(0)]
         [CommandDescription("Specifies filter for enumerated files. Does not apply to folders listing.")]
         public string Filter { get; set; }
-
-        public DirCommandModel(string[] rawParameters) : base(rawParameters)
-        {
-
-        }
     }
 
     public enum ListMode

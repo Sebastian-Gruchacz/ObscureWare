@@ -15,7 +15,12 @@ namespace Obscureware.Console.Commands
 
         public void PrintResultLines(IEnumerable<string> results)
         {
-            throw new NotImplementedException();
+            // TODO: improve!
+
+            foreach (var result in results)
+            {
+                _consoleInstance.WriteLine(result);
+            }
         }
     }
 }

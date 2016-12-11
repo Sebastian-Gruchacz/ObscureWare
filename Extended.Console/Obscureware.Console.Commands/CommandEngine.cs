@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using ObscureWare.Console;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands
 {
+    using System.Collections.Generic;
+    using System.Runtime.InteropServices;
+    using ObscureWare.Console;
     using System;
     using System.Linq;
     using System.Reflection;
@@ -13,13 +12,30 @@ namespace Obscureware.Console.Commands
     public class CommandEngine
     {
         private CommandEngineStyles _styles;
+        private static readonly string[] InlineHelpCommands = new[] { "?", "help", "h" };
+        private readonly Dictionary<string, CommandInfo> _commands;
+
 
         // NO default public constructor - by design
         private CommandEngine(Type[] commands)
         {
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
 
-            // TODO: verify types are : IConsoleCommand<CommandModel>
+            this._commands = this.CheckCommands(commands);
+        }
+
+        private Dictionary<string, CommandInfo> CheckCommands(Type[] commands)
+        {
+            Dictionary<string, CommandInfo> result = new Dictionary<string, CommandInfo>();
+
+            ConsoleCommandBuilder builder = new ConsoleCommandBuilder();
+            foreach (var commandType in commands)
+            {
+                Tuple<string, ModelBuilder, IConsoleCommand> cmd = builder.ValidateAndBuildCommand(commandType);
+                result.Add(cmd.Item1.ToUpper(), new CommandInfo(cmd.Item3, cmd.Item2));
+            }
+
+            return result;
         }
 
         public string[] FlagCharacters { get; set; }
@@ -66,11 +82,11 @@ namespace Obscureware.Console.Commands
                 return false;
             }
 
-            IConsoleCommand cmd = this.FindCommand(cmdName);
+            CommandInfo cmd = this.FindCommand(cmdName);
             if (cmd == null)
             {
-                // TODO: print CommandNotFound error + help Hint.
-
+                consoleInstance.WriteLine(this.Styles.Warning, "Unknown command.");
+                this.PrintHelpOnHelp(consoleInstance);
                 return false;
             }
 
@@ -78,7 +94,7 @@ namespace Obscureware.Console.Commands
             {
                 if (this.IsCommandHelpRequested(commandLineArguments[1]))
                 {
-                    this.PrintCommandHelp(cmd, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
+                    this.PrintCommandHelp(cmd.Command, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
                     return false;
                 }
             }
@@ -89,7 +105,7 @@ namespace Obscureware.Console.Commands
 
             try
             {
-                cmd.Execute(context, outputManager, model); // skip only cmdName itself
+                cmd.Command.Execute(context, outputManager, model); // skip only cmdName itself
             }
             catch (Exception)
             {
@@ -104,17 +120,27 @@ namespace Obscureware.Console.Commands
 
         private bool IsGlobalHelpRequested(string cmdName)
         {
+            // TODO: more options
             return cmdName.Equals("help", StringComparison.InvariantCultureIgnoreCase);
         }
 
+
+
         private bool IsCommandHelpRequested(string commandLineArgument)
         {
-            throw new NotImplementedException();
+            // TODO: implement using InlineHelpCommands
+            return false;
         }
 
-        private IConsoleCommand FindCommand(string cmdName)
+        private CommandInfo FindCommand(string cmdName)
         {
-            throw new NotImplementedException();
+            CommandInfo cmd;
+            if (this._commands.TryGetValue(cmdName.ToUpper(), out cmd))
+            {
+                return cmd;
+            }
+
+            return null;
         }
 
         private void PrintGlobalHelp(IEnumerable<string> skip)
@@ -122,14 +148,31 @@ namespace Obscureware.Console.Commands
             throw new NotImplementedException();
         }
 
+        private void PrintHelpOnHelp(IConsole console)
+        {
+            console.WriteText(this.Styles.Default, "To get list of available commands type ");
+            var availableCommands = InlineHelpCommands.Select(cm => this.SwitchCharacters.First() + cm).ToArray();
+            for (int i = 0; i < availableCommands.Length; i++)
+            {
+                if (i > 0)
+                {
+                    console.WriteText(this.Styles.Default, i == availableCommands.Length - 1 ? " or " : ", ");
+                }
+
+                console.WriteText(this.Styles.HelpDefinition, availableCommands[i]);
+            }
+
+            console.WriteLine(this.Styles.Default, ".");
+        }
+
         private void PrintCommandHelp(IConsoleCommand cmd, IEnumerable<string> skip)
         {
             throw new NotImplementedException();
         }
 
-        private object BuildModelForCommand(IConsoleCommand cmd, IEnumerable<string> arguments)
+        private object BuildModelForCommand(CommandInfo cmdInfo, IEnumerable<string> arguments)
         {
-            throw new NotImplementedException();
+            return cmdInfo.ModelBuilder.BuildModel(arguments);
         }
 
 
