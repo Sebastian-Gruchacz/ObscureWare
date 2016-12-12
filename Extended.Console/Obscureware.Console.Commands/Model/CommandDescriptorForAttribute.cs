@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     /// <summary>
     ///
     /// </summary>

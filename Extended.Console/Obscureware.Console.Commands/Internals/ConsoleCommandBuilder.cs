@@ -3,6 +3,8 @@
     using System;
     using System.Linq;
 
+    using Obscureware.Console.Commands.Model;
+
     internal class ConsoleCommandBuilder
     {
         /// <summary>

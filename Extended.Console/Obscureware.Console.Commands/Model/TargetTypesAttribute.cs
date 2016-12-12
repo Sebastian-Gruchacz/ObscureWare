@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public class TargetTypesAttribute : Attribute
     {
@@ -9,7 +9,7 @@ namespace Obscureware.Console.Commands
 
         public TargetTypesAttribute(params Type[] targetTypes)
         {
-            TargetTypes = targetTypes;
+            this.TargetTypes = targetTypes;
         }
     }
 }

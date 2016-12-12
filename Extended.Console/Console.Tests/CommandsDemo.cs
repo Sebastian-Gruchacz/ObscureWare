@@ -10,6 +10,7 @@
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Obscureware.Console.Commands;
+    using Obscureware.Console.Commands.Model;
 
     public class TestCommands
     {

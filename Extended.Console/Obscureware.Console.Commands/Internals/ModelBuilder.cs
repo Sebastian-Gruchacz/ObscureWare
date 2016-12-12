@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Reflection;
 
+    using Obscureware.Console.Commands.Model;
+
     internal class ModelBuilder
     {
         public string CommandName { get; private set; }

@@ -1,14 +1,14 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     public class MandatoryAttribute : Attribute
     {
         public bool IsParameterMandatory { get; private set; }
 
         public MandatoryAttribute(bool isParameterMandatory = true)
         {
-            IsParameterMandatory = isParameterMandatory;
+            this.IsParameterMandatory = isParameterMandatory;
         }
     }
 }

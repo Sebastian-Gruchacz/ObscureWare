@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class CommandFlagAttribute : Attribute
     {
@@ -17,8 +17,8 @@ namespace Obscureware.Console.Commands
 
         public CommandFlagAttribute(bool isEnabledByDefault = false, params string[] commandLiterals)
         {
-            IsEnabledByDefault = isEnabledByDefault;
-            CommandLiterals = commandLiterals;
+            this.IsEnabledByDefault = isEnabledByDefault;
+            this.CommandLiterals = commandLiterals;
         }
     }
 }
