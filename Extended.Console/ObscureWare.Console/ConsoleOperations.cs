@@ -29,7 +29,7 @@
         private void WriteTextBoxFrame(int boxX, int boxY, int boxWidth, int boxHeight, FrameStyle frameDef)
         {
             _console.SetColors(frameDef.FrameColor.ForeColor, frameDef.FrameColor.BgColor);
-            _console.PositionCursor(boxX, boxY);
+            _console.SetCursorPosition(boxX, boxY);
             _console.WriteText(frameDef.TopLeft);
             for (int i = 1; i < boxWidth - 1; i++)
             {
@@ -39,10 +39,10 @@
             string body = frameDef.Left + new string(frameDef.BackgroundFiller, boxWidth - 2) + frameDef.Right;
             for (int j = 1; j < boxHeight - 1; j++)
             {
-                _console.PositionCursor(boxX, boxY + j);
+                _console.SetCursorPosition(boxX, boxY + j);
                 _console.WriteText(body);
             }
-            _console.PositionCursor(boxX, boxY + boxHeight - 1);
+            _console.SetCursorPosition(boxX, boxY + boxHeight - 1);
             _console.WriteText(frameDef.BottomLeft);
             for (int i = 1; i < boxWidth - 1; i++)
             {
@@ -59,14 +59,14 @@
         public bool WriteTextBox(int x, int y, int boxWidth, int boxHeight, string text, ConsoleFontColor colorDef)
         {
             this.LimitBoxDimensions(x, y, ref boxWidth, ref boxHeight); // so do not have to check for this every line is drawn...
-            _console.PositionCursor(x, y);
+            _console.SetCursorPosition(x, y);
             _console.SetColors(colorDef.ForeColor, colorDef.BgColor);
 
             string[] lines = SplitText(text, boxWidth);
             int i;
             for (i = 0; i < lines.Length && i < boxHeight; ++i)
             {
-                _console.PositionCursor(x, y + i);
+                _console.SetCursorPosition(x, y + i);
                 WriteJustified(lines[i], boxWidth);
             }
 
@@ -86,7 +86,7 @@
             TableStyle style)
         {
             this.LimitTableDimensions(x, ref maxTableWidth); // so do not have to check for this every line is drawn...
-            _console.PositionCursor(x, y);
+            _console.SetCursorPosition(x, y);
 
             // table calculations - fitting content
 

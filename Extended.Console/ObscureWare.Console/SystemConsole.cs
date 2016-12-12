@@ -59,7 +59,7 @@ namespace ObscureWare.Console
 
         public void WriteText(int x, int y, string text, Color foreColor, Color bgColor)
         {
-            PositionCursor(x, y);
+            this.SetCursorPosition(x, y);
             SetColors(foreColor, bgColor);
             WriteText(text);
         }
@@ -102,9 +102,14 @@ namespace ObscureWare.Console
             System.Console.Write(text);
         }
 
-        public void PositionCursor(int x, int y)
+        public void SetCursorPosition(int x, int y)
         {
             System.Console.SetCursorPosition(x, y);
+        }
+
+        public Point GetCursorPosition()
+        {
+            return new Point(System.Console.CursorLeft, System.Console.CursorTop);
         }
 
         public void WriteText(char character)
