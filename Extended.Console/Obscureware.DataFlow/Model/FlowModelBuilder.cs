@@ -1,35 +1,37 @@
-namespace Obscureware.Console.Commands.Blocks
+namespace Obscureware.DataFlow.Model
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Console.Commands.Blocks;
+    using DataFlow;
 
-    public class FlowModelBuilder : IFluentFlowBuilder
+    public class FlowModelBuilder : IFlowBuilder
     {
-        private readonly IProcessingBlockFactory _blockFactory;
+        private readonly IBlockFactory _blockFactory;
 
-        private readonly Dictionary<string, ProcessingBlockBase> _blocks =
-            new Dictionary<string, ProcessingBlockBase>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly Dictionary<string, BlockBase> _blocks =
+            new Dictionary<string, BlockBase>(StringComparer.InvariantCultureIgnoreCase);
 
         // used in order to traverse blocks in order of first appearance in flow
-        private readonly List<ProcessingBlockBase> _orderedBlocks = new List<ProcessingBlockBase>();
+        private readonly List<BlockBase> _orderedBlocks = new List<BlockBase>();
 
         private readonly Stack<BlockLink> _recentLinks = new Stack<BlockLink>();
         private string[] _sourceIds;
 
         // note XL - might add additional connection validation
-        public FlowModelBuilder(IProcessingBlockFactory blockFactory)
+        public FlowModelBuilder(IBlockFactory blockFactory)
         {
             this._blockFactory = blockFactory;
         }
 
-        public virtual IFluentFlow BuildFlow()
+        public virtual IFlow BuildFlow()
         {
             return new ProcessingFlow(this._orderedBlocks, this._blockFactory.CancellationTokenSource);
         }
 
-        public virtual IFluentFlowBuilder Link(string sourceId)
+        public virtual IFlowBuilder Link(string sourceId)
         {
             this.ValidateInExisting(sourceId);
             this._recentLinks.Clear();
@@ -37,16 +39,16 @@ namespace Obscureware.Console.Commands.Blocks
             return this;
         }
 
-        public virtual IFluentFlowBuilder Link<TBlockSource>()
-            where TBlockSource : ProcessingBlockBase
+        public virtual IFlowBuilder Link<TBlockSource>()
+            where TBlockSource : BlockBase
         {
             this._recentLinks.Clear();
             this._sourceIds = new[] { this.CreateDefaultBlockWithId<TBlockSource>() };
             return this;
         }
 
-        public IFluentFlowBuilder Link<TBlockSource, TBlockSource2>()
-            where TBlockSource : ProcessingBlockBase where TBlockSource2 : ProcessingBlockBase
+        public IFlowBuilder Link<TBlockSource, TBlockSource2>()
+            where TBlockSource : BlockBase where TBlockSource2 : BlockBase
         {
             this._recentLinks.Clear();
             this._sourceIds = new[]
@@ -58,8 +60,8 @@ namespace Obscureware.Console.Commands.Blocks
             return this;
         }
 
-        public IFluentFlowBuilder Link<TBlockSource, TBlockSource2, TBlockSource3>()
-            where TBlockSource : ProcessingBlockBase where TBlockSource2 : ProcessingBlockBase where TBlockSource3 : ProcessingBlockBase
+        public IFlowBuilder Link<TBlockSource, TBlockSource2, TBlockSource3>()
+            where TBlockSource : BlockBase where TBlockSource2 : BlockBase where TBlockSource3 : BlockBase
         {
             this._recentLinks.Clear();
             this._sourceIds = new[] { this.CreateDefaultBlockWithId<TBlockSource>(), this.CreateDefaultBlockWithId<TBlockSource2>(), this.CreateDefaultBlockWithId<TBlockSource3>() };
@@ -68,7 +70,7 @@ namespace Obscureware.Console.Commands.Blocks
         }
 
         private string CreateDefaultBlockWithId<TBlockSource>()
-            where TBlockSource : ProcessingBlockBase
+            where TBlockSource : BlockBase
         {
             var id = GetDefaultIdFromType<TBlockSource>();
             if (!this._blocks.ContainsKey(id))
@@ -76,7 +78,7 @@ namespace Obscureware.Console.Commands.Blocks
                 var block = this._blockFactory.Create<TBlockSource>();
                 if (block == null)
                 {
-                    throw new InvalidOperationException(string.Format("Failed to create block of type {0}", typeof(TBlockSource).Name));
+                    throw new InvalidOperationException($"Failed to create block of type {typeof(TBlockSource).Name}");
                 }
 
                 block.ReadableId = id;
@@ -87,7 +89,7 @@ namespace Obscureware.Console.Commands.Blocks
             return id;
         }
 
-        public IFluentFlowBuilder To(string targetId)
+        public IFlowBuilder To(string targetId)
         {
             this.ValidateInExisting(targetId);
             if (this._sourceIds == null || !this._sourceIds.Any())
@@ -102,7 +104,7 @@ namespace Obscureware.Console.Commands.Blocks
                 var sourceBlock = this.GetBlock(source);
                 if (sourceBlock == null)
                 {
-                    throw new InvalidOperationException(string.Format("target block with id {0} not found", source));
+                    throw new InvalidOperationException($"target block with id {source} not found");
                 }
 
                 this._recentLinks.Push(BlockLink.Link(sourceBlock, targetBlock));
@@ -111,7 +113,7 @@ namespace Obscureware.Console.Commands.Blocks
             return this;
         }
 
-        public IFluentFlowBuilder To<TBlockTarget>() where TBlockTarget : ProcessingBlockBase
+        public IFlowBuilder To<TBlockTarget>() where TBlockTarget : BlockBase
         {
 
             if (this._sourceIds == null || !this._sourceIds.Any())
@@ -122,7 +124,7 @@ namespace Obscureware.Console.Commands.Blocks
             var targetBlock = this.GetBlock(this.CreateDefaultBlockWithId<TBlockTarget>());
             if (targetBlock == null)
             {
-                throw new InvalidOperationException(string.Format("target block with of type {0} not found", typeof(TBlockTarget).Name));
+                throw new InvalidOperationException($"Target block with of type {typeof(TBlockTarget).Name} not found");
             }
 
             foreach (var source in this._sourceIds)
@@ -130,7 +132,7 @@ namespace Obscureware.Console.Commands.Blocks
                 var sourceBlock = this.GetBlock(source);
                 if (sourceBlock == null)
                 {
-                    throw new InvalidOperationException(string.Format("target block with id {0} not found", source));
+                    throw new InvalidOperationException($"target block with id {source} not found");
                 }
 
                 this._recentLinks.Push(BlockLink.Link(sourceBlock, targetBlock));
@@ -139,9 +141,9 @@ namespace Obscureware.Console.Commands.Blocks
             return this;
         }
 
-        public IFluentFlowBuilder To<TBlockTarget, TBlockTarget2>()
-            where TBlockTarget : ProcessingBlockBase
-            where TBlockTarget2 : ProcessingBlockBase
+        public IFlowBuilder To<TBlockTarget, TBlockTarget2>()
+            where TBlockTarget : BlockBase
+            where TBlockTarget2 : BlockBase
         {
             this.To<TBlockTarget>();
             this.To<TBlockTarget2>();
@@ -149,11 +151,11 @@ namespace Obscureware.Console.Commands.Blocks
             return this;
         }
 
-        public virtual IFluentFlowBuilder When<TTuple>(Expression<Predicate<TTuple>> condition)
+        public virtual IFlowBuilder When<TTuple>(Expression<Predicate<TTuple>> condition)
         {
             if (!this._recentLinks.Any())
             {
-                throw new InvalidOperationException("No links exist to connect condition to");
+                throw new InvalidOperationException("No links exist to connect condition to.");
             }
 
             while (this._recentLinks.Any())
@@ -174,33 +176,33 @@ namespace Obscureware.Console.Commands.Blocks
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
             if (!this._blocks.ContainsKey(id))
             {
-                throw new InvalidOperationException(string.Format("Block with custom id {0} not created using OverrideCreate", id));
+                throw new InvalidOperationException($"Block with custom id {id} not created using OverrideCreate");
             }
         }
 
-        private ProcessingBlockBase GetBlock(string id)
+        private BlockBase GetBlock(string id)
         {
             if (!this._blocks.ContainsKey(id))
             {
-                throw new ArgumentException(string.Format("Could not find block with id {0}", id));
+                throw new ArgumentException($"Could not find block with id {id}", nameof(id));
             }
 
             return this._blocks[id];
         }
 
-        public virtual IFluentFlowBuilder OverrideCreate<TBlock>(ProcessingBlockOptions options, string id = null)
-            where TBlock : ProcessingBlockBase
+        public virtual IFlowBuilder OverrideCreate<TBlock>(ProcessingBlockOptions options, string id = null)
+            where TBlock : BlockBase
         {
             id = id ?? GetDefaultIdFromType<TBlock>();
 
             if (this._blocks.ContainsKey(id))
             {
-                throw new ApplicationException(string.Format("Block with id {0} already exists in this flow", id));
+                throw new ApplicationException($"Block with id {id} already exists in this flow");
             }
 
             this._blockFactory.OverrideCreate<TBlock>(options, id);
@@ -213,14 +215,14 @@ namespace Obscureware.Console.Commands.Blocks
         }
 
 
-        public virtual IFluentFlowBuilder OverrideCreate<TBlock>(Func<TBlock> factoryFunction, string id = null)
-            where TBlock : ProcessingBlockBase
+        public virtual IFlowBuilder OverrideCreate<TBlock>(Func<TBlock> factoryFunction, string id = null)
+            where TBlock : BlockBase
         {
             id = id ?? GetDefaultIdFromType<TBlock>();
 
             if (this._blocks.ContainsKey(id))
             {
-                throw new ApplicationException(string.Format("Block with id {0} already exists in this flow", id));
+                throw new ApplicationException($"Block with id {id} already exists in this flow");
             }
 
             this._blockFactory.OverrideCreate(factoryFunction, id);
@@ -234,7 +236,7 @@ namespace Obscureware.Console.Commands.Blocks
             return this;
         }
 
-        private static string GetDefaultIdFromType<TBlock>() where TBlock : ProcessingBlockBase
+        private static string GetDefaultIdFromType<TBlock>() where TBlock : BlockBase
         {
             return typeof(TBlock).Name;
         }

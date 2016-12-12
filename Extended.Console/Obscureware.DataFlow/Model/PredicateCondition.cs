@@ -2,12 +2,13 @@ namespace Obscureware.Console.Commands.Blocks
 {
     using System;
     using System.Linq.Expressions;
+    using DataFlow.Implementation;
 
     public class PredicateCondition<TTuple> : ICondition
     {
         public string SerializedCondition { get; private set; }
 
-        public Predicate<FlowToken> Condition { get; private set; }
+        public Predicate<DataFlowToken> Condition { get; private set; }
 
         public PredicateCondition(Expression<Predicate<TTuple>> condition)
         {
@@ -16,9 +17,9 @@ namespace Obscureware.Console.Commands.Blocks
             this.Condition = o => conditionOnTuple(o.Get<TTuple>());
         }
 
-        public void Accept(IFlowVisitor visitor)
+        public void Accept(IFlowNavigator navigator)
         {
-            visitor.Visit(this);
+            navigator.Visit(this);
         }
     }
 }

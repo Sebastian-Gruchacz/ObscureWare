@@ -30,8 +30,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=10.2.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.10.2.1\lib\net\JetBrains.Annotations.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.11\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,36 +52,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\Annotations.cs" />
     <Compile Include="Model\BlockLink.cs" />
-    <Compile Include="Implementation\ToStringBuilder.cs" />
-    <Compile Include="Logging\BlockLogger.cs" />
-    <Compile Include="Logging\BlockLoggerFactory.cs" />
-    <Compile Include="Implementation\CycleValidationVisitor.cs" />
-    <Compile Include="Implementation\DefaultProcessingBlockFactory.cs" />
-    <Compile Include="Implementation\FinishedTokenReceivedEventArgs.cs" />
-    <Compile Include="Model\FlowExceptionManager.cs" />
+    <Compile Include="Logging\DataFlowNLogger.cs" />
+    <Compile Include="Logging\DataFlowLoggerFactory.cs" />
+    <Compile Include="Implementation\CycleValidationNavigator.cs" />
+    <Compile Include="Implementation\DefaultBlockFactory.cs" />
+    <Compile Include="Implementation\TerminatedTokenReceivedEventArgs.cs" />
+    <Compile Include="Implementation\FlowExceptionManager.cs" />
     <Compile Include="Model\FlowExecutor.cs" />
     <Compile Include="Model\FlowModelBuilder.cs" />
-    <Compile Include="Implementation\FlowToken.cs" />
-    <Compile Include="Logging\IBlockLogger.cs" />
-    <Compile Include="ICommandBlock.cs" />
+    <Compile Include="Implementation\DataFlowToken.cs" />
+    <Compile Include="Logging\IDataFlowLogger.cs" />
+    <Compile Include="IBlock.cs" />
     <Compile Include="ICondition.cs" />
-    <Compile Include="IFlowVisitor.cs" />
-    <Compile Include="IFluentFlow.cs" />
-    <Compile Include="IFluentFlowBuilder.cs" />
+    <Compile Include="IFlowNavigator.cs" />
+    <Compile Include="IFlow.cs" />
+    <Compile Include="IFlowBuilder.cs" />
     <Compile Include="ILink.cs" />
     <Compile Include="InvalidFlowException.cs" />
-    <Compile Include="Implementation\IProcessingBlockFactory.cs" />
-    <Compile Include="IVisitableElement.cs" />
+    <Compile Include="IBlockFactory.cs" />
+    <Compile Include="INavigableElement.cs" />
     <Compile Include="Logging\PerformanceMonitor.cs" />
     <Compile Include="Model\PredicateCondition.cs" />
-    <Compile Include="Model\ProcessingBlockBase.cs" />
+    <Compile Include="Model\BlockBase.cs" />
     <Compile Include="Model\ProcessingBlockOptions.cs" />
     <Compile Include="Model\ProcessingFlow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\TplFlowBuildingVisitor.cs" />
+    <Compile Include="Model\FlowBuildingNavigator.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

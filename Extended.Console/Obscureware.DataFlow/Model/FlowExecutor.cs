@@ -1,25 +1,28 @@
-namespace Obscureware.Console.Commands.Blocks
+namespace Obscureware.DataFlow.Model
 {
     using System;
     using System.Threading.Tasks;
+    using DataFlow;
+    using Implementation;
 
-    using Obscureware.DataFlow.Implementation;
-
+    /// <summary>
+    /// Class responsible for execution of previously build Flow
+    /// </summary>
     public class FlowExecutor
     {
-        private readonly Action<IFluentFlowBuilder> _flowFactory;
+        private readonly Action<IFlowBuilder> _flowFactory;
 
-        private readonly IProcessingBlockFactory _blockFactory;
+        private readonly IBlockFactory _blockFactory;
 
-        private IFluentFlow _flow;
+        private IFlow _flow;
 
-        public FlowExecutor(Action<IFluentFlowBuilder> flowFactory, IProcessingBlockFactory blockFactory = null)
+        public FlowExecutor(Action<IFlowBuilder> flowFactory, IBlockFactory blockFactory = null)
         {
             this._flowFactory = flowFactory;
-            this._blockFactory = blockFactory ?? new DefaultProcessingBlockFactory();
+            this._blockFactory = blockFactory ?? new DefaultBlockFactory();
         }
 
-        public async Task PostToFlowAsync(FlowToken token)
+        public async Task PostToFlowAsync(DataFlowToken token)
         {
             if (this._flow == null)
             {

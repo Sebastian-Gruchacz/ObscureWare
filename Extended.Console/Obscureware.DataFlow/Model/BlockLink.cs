@@ -1,17 +1,18 @@
 namespace Obscureware.Console.Commands.Blocks
 {
     using System;
+    using DataFlow.Model;
 
     public class BlockLink : ILink
     {
-        private BlockLink(ProcessingBlockBase source, ProcessingBlockBase target, ICondition condition)
+        private BlockLink(BlockBase source, BlockBase target, ICondition condition)
         {
             this.Source = source;
             this.Target = target;
             this.Condition = condition;
         }
 
-        public static BlockLink Link(ProcessingBlockBase source, ProcessingBlockBase target, ICondition condition = null)
+        public static BlockLink Link(BlockBase source, BlockBase target, ICondition condition = null)
         {
             if (source == null || target == null)
             {
@@ -30,13 +31,13 @@ namespace Obscureware.Console.Commands.Blocks
             return link;
         }
 
-        public void Accept(IFlowVisitor visitor)
+        public void Accept(IFlowNavigator navigator)
         {
-            visitor.Visit(this);
+            navigator.Visit(this);
         }
 
-        public ProcessingBlockBase Source { get; private set; }
-        public ProcessingBlockBase Target { get; private set; }
+        public BlockBase Source { get; private set; }
+        public BlockBase Target { get; private set; }
         public ICondition Condition { get; set; }
     }
 }

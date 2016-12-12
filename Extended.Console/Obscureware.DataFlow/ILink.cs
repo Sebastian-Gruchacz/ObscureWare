@@ -1,9 +1,11 @@
 namespace Obscureware.Console.Commands.Blocks
 {
+    using DataFlow.Model;
+
     public interface ILink
     {
-        ProcessingBlockBase Source { get; }
-        ProcessingBlockBase Target { get; }
+        BlockBase Source { get; }
+        BlockBase Target { get; }
         ICondition Condition { get; set; }
     }
 }

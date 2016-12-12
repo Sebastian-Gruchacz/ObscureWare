@@ -1,20 +1,25 @@
-﻿namespace Obscureware.Console.Commands.Blocks
+﻿namespace Obscureware.DataFlow.Logging
 {
+    using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Threading;
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using System.Threading;
 
+    /// <summary>
+    /// Simple performance monitoring routines, good for remote measurement of deployed code.
+    /// </summary>
     public static class PerformanceMonitor
     {
-        private static readonly ConcurrentDictionary<string, PerfInfo> _results =
-            new ConcurrentDictionary<string, PerfInfo>();
+        private static readonly ConcurrentDictionary<string, PerfInfo> _results = new ConcurrentDictionary<string, PerfInfo>();
 
+        /// <summary>
+        /// Register execution time under specific counter key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="elapsedTicks"></param>
         public static void RegisterExecution(string key, long elapsedTicks)
         {
             PerfInfo info;
@@ -35,6 +40,11 @@
             }
         }
 
+        /// <summary>
+        /// Measures execution time of given action under specific counter key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
         public static void MeasureBlock(string key, Action action)
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -48,6 +58,14 @@
                 RegisterExecution(key, sw.ElapsedTicks);
             }
         }
+
+        /// <summary>
+        /// Measures execution time of given function under specific counter key
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public static T MeasureBlock<T>(string key, Func<T> func)
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -62,6 +80,10 @@
             }
         }
 
+        /// <summary>
+        /// Measures execution time of given action under automatically generated key - by stack frame history
+        /// </summary>
+        /// <param name="action"></param>
         public static void MeasureBlock(Action action)
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -80,6 +102,12 @@
             }
         }
 
+        /// <summary>
+        /// Measures execution time of given function under automatically generated key - by stack frame history
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public static T MeasureBlock<T>(Func<T> func)
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -98,6 +126,12 @@
             }
         }
 
+        /// <summary>
+        /// Writes performance results in formated layout to the given stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="orderMode"></param>
+        /// <param name="vector"></param>
         public static void ExportPerformanceResults(StreamWriter stream, OrderMode orderMode, OrderVector vector)
         {
             var comparator = new PerfInfoComparator(orderMode);
@@ -126,24 +160,28 @@
             }
         }
 
+        /// <summary>
+        /// Clears performance results registered so far.
+        /// </summary>
         public static void Clear()
         {
             _results.Clear();
         }
     }
 
-    public class PerfInfoComparator : IComparer<PerfInfo>
+
+    internal class PerfInfoComparator : IComparer<PerfInfo>
     {
         private readonly OrderMode _orderMode;
 
         public PerfInfoComparator(OrderMode orderMode)
         {
-            _orderMode = orderMode;
+            this._orderMode = orderMode;
         }
 
         public int Compare(PerfInfo x, PerfInfo y)
         {
-            switch (_orderMode)
+            switch (this._orderMode)
             {
                 case OrderMode.Name:
                     return x.Name.CompareTo(y.Name);
@@ -181,12 +219,12 @@
 
         public PerfInfo(string name)
         {
-            _name = name;
+            this._name = name;
         }
 
         public string Name
         {
-            get { return _name; }
+            get { return this._name; }
         }
     }
 }

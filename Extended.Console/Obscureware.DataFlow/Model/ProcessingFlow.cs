@@ -1,3 +1,5 @@
+using Obscureware.DataFlow;
+
 namespace Obscureware.Console.Commands.Blocks
 {
     using System;
@@ -5,18 +7,20 @@ namespace Obscureware.Console.Commands.Blocks
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using DataFlow.Implementation;
+    using DataFlow.Model;
 
-    internal class ProcessingFlow : IFluentFlow
+    internal class ProcessingFlow : IFlow
     {
         protected CancellationTokenSource CancellationTokenSource { get; private set; }
         protected FlowModelBuilder Builder { get; set; }
-        protected IFlowVisitor DefaultVisitor { get; set; }
-        protected IFlowVisitor ValidationVisitor { get; set; }
+        protected IFlowNavigator DefaultNavigator { get; set; }
+        protected IFlowNavigator ValidationNavigator { get; set; }
         private bool _isModelInited;
         private bool _isStackBlockCompleted;
-        public IList<ProcessingBlockBase> ProcesingBlocks { get; private set; }
+        public IList<BlockBase> ProcesingBlocks { get; private set; }
 
-        public virtual ProcessingBlockBase StartBlock
+        public virtual BlockBase StartBlock
         {
             get
             {
@@ -39,25 +43,25 @@ namespace Obscureware.Console.Commands.Blocks
             }
         }
 
-        public ProcessingFlow(IList<ProcessingBlockBase> blocks, CancellationTokenSource tokenSource)
+        public ProcessingFlow(IList<BlockBase> blocks, CancellationTokenSource tokenSource)
         {
             this.ProcesingBlocks = blocks;
             this.CancellationTokenSource = tokenSource;
-            this.DefaultVisitor = TplFlowBuildingVisitor.Create(tokenSource);
-            this.ValidationVisitor = new CycleValidationVisitor();
+            this.DefaultNavigator = FlowBuildingNavigator.Create(tokenSource);
+            this.ValidationNavigator = new CycleValidationNavigator();
         }
 
         private void Init()
         {
             if (!this._isModelInited)
             {
-                this.Accept(this.ValidationVisitor);
-                this.Accept(this.DefaultVisitor);
+                this.Accept(this.ValidationNavigator);
+                this.Accept(this.DefaultNavigator);
                 this._isModelInited = true;
             }
         }
 
-        public void Post(FlowToken token)
+        public void Post(DataFlowToken token)
         {
             this.Init();
 
@@ -93,9 +97,9 @@ namespace Obscureware.Console.Commands.Blocks
 
         }
 
-        public void Accept(IFlowVisitor visitor)
+        public void Accept(IFlowNavigator navigator)
         {
-            visitor.Visit(this);
+            navigator.Visit(this);
         }
     }
 }
