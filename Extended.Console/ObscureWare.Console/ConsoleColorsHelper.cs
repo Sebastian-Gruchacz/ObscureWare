@@ -33,13 +33,13 @@ namespace ObscureWare.Console
         /// </summary>
         public ConsoleColorsHelper()
         {
-            _hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // 7
-            if (_hConsoleOutput == InvalidHandleValue)
+            this._hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // 7
+            if (this._hConsoleOutput == this.InvalidHandleValue)
             {
                 throw new SystemException("GetStdHandle->WinError: #" + Marshal.GetLastWin32Error());
             }
 
-            _colorBuffer = GetCurrentColorset();
+            this._colorBuffer = this.GetCurrentColorset();
         }
 
         /// <summary>
@@ -53,13 +53,13 @@ namespace ObscureWare.Console
             // TODO: make thread safe?
 
             ConsoleColor cc;
-            if (_knownMappings.TryGetValue(color, out cc))
+            if (this._knownMappings.TryGetValue(color, out cc))
             {
                 return cc;
             }
 
-            cc = Enumerable.OrderBy(_colorBuffer, kp => ColorMatching(color, kp.Value)).First().Key;
-            _knownMappings.Add(color, cc);
+            cc = Enumerable.OrderBy(this._colorBuffer, kp => this.ColorMatching(color, kp.Value)).First().Key;
+            this._knownMappings.Add(color, cc);
             return cc;
         }
 
@@ -96,7 +96,7 @@ namespace ObscureWare.Console
         /// <param name="mappings"></param>
         public void ReplaceConsoleColors(params Tuple<ConsoleColor, Color>[] mappings)
         {
-            var csbe = GetConsoleScreenBufferInfoEx();
+            var csbe = this.GetConsoleScreenBufferInfoEx();
 
             foreach (var mapping in mappings)
             {
@@ -107,13 +107,13 @@ namespace ObscureWare.Console
             ++csbe.srWindow.Bottom;
             ++csbe.srWindow.Right;
 
-            bool brc = SetConsoleScreenBufferInfoEx(_hConsoleOutput, ref csbe);
+            bool brc = SetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
             if (!brc)
             {
                 throw new SystemException("SetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
             }
 
-            ResetColorCache();
+            this.ResetColorCache();
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace ObscureWare.Console
         /// <param name="rgbColor">New RGB value to be used under this color name</param>
         public void ReplaceConsoleColor(ConsoleColor color, Color rgbColor)
         {
-            var csbe = GetConsoleScreenBufferInfoEx();
+            var csbe = this.GetConsoleScreenBufferInfoEx();
 
             SetNewColorDefinition(ref csbe, color, rgbColor);
 
@@ -131,20 +131,20 @@ namespace ObscureWare.Console
             ++csbe.srWindow.Bottom;
             ++csbe.srWindow.Right;
 
-            bool brc = SetConsoleScreenBufferInfoEx(_hConsoleOutput, ref csbe);
+            bool brc = SetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
             if (!brc)
             {
                 throw new SystemException("SetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
             }
 
-            ResetColorCache();
+            this.ResetColorCache();
         }
 
         private void ResetColorCache()
         {
             // remove cache, new mappings are required
-            _colorBuffer = GetCurrentColorset();
-            _knownMappings.Clear();
+            this._colorBuffer = this.GetCurrentColorset();
+            this._knownMappings.Clear();
         }
 
         private CONSOLE_SCREEN_BUFFER_INFO_EX GetConsoleScreenBufferInfoEx()
@@ -152,7 +152,7 @@ namespace ObscureWare.Console
             CONSOLE_SCREEN_BUFFER_INFO_EX csbe = new CONSOLE_SCREEN_BUFFER_INFO_EX();
             csbe.cbSize = Marshal.SizeOf(csbe); // 96 = 0x60
 
-            bool brc = GetConsoleScreenBufferInfoEx(_hConsoleOutput, ref csbe);
+            bool brc = GetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
             if (!brc)
             {
                 throw new SystemException("GetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
@@ -223,7 +223,7 @@ namespace ObscureWare.Console
 
         private KeyValuePair<ConsoleColor, Color>[] GetCurrentColorset()
         {
-            var csbe = GetConsoleScreenBufferInfoEx();
+            var csbe = this.GetConsoleScreenBufferInfoEx();
 
             return new[]
             {
@@ -273,23 +273,23 @@ namespace ObscureWare.Console
 
             internal COLORREF(Color color)
             {
-                ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
+                this.ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
             }
 
             internal COLORREF(uint r, uint g, uint b)
             {
-                ColorDWORD = r + (g << 8) + (b << 16);
+                this.ColorDWORD = r + (g << 8) + (b << 16);
             }
 
             internal Color GetColor()
             {
-                return Color.FromArgb((int)(0x000000FFU & ColorDWORD),
-                    (int)(0x0000FF00U & ColorDWORD) >> 8, (int)(0x00FF0000U & ColorDWORD) >> 16);
+                return Color.FromArgb((int)(0x000000FFU & this.ColorDWORD),
+                    (int)(0x0000FF00U & this.ColorDWORD) >> 8, (int)(0x00FF0000U & this.ColorDWORD) >> 16);
             }
 
             internal void SetColor(Color color)
             {
-                ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
+                this.ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
             }
         }
 

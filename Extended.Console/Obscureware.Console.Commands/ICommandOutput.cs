@@ -9,5 +9,7 @@ namespace Obscureware.Console.Commands
         /// </summary>
         /// <param name="results"></param>
         void PrintResultLines(IEnumerable<string> results);
+
+        void Clear();
     }
 }

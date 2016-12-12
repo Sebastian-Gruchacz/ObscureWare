@@ -20,10 +20,10 @@ namespace ObscureWare.Console
 
         public SystemConsole(ConsoleColorsHelper helper, bool isFullScreen)
         {
-            System.Console.OutputEncoding = Encoding.Unicode;
-            System.Console.InputEncoding = Encoding.Unicode;
+            Console.OutputEncoding = Encoding.Unicode;
+            Console.InputEncoding = Encoding.Unicode;
 
-            _consoleColorsHelper = helper ?? new ConsoleColorsHelper();
+            this._consoleColorsHelper = helper ?? new ConsoleColorsHelper();
 
             if (isFullScreen)
             {
@@ -33,24 +33,24 @@ namespace ObscureWare.Console
 
                 // SG: (-2) On Win8 the only working way to keep borders on the screen :(
                 // (-1) required on Win10 though :(
-                this.WindowSize = new Point(System.Console.LargestWindowWidth - 2, System.Console.LargestWindowHeight - 1);
+                this.WindowSize = new Point(Console.LargestWindowWidth - 2, Console.LargestWindowHeight - 1);
 
                 // setting full-screen
-                System.Console.BufferWidth = WindowSize.X;
-                System.Console.WindowWidth = WindowSize.X;
-                System.Console.BufferHeight = WindowSize.Y;
-                System.Console.WindowHeight = WindowSize.Y;
-                System.Console.SetWindowPosition(0, 0);
+                Console.BufferWidth = this.WindowSize.X;
+                Console.WindowWidth = this.WindowSize.X;
+                Console.BufferHeight = this.WindowSize.Y;
+                Console.WindowHeight = this.WindowSize.Y;
+                Console.SetWindowPosition(0, 0);
             }
 
-            this.WindowWidth = System.Console.WindowWidth;
-            this.WindowHeight = System.Console.WindowHeight;
+            this.WindowWidth = Console.WindowWidth;
+            this.WindowHeight = Console.WindowHeight;
         }
 
         private void SetConsoleWindowToFullScreen()
         {
             // http://www.codeproject.com/Articles/4426/Console-Enhancements
-            SetWindowPosition(
+            this.SetWindowPosition(
                 0,
                 0,
                 Screen.PrimaryScreen.WorkingArea.Width - (2 * 16),
@@ -60,13 +60,13 @@ namespace ObscureWare.Console
         public void WriteText(int x, int y, string text, Color foreColor, Color bgColor)
         {
             this.SetCursorPosition(x, y);
-            SetColors(foreColor, bgColor);
-            WriteText(text);
+            this.SetColors(foreColor, bgColor);
+            this.WriteText(text);
         }
 
         private void WriteText(string text)
         {
-            System.Console.Write(text);
+            Console.Write(text);
         }
 
         void IConsole.WriteText(string text)
@@ -77,44 +77,44 @@ namespace ObscureWare.Console
         public void WriteLine(ConsoleFontColor colors, string text)
         {
             this.SetColors(colors.ForeColor, colors.BgColor);
-            System.Console.WriteLine(text);
+            Console.WriteLine(text);
         }
 
         public void WriteLine(string text)
         {
-            System.Console.WriteLine(text);
+            Console.WriteLine(text);
         }
 
         public void SetColors(Color foreColor, Color bgColor)
         {
-            System.Console.ForegroundColor = _consoleColorsHelper.FindClosestColor(foreColor);
-            System.Console.BackgroundColor = _consoleColorsHelper.FindClosestColor(bgColor);
+            Console.ForegroundColor = this._consoleColorsHelper.FindClosestColor(foreColor);
+            Console.BackgroundColor = this._consoleColorsHelper.FindClosestColor(bgColor);
         }
 
         public void Clear()
         {
-            System.Console.Clear();
+            Console.Clear();
         }
 
         public void WriteText(ConsoleFontColor colors, string text)
         {
             this.SetColors(colors.ForeColor, colors.BgColor);
-            System.Console.Write(text);
+            Console.Write(text);
         }
 
         public void SetCursorPosition(int x, int y)
         {
-            System.Console.SetCursorPosition(x, y);
+            Console.SetCursorPosition(x, y);
         }
 
         public Point GetCursorPosition()
         {
-            return new Point(System.Console.CursorLeft, System.Console.CursorTop);
+            return new Point(Console.CursorLeft, Console.CursorTop);
         }
 
         public void WriteText(char character)
         {
-            System.Console.Write(character);
+            Console.Write(character);
         }
 
         public int WindowHeight { get; }
@@ -123,12 +123,12 @@ namespace ObscureWare.Console
 
         public string ReadLine()
         {
-            return System.Console.ReadLine();
+            return Console.ReadLine();
         }
 
         public void WriteLine()
         {
-            System.Console.WriteLine();
+            Console.WriteLine();
         }
 
         public void SetColors(ConsoleFontColor style)
@@ -138,7 +138,7 @@ namespace ObscureWare.Console
 
         public void ReplaceConsoleColor(ConsoleColor color, Color rgbColor)
         {
-            _consoleColorsHelper.ReplaceConsoleColor(color, rgbColor);
+            this._consoleColorsHelper.ReplaceConsoleColor(color, rgbColor);
         }
 
         #region PInvoke

@@ -67,7 +67,7 @@
         /// <returns>true, if this is the default <see cref="CommandDescriptionAttribute"/> instance; otherwise, false.</returns>
         public override bool IsDefaultAttribute()
         {
-            return object.ReferenceEquals(this, Default);
+            return ReferenceEquals(this, Default);
         }
     }
 }

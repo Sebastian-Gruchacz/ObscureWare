@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Reflection;
 
-    using Obscureware.Console.Commands.Model;
+    using Model;
 
     internal class ModelBuilder
     {
@@ -14,10 +14,10 @@
 
         public ModelBuilder(Type modelType, string commandName)
         {
-            CommandName = commandName;
+            this.CommandName = commandName;
             if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
-            _modelType = modelType;
+            this._modelType = modelType;
             this.ValidateModel(modelType);
 
             // TODO: cache help data
@@ -41,7 +41,7 @@
         {
             // TODO: full implementation
 
-            return Activator.CreateInstance(_modelType) as CommandModel;
+            return Activator.CreateInstance(this._modelType) as CommandModel;
         }
 
 

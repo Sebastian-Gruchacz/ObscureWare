@@ -13,7 +13,7 @@
     {
         private readonly IConsole _console;
 
-        public DataTablePrinter(IConsole console)
+        protected DataTablePrinter(IConsole console)
         {
             this._console = console;
         }
@@ -47,7 +47,7 @@
             else
             {
                 int availableWidth = totalAvailableWidth - spacingWidth;
-                float scale = (float)_console.WindowWidth / (float)maxRequiredWidth;
+                float scale = (float) this._console.WindowWidth / (float)maxRequiredWidth;
                 for (int i = 0; i < columns.Length; i++)
                 {
                     // TODO:probably round would be as good... gonna check

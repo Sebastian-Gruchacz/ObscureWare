@@ -14,20 +14,20 @@ namespace ObscureWare.Console
 
         public TextColumnInfo(string columnHeader, IEnumerable<string> values)
         {
-            _header = columnHeader;
-            MaxLength = CalculateMaxLength(_header, values.ToArray());
+            this._header = columnHeader;
+            this.MaxLength = this.CalculateMaxLength(this._header, values.ToArray());
         }
 
         public void UpdateWithNewValues(IEnumerable<string> values)
         {
-            MaxLength = CalculateMaxLength(_header, values.ToArray());
+            this.MaxLength = this.CalculateMaxLength(this._header, values.ToArray());
         }
 
         public int MaxLength { get; private set; }
 
         public string GetDisplayHeader()
         {
-            return _header + new string(' ', MaxLength - _header.Length);
+            return this._header + new string(' ', this.MaxLength - this._header.Length);
         }
 
         public string GetDisplayValue(string value)

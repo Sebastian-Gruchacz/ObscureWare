@@ -24,13 +24,13 @@
         public TableStyle(ConsoleFontColor frameColor, ConsoleFontColor headerColor, ConsoleFontColor oddRowColor, ConsoleFontColor evenRowColor,
             string frameChars, char backgroundFiller, TableLargeRowContentBehavior behaviour)
         {
-            FrameColor = frameColor;
-            HeaderColor = headerColor;
-            OddRowColor = oddRowColor;
-            EvenRowColor = evenRowColor;
-            BackgroundFiller = backgroundFiller;
-            Behaviour = behaviour;
-            _frameChars = frameChars.ToCharArray();
+            this.FrameColor = frameColor;
+            this.HeaderColor = headerColor;
+            this.OddRowColor = oddRowColor;
+            this.EvenRowColor = evenRowColor;
+            this.BackgroundFiller = backgroundFiller;
+            this.Behaviour = behaviour;
+            this._frameChars = frameChars.ToCharArray();
         }
 
         public ConsoleFontColor FrameColor { get; private set; }
@@ -41,31 +41,31 @@
         public char BackgroundFiller { get; private set; }
         public TableLargeRowContentBehavior Behaviour { get; private set; }
 
-        public char TopLeft => _frameChars[(byte)TablePiece.TopLeft];
+        public char TopLeft => this._frameChars[(byte)TablePiece.TopLeft];
 
-        public char Top => _frameChars[(byte)TablePiece.Top];
+        public char Top => this._frameChars[(byte)TablePiece.Top];
 
-        public char TopRight => _frameChars[(byte)TablePiece.TopRight];
+        public char TopRight => this._frameChars[(byte)TablePiece.TopRight];
 
-        public char Left => _frameChars[(byte)TablePiece.Left];
+        public char Left => this._frameChars[(byte)TablePiece.Left];
 
-        public char Right => _frameChars[(byte)TablePiece.Right];
+        public char Right => this._frameChars[(byte)TablePiece.Right];
 
-        public char BottomLeft => _frameChars[(byte)TablePiece.BottomLeft];
+        public char BottomLeft => this._frameChars[(byte)TablePiece.BottomLeft];
 
-        public char Bottom => _frameChars[(byte)TablePiece.Bottom];
+        public char Bottom => this._frameChars[(byte)TablePiece.Bottom];
 
-        public char BottomRight => _frameChars[(byte)TablePiece.BottomRight];
+        public char BottomRight => this._frameChars[(byte)TablePiece.BottomRight];
 
-        public char HeaderSeparatorFrame => _frameChars[(byte)TablePiece.HeaderSeparatorWithFrame];
+        public char HeaderSeparatorFrame => this._frameChars[(byte)TablePiece.HeaderSeparatorWithFrame];
 
-        public char HeaderSeparatorCell => _frameChars[(byte)TablePiece.HeaderSeparatorWithoutFrame];
+        public char HeaderSeparatorCell => this._frameChars[(byte)TablePiece.HeaderSeparatorWithoutFrame];
 
-        public char ColumnSeparator => _frameChars[(byte)TablePiece.ColumnsSeparator];
+        public char ColumnSeparator => this._frameChars[(byte)TablePiece.ColumnsSeparator];
 
-        public char TopConnector => _frameChars[(byte)TablePiece.TopConnector];
+        public char TopConnector => this._frameChars[(byte)TablePiece.TopConnector];
 
-        public char BottomConnector => _frameChars[(byte)TablePiece.BottomConnector];
+        public char BottomConnector => this._frameChars[(byte)TablePiece.BottomConnector];
     }
 
     /// <summary>

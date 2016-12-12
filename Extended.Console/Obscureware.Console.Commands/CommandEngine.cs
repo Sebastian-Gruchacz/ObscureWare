@@ -1,6 +1,6 @@
 ﻿namespace Obscureware.Console.Commands
 {
-    using Obscureware.Console.Commands.Internals;
+    using Internals;
     using System.Collections.Generic;
 
     using ObscureWare.Console;
@@ -21,7 +21,7 @@
         private CommandEngine(Type[] commands)
         {
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
-            _commandManager = new CommandManager(commands);
+            this._commandManager = new CommandManager(commands);
         }
 
         public string[] FlagCharacters { get; set; }
@@ -36,21 +36,21 @@
         /// </summary>
         public CommandEngineStyles Styles
         {
-            get { return _styles; }
+            get { return this._styles; }
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
 
-                _styles = value;
+                this._styles = value;
             }
         }
 
         public CommandCaseSensitivenes CommandsSensitivenes
         {
-            get { return _commandsSensitivenes; }
+            get { return this._commandsSensitivenes; }
             set
             {
-                _commandsSensitivenes = value;
+                this._commandsSensitivenes = value;
                 this._commandManager.CommandsSensitivenes = value;
             }
         }
@@ -78,7 +78,7 @@
                 return false;
             }
 
-            CommandInfo cmd = _commandManager.FindCommand(cmdName);
+            CommandInfo cmd = this._commandManager.FindCommand(cmdName);
             if (cmd == null)
             {
                 consoleInstance.WriteLine(this.Styles.Warning, "Unknown command.");
@@ -132,7 +132,7 @@
         {
             console.WriteLine(this.Styles.HelpHeader, "Available commands:");
 
-            foreach (var cmdInfo in _commandManager.GetAll())
+            foreach (var cmdInfo in this._commandManager.GetAll())
             {
                 console.WriteLine(this.Styles.HelpDefinition, cmdInfo.ModelBuilder.CommandName);
 

@@ -9,7 +9,7 @@
 
         public OutputManager(IConsole consoleInstance)
         {
-            _consoleInstance = consoleInstance;
+            this._consoleInstance = consoleInstance;
         }
 
         public void PrintResultLines(IEnumerable<string> results)
@@ -18,8 +18,14 @@
 
             foreach (var result in results)
             {
-                _consoleInstance.WriteLine(result);
+                this._consoleInstance.WriteLine(result);
             }
+        }
+
+        /// <inheritdoc />
+        public void Clear()
+        {
+            this._consoleInstance.Clear();
         }
     }
 }

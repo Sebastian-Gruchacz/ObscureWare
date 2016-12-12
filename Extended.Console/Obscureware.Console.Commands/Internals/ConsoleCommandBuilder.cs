@@ -2,8 +2,8 @@
 {
     using System;
     using System.Linq;
-
-    using Obscureware.Console.Commands.Model;
+    using System.Reflection;
+    using Model;
 
     internal class ConsoleCommandBuilder
     {
@@ -29,7 +29,10 @@
             if (modelAtt == null)
                 throw new ArgumentException($"Command type must be decorated with {nameof(CommandModelAttribute)}.", nameof(commandType));
 
-            // 2. Build / Verify Command's model type
+            // 2. Verify that code of the command doe snot directly call System.Console type, which might be a very common error
+            this.VerifyCodeForReference(typeof(Console));
+
+            // 3. Build / Verify Command's model type
             var mBuilder = this.ValidateModel(modelAtt.ModelType, commandType);
 
             // 4. Try creating instance of the command.
@@ -44,6 +47,21 @@
             }
 
             return new Tuple<ModelBuilder, IConsoleCommand>(mBuilder, instance);
+        }
+
+        private void VerifyCodeForReference(Type type)
+        {
+            //foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static) )
+            //{
+            //    if (methodInfo.IsAbstract)
+            //    {
+            //        continue;
+            //    }
+
+            //    var body = methodInfo.GetMethodBody();
+
+            //    // TODO: implement somewhere in time
+            //}
         }
 
         private ModelBuilder ValidateModel(Type modelType, Type commandType)

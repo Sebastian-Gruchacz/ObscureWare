@@ -48,7 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ClsCommand.cs" />
+    <Compile Include="Commands\ClsCommandModel.cs" />
     <Compile Include="CommandsDemo.cs" />
+    <Compile Include="ComsoleContext.cs" />
+    <Compile Include="Commands\DirCommand.cs" />
+    <Compile Include="Commands\DirCommandModel.cs" />
+    <Compile Include="Commands\DirectoryListMode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

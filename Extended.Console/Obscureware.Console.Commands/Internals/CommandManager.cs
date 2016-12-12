@@ -12,7 +12,7 @@
 
         public CommandManager(Type[] commands)
         {
-            _commands = CheckCommands(commands);
+            this._commands = this.CheckCommands(commands);
         }
 
         public CommandInfo FindCommand(string cmdName)
@@ -20,7 +20,7 @@
             return this._commands
                 .SingleOrDefault(pair =>
                     pair.Key.Equals(cmdName,
-                        (CommandsSensitivenes == CommandCaseSensitivenes.Sensitive)
+                        (this.CommandsSensitivenes == CommandCaseSensitivenes.Sensitive)
                             ? StringComparison.InvariantCulture
                             : StringComparison.InvariantCultureIgnoreCase))
                 .Value;
