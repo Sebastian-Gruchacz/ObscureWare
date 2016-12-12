@@ -1,8 +1,7 @@
-﻿using System.IO;
-using ObscureWare.Console;
-
-namespace ConsoleApplication1
+﻿namespace ConsoleApplication1
 {
+    using System.IO;
+    using ObscureWare.Console;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -11,6 +10,7 @@ namespace ConsoleApplication1
     using System.Threading.Tasks;
     using System.Windows.Input;
     using Obscureware.Console.Commands;
+    using Obscureware.Console.Commands.Model;
 
     public class TestCommands
     {
@@ -73,6 +73,7 @@ namespace ConsoleApplication1
             string basePath = Environment.CurrentDirectory;
             List<string> results = new List<string>();
 
+            //TODO use Directory/FileInfo to get more data and filename only
             if (parameters.IncludeFolders)
             {
                 var dirs = Directory.GetDirectories(basePath, filter, SearchOption.TopDirectoryOnly);
@@ -118,15 +119,6 @@ namespace ConsoleApplication1
 
         CurrentLocalState,
 
-        CurrentRemoteHead,
-
-        // perhaps?
-
-        // specific head
-
-        // specific local state
-
-        // specific open state - remote
-
+        CurrentRemoteHead
     }
 }

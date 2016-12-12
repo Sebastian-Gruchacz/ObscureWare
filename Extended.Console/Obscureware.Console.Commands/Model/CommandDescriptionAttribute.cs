@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     /// <summary>Specifies a description for a command model or any of fragment of that model.</summary>
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
     public class CommandDescriptionAttribute : Attribute
@@ -32,7 +32,7 @@ namespace Obscureware.Console.Commands
         /// <returns>The description stored in this attribute.</returns>
         public string Description
         {
-            get { return _description; }
+            get { return this._description; }
         }
 
         /// <summary>

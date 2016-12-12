@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C72CD243-E0BF-4F13-803B-0C1DF97B9008}</ProjectGuid>
+    <ProjectGuid>{5C87D79C-7E55-4033-B42F-EEB926F1C8D4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Obscureware.Console.Commands</RootNamespace>
-    <AssemblyName>Obscureware.Console.Commands</AssemblyName>
+    <RootNamespace>Obscureware.Console.Operations</RootNamespace>
+    <AssemblyName>Obscureware.Console.Operations</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -29,18 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.11\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,42 +46,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\CommandDescriptionAttribute.cs" />
-    <Compile Include="CommandEngine.cs" />
-    <Compile Include="CommandEngineStyles.cs" />
-    <Compile Include="Model\CommandFlagAttribute.cs" />
-    <Compile Include="CommandCaseSensitivenes.cs" />
-    <Compile Include="Model\CommandDescriptorForAttribute.cs" />
-    <Compile Include="Internals\CommandInfo.cs" />
-    <Compile Include="Internals\CommandManager.cs" />
-    <Compile Include="Model\CommandNameAttribute.cs" />
-    <Compile Include="Model\CommandModel.cs" />
-    <Compile Include="CommandOptionArgumentMode.cs" />
-    <Compile Include="Model\CommandSwitchAttribute.cs" />
-    <Compile Include="Model\CommandUnnamedOptionAttribute.cs" />
-    <Compile Include="Model\CommandValueFlagAttribute.cs" />
-    <Compile Include="Internals\ConsoleCommandBuilder.cs" />
-    <Compile Include="ICommandOutput.cs" />
-    <Compile Include="IConsoleCommand.cs" />
-    <Compile Include="Model\MandatoryAttribute.cs" />
-    <Compile Include="Internals\ModelBuilder.cs" />
-    <Compile Include="Internals\OutputManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\TargetTypesAttribute.cs" />
-    <Compile Include="UnnamedOptionsMode.cs" />
-    <Compile Include="Model\ValueFlagType.cs" />
+    <Compile Include="Tables\ColumnAlignment.cs" />
+    <Compile Include="Tables\ColumnInfo.cs" />
+    <Compile Include="Tables\DataTable.cs" />
+    <Compile Include="Tables\DataTablePrinter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">
       <Project>{E55BFAA2-62A4-4052-8351-548FBE5B02BA}</Project>
       <Name>ObscureWare.Console</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Blocks\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

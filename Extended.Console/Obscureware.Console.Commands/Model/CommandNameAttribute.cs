@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     /// <summary>
     /// Specifies command name
     /// </summary>
@@ -11,7 +11,7 @@ namespace Obscureware.Console.Commands
 
         public CommandNameAttribute(string commandName)
         {
-            CommandName = commandName;
+            this.CommandName = commandName;
         }
     }
 }

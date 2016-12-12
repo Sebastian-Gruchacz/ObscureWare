@@ -29,7 +29,7 @@
         private void WriteTextBoxFrame(int boxX, int boxY, int boxWidth, int boxHeight, FrameStyle frameDef)
         {
             _console.SetColors(frameDef.FrameColor.ForeColor, frameDef.FrameColor.BgColor);
-            _console.PositionCursor(boxX, boxY);
+            _console.SetCursorPosition(boxX, boxY);
             _console.WriteText(frameDef.TopLeft);
             for (int i = 1; i < boxWidth - 1; i++)
             {
@@ -39,10 +39,10 @@
             string body = frameDef.Left + new string(frameDef.BackgroundFiller, boxWidth - 2) + frameDef.Right;
             for (int j = 1; j < boxHeight - 1; j++)
             {
-                _console.PositionCursor(boxX, boxY + j);
+                _console.SetCursorPosition(boxX, boxY + j);
                 _console.WriteText(body);
             }
-            _console.PositionCursor(boxX, boxY + boxHeight - 1);
+            _console.SetCursorPosition(boxX, boxY + boxHeight - 1);
             _console.WriteText(frameDef.BottomLeft);
             for (int i = 1; i < boxWidth - 1; i++)
             {
@@ -59,14 +59,14 @@
         public bool WriteTextBox(int x, int y, int boxWidth, int boxHeight, string text, ConsoleFontColor colorDef)
         {
             this.LimitBoxDimensions(x, y, ref boxWidth, ref boxHeight); // so do not have to check for this every line is drawn...
-            _console.PositionCursor(x, y);
+            _console.SetCursorPosition(x, y);
             _console.SetColors(colorDef.ForeColor, colorDef.BgColor);
 
             string[] lines = SplitText(text, boxWidth);
             int i;
             for (i = 0; i < lines.Length && i < boxHeight; ++i)
             {
-                _console.PositionCursor(x, y + i);
+                _console.SetCursorPosition(x, y + i);
                 WriteJustified(lines[i], boxWidth);
             }
 
@@ -86,7 +86,7 @@
             TableStyle style)
         {
             this.LimitTableDimensions(x, ref maxTableWidth); // so do not have to check for this every line is drawn...
-            _console.PositionCursor(x, y);
+            _console.SetCursorPosition(x, y);
 
             // table calculations - fitting content
 
@@ -109,7 +109,7 @@
             }
             else
             {
-                string[] parts = text.Split(new string[] {@" ", @"\t"}, StringSplitOptions.RemoveEmptyEntries); // both split and clean
+                string[] parts = text.Split(new string[] { @" ", @"\t" }, StringSplitOptions.RemoveEmptyEntries); // both split and clean
                 if (parts.Length == 1)
                 {
                     System.Console.Write(text); // we cannot do anything about one long word...
@@ -118,9 +118,9 @@
                 {
                     int cleanedLength = parts.Select(s => s.Length).Sum() + parts.Length - 1;
                     int remainingBlanks = boxWidth - cleanedLength;
-                    if (remainingBlanks > cleanedLength/2)
+                    if (remainingBlanks > cleanedLength / 2)
                     {
-                        System.Console.Write(text); // text is way too short to expandf it, keep to th eleft
+                        System.Console.Write(text); // text is way too short to expand it, keep to the left
                     }
                     else
                     {

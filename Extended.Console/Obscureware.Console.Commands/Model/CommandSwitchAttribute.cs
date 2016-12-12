@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     public class CommandSwitchAttribute : Attribute
     {
         public Type SwitchBaseType { get; private set; }
@@ -17,8 +17,8 @@ namespace Obscureware.Console.Commands
             if (!switchBaseType.IsEnum) throw new ArgumentException("Value must be an Enumeration type.", nameof(switchBaseType));
             if (commandLiterals.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(commandLiterals));
 
-            SwitchBaseType = switchBaseType;
-            CommandLiterals = commandLiterals;
+            this.SwitchBaseType = switchBaseType;
+            this.CommandLiterals = commandLiterals;
         }
     }
 }

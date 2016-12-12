@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Obscureware.Console.Commands
+﻿namespace Obscureware.Console.Commands.Model
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class CommandValueFlagAttribute : Attribute
     {
@@ -17,8 +17,8 @@ namespace Obscureware.Console.Commands
 
         public CommandValueFlagAttribute(ValueFlagType valueType, params string[] commandLiterals)
         {
-            ValueFlagType = valueType;
-            CommandLiterals = commandLiterals;
+            this.ValueFlagType = valueType;
+            this.CommandLiterals = commandLiterals;
         }
     }
 }

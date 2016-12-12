@@ -59,7 +59,7 @@
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        void PositionCursor(int x, int y);
+        void SetCursorPosition(int x, int y);
 
         /// <summary>
         /// Writes single character at current cursor position using most recent colors
