@@ -109,7 +109,7 @@
             }
             else
             {
-                string[] parts = text.Split(new string[] {@" ", @"\t"}, StringSplitOptions.RemoveEmptyEntries); // both split and clean
+                string[] parts = text.Split(new string[] { @" ", @"\t" }, StringSplitOptions.RemoveEmptyEntries); // both split and clean
                 if (parts.Length == 1)
                 {
                     System.Console.Write(text); // we cannot do anything about one long word...
@@ -118,9 +118,9 @@
                 {
                     int cleanedLength = parts.Select(s => s.Length).Sum() + parts.Length - 1;
                     int remainingBlanks = boxWidth - cleanedLength;
-                    if (remainingBlanks > cleanedLength/2)
+                    if (remainingBlanks > cleanedLength / 2)
                     {
-                        System.Console.Write(text); // text is way too short to expandf it, keep to th eleft
+                        System.Console.Write(text); // text is way too short to expand it, keep to the left
                     }
                     else
                     {
