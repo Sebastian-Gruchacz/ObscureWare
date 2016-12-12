@@ -16,8 +16,7 @@ namespace ConsoleApplication1
                 new Tuple<ConsoleColor, Color>(ConsoleColor.DarkCyan, Color.Chocolate),
                 new Tuple<ConsoleColor, Color>(ConsoleColor.Blue, Color.DodgerBlue),
                 new Tuple<ConsoleColor, Color>(ConsoleColor.Yellow, Color.Gold),
-                new Tuple<ConsoleColor, Color>(ConsoleColor.DarkBlue, Color.MidnightBlue)
-                );
+                new Tuple<ConsoleColor, Color>(ConsoleColor.DarkBlue, Color.MidnightBlue));
 
             IConsole console = new SystemConsole(helper, isFullScreen: false);
             ConsoleOperations ops = new ConsoleOperations(console);
