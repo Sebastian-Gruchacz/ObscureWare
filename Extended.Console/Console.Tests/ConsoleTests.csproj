@@ -66,6 +66,10 @@
       <Project>{C72CD243-E0BF-4F13-803B-0C1DF97B9008}</Project>
       <Name>Obscureware.Console.Commands</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Obscureware.Console.Operations\Obscureware.Console.Operations.csproj">
+      <Project>{5C87D79C-7E55-4033-B42F-EEB926F1C8D4}</Project>
+      <Name>Obscureware.Console.Operations</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">
       <Project>{e55bfaa2-62a4-4052-8351-548fbe5b02ba}</Project>
       <Name>ObscureWare.Console</Name>

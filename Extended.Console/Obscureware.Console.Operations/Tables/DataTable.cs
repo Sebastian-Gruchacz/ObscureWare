@@ -6,30 +6,30 @@
 
     public class DataTable<T>
     {
-        private Dictionary<T, string[]> data = new Dictionary<T, string[]>();
+        private readonly Dictionary<T, string[]> _data = new Dictionary<T, string[]>();
+        private readonly Dictionary<string, ColumnInfo> _columns;
 
-        private Dictionary<string, ColumnInfo> columns = new Dictionary<string, ColumnInfo>();
+        public DataTable(params ColumnInfo[] columns)
+        {
+            this._columns = columns.ToDictionary(c => c.Header, c => c);
+        }
 
         public Dictionary<string, ColumnInfo> Columns
         {
             get
             {
-                return this.columns;
-            }
-            set
-            {
-                this.columns = value;
+                return this._columns;
             }
         }
 
         public void AddRow(T src, string[] rowValues)
         {
-            this.data.Add(src, rowValues);
+            this._data.Add(src, rowValues);
         }
 
         public IEnumerable<string[]> GetRows()
         {
-            return this.data.Values;
+            return this._data.Values;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@
         /// <returns></returns>
         public T GetUnderlyingValue(string aIdentifier)
         {
-            return this.data.FirstOrDefault(pair => pair.Value.First().Equals(aIdentifier, StringComparison.InvariantCultureIgnoreCase)).Key;
+            return this._data.FirstOrDefault(pair => pair.Value.First().Equals(aIdentifier, StringComparison.InvariantCultureIgnoreCase)).Key;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@
         /// <returns></returns>
         public T FindValueWhere(string identifier, Func<T, string, bool> matchingFunc)
         {
-            return this.data.FirstOrDefault(pair => matchingFunc(pair.Key, identifier)).Key;
+            return this._data.FirstOrDefault(pair => matchingFunc(pair.Key, identifier)).Key;
         }
     }
 }

@@ -1,5 +1,7 @@
-namespace ObscureWare.Console
+namespace Obscureware.Console.Operations
 {
+    using ObscureWare.Console;
+
     /// <summary>
     /// Definition of on-screen frame
     /// </summary>

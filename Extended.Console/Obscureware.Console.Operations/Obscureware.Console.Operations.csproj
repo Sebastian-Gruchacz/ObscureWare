@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,11 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleOperations.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FrameStyle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TableStyle.cs" />
     <Compile Include="Tables\ColumnAlignment.cs" />
     <Compile Include="Tables\ColumnInfo.cs" />
     <Compile Include="Tables\DataTable.cs" />
     <Compile Include="Tables\DataTablePrinter.cs" />
+    <Compile Include="TextColumnInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">

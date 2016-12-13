@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ObscureWare.Console
+﻿namespace Obscureware.Console.Operations
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Manages column definitions and parameters for displaying collections of objects in table (dynamically applying size of column width to be data/header dependent)
     /// </summary>

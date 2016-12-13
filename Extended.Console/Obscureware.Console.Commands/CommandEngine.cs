@@ -97,10 +97,15 @@
                 return false;
             }
 
+            if (string.IsNullOrWhiteSpace(cmdName))
+            {
+                return false; // just ignore
+            }
+
             CommandInfo cmd = this._commandManager.FindCommand(cmdName);
             if (cmd == null)
             {
-                consoleInstance.WriteLine(this.Styles.Warning, "Unknown command.");
+                consoleInstance.WriteLine(this.Styles.Warning, $"Unknown command => \"{cmdName}\".");
                 this._helpPrinter.PrintHelpOnHelp(consoleInstance);
                 return false;
             }
@@ -116,7 +121,7 @@
 
             // This might crash-throw if invalid types defined. Fine.
             var model = this.BuildModelForCommand(cmd, commandLineArguments.Skip(1));
-            var outputManager = new OutputManager(consoleInstance);
+            var outputManager = new OutputManager(consoleInstance, this.Styles);
 
             try
             {

@@ -1,5 +1,7 @@
-﻿namespace ObscureWare.Console
+﻿namespace Obscureware.Console.Operations
 {
+    using ObscureWare.Console;
+
     public class TableStyle
     {
         internal enum TablePiece : byte

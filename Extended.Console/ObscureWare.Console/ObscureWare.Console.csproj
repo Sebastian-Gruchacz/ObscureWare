@@ -49,15 +49,9 @@
   <ItemGroup>
     <Compile Include="ConsoleColorsHelper.cs" />
     <Compile Include="ConsoleFontColor.cs" />
-    <Compile Include="ConsoleOperations.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="FrameStyle.cs" />
-    <Compile Include="DataTable.cs" />
-    <Compile Include="TableStyle.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemConsole.cs" />
-    <Compile Include="TextColumnInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.txt" />

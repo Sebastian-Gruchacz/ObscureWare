@@ -35,7 +35,7 @@
 
         public void PrintCommandHelp(IConsole console, ModelBuilder cmdModelBuilder)
         {
-            throw new NotImplementedException();
+            console.WriteLine(this._styles.Error, $"Function {nameof(this.PrintCommandHelp)} is not yet implemented.");
         }
 
         public void PrintHelpOnHelp(IConsole console)
