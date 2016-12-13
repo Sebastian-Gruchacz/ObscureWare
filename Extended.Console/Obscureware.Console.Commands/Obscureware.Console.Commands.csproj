@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BadImplementationException.cs" />
+    <Compile Include="ICommandParserOptions.cs" />
     <Compile Include="Model\CommandDescriptionAttribute.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="CommandEngineStyles.cs" />

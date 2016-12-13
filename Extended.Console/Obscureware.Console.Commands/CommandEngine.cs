@@ -8,7 +8,7 @@
     using System.Linq;
     using System.Reflection;
 
-    public class CommandEngine : ICommandParserOptions
+    public class CommandEngine
     {
         private CommandEngineStyles _styles;
         private static readonly string[] InlineHelpCommands = new[] { "?", "help", "h" };
@@ -18,23 +18,19 @@
 
 
         // NO default public constructor - by design
-        private CommandEngine(Type[] commands)
+        private CommandEngine(Type[] commands, ICommandParserOptions options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            this.Options = options;
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
-            this._commandManager = new CommandManager(commands) { CommandsSensitivenes = this.CommandsSensitivenes };
+            this._commandManager = new CommandManager(commands) { CommandsSensitivenes = this.Options.CommandsSensitivenes };
         }
 
-        public string[] FlagCharacters { get; set; } = new[] { @"\" };
-
-        public string[] SwitchCharacters { get; set; } = new[] { @"-" };
-
-        public CommandOptionArgumentMode OptionArgumentMode { get; set; } = CommandOptionArgumentMode.Separated;
-
-        public char OptionArgumentJoinCharacater { get; set; } = ':';
-
-        public bool AllowFlagsAsOneArgument { get; set; } = false;
-
-        public UnnamedOptionsMode UnnamedOptionsMode { get; set; } = UnnamedOptionsMode.EndOnly;
+        public ICommandParserOptions Options { get; set; }
 
         /// <summary>
         /// Specifies styles used by CommandEngine to color the output and help.
@@ -49,17 +45,6 @@
                 this._styles = value;
             }
         }
-
-        public CommandCaseSensitivenes CommandsSensitivenes
-        {
-            get { return this._commandsSensitivenes; }
-            set
-            {
-                this._commandsSensitivenes = value;
-                this._commandManager.CommandsSensitivenes = value;
-            }
-        }
-
 
         // https://en.wikipedia.org/wiki/Command-line_interface
 
@@ -145,7 +130,7 @@
             }
 
             console.WriteLine();
-            console.WriteLine(this.Styles.Default, $"All command names are case {this.CommandsSensitivenes.ToString().ToLower()}.");
+            console.WriteLine(this.Styles.Default, $"All command names are case {this.Options.CommandsSensitivenes.ToString().ToLower()}.");
             console.WriteText(this.Styles.Default, "To receive syntax help about particular command use \"");
             console.WriteText(this.Styles.HelpDefinition, "<commandName> -h");
             console.WriteLine(this.Styles.Default, "\" syntax.");
@@ -155,7 +140,7 @@
         private void PrintHelpOnHelp(IConsole console)
         {
             console.WriteText(this.Styles.Default, "To get list of available commands type ");
-            var availableCommands = InlineHelpCommands.Select(cm => this.SwitchCharacters.First() + cm).ToArray();
+            var availableCommands = InlineHelpCommands.Select(cm => this.Options.SwitchCharacters.First() + cm).ToArray();
             for (int i = 0; i < availableCommands.Length; i++)
             {
                 if (i > 0)
@@ -176,72 +161,25 @@
 
         private object BuildModelForCommand(CommandInfo cmdInfo, IEnumerable<string> arguments)
         {
-            // TODO: maybe move parser options to separate object + property?
-            this.ValidateParserOptions(this);
+            this.Options.ValidateParserOptions();
 
-            return cmdInfo.ModelBuilder.BuildModel(arguments, this);
+            return cmdInfo.ModelBuilder.BuildModel(arguments, this.Options);
         }
 
-        // TODO: move this validation to parser options dedicated object
-        private void ValidateParserOptions(ICommandParserOptions options)
-        {
-            if (options.FlagCharacters == null || options.FlagCharacters.Length < 1)
-            {
-                throw new BadImplementationException($"{nameof(options.FlagCharacters)}  cannot be null or empty.", typeof(ICommandParserOptions));
-            }
-
-            if (options.SwitchCharacters == null || options.SwitchCharacters.Length < 1)
-            {
-                throw new BadImplementationException($"{nameof(options.SwitchCharacters)}  cannot be null or empty.", typeof(ICommandParserOptions));
-            }
-
-            if ((options.OptionArgumentMode == CommandOptionArgumentMode.Joined) && Char.IsWhiteSpace(options.OptionArgumentJoinCharacater))
-            {
-                throw new BadImplementationException($"In {nameof(CommandOptionArgumentMode.Joined)} mode {nameof(options.OptionArgumentJoinCharacater)} cannot be white character.", typeof(ICommandParserOptions));
-            }
-
-            if (options.AllowFlagsAsOneArgument && options.OptionArgumentMode == CommandOptionArgumentMode.Merged)
-            {
-                throw new BadImplementationException($"When {nameof(options.OptionArgumentMode)} is set to \"{nameof(CommandOptionArgumentMode.Merged)}\", {nameof(options.AllowFlagsAsOneArgument)} cannot be set to TRUE because this could led to ambiguous syntax.", typeof(ICommandParserOptions));
-            }
-
-            if (options.UnnamedOptionsMode == UnnamedOptionsMode.Mixed && options.OptionArgumentMode == CommandOptionArgumentMode.Separated)
-            {
-                throw new BadImplementationException($"Options {nameof(options.OptionArgumentMode)}=\"{nameof(CommandOptionArgumentMode.Separated)}\" and {nameof(options.UnnamedOptionsMode)}=\"{nameof(UnnamedOptionsMode.Mixed)}\" should not be selected at the same time because this could led to ambiguous syntax.", typeof(ICommandParserOptions));
-            }
-        }
-
-        /// <summary>
+        ///  <summary>
         ///
-        /// </summary>
+        ///  </summary>
+        /// <param name="options"></param>
         /// <param name="commands"></param>
         /// <returns></returns>
-        public static CommandEngine BuildEngineForManualSelection(params Type[] commands)
+        public static CommandEngine BuildEngineForManualSelection(CommandParserOptions options, params Type[] commands)
         {
-            return new CommandEngine(commands);
+            return new CommandEngine(commands, options);
         }
 
         public static CommandEngine BuildEngineWithAutodiscovery(params Assembly[] assembliesToScan)
         {
             throw new NotImplementedException();
         }
-    }
-
-    public interface ICommandParserOptions
-    {
-        string[] FlagCharacters { get; }
-
-        string[] SwitchCharacters { get; }
-
-        CommandOptionArgumentMode OptionArgumentMode { get; }
-
-        char OptionArgumentJoinCharacater { get; }
-
-        bool AllowFlagsAsOneArgument { get; }
-
-        UnnamedOptionsMode UnnamedOptionsMode { get; }
-
-
-        CommandCaseSensitivenes CommandsSensitivenes { get; }
     }
 }
