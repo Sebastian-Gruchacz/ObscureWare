@@ -8,28 +8,33 @@
     using System.Linq;
     using System.Reflection;
 
-    public class CommandEngine
+    public class CommandEngine : ICommandParserOptions
     {
         private CommandEngineStyles _styles;
         private static readonly string[] InlineHelpCommands = new[] { "?", "help", "h" };
 
         private readonly CommandManager _commandManager;
-        private CommandCaseSensitivenes _commandsSensitivenes;
+        private CommandCaseSensitivenes _commandsSensitivenes = CommandCaseSensitivenes.Insensitive;
 
 
         // NO default public constructor - by design
         private CommandEngine(Type[] commands)
         {
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
-            this._commandManager = new CommandManager(commands);
+            this._commandManager = new CommandManager(commands) { CommandsSensitivenes = this.CommandsSensitivenes };
         }
 
-        public string[] FlagCharacters { get; set; }
-        public string[] SwitchCharacters { get; set; }
-        public CommandOptionArgumentMode OptionArgumentMode { get; set; }
-        public char OptionArgumentJoinCharacater { get; set; }
-        public bool AllowFlagsAsOneArgument { get; set; }
-        public UnnamedOptionsMode UnnamedOptionsMode { get; set; }
+        public string[] FlagCharacters { get; set; } = new[] { @"\" };
+
+        public string[] SwitchCharacters { get; set; } = new[] { @"-" };
+
+        public CommandOptionArgumentMode OptionArgumentMode { get; set; } = CommandOptionArgumentMode.Separated;
+
+        public char OptionArgumentJoinCharacater { get; set; } = ':';
+
+        public bool AllowFlagsAsOneArgument { get; set; } = false;
+
+        public UnnamedOptionsMode UnnamedOptionsMode { get; set; } = UnnamedOptionsMode.EndOnly;
 
         /// <summary>
         /// Specifies styles used by CommandEngine to color the output and help.
@@ -171,9 +176,40 @@
 
         private object BuildModelForCommand(CommandInfo cmdInfo, IEnumerable<string> arguments)
         {
-            return cmdInfo.ModelBuilder.BuildModel(arguments);
+            // TODO: maybe move parser options to separate object + property?
+            this.ValidateParserOptions(this);
+
+            return cmdInfo.ModelBuilder.BuildModel(arguments, this);
         }
 
+        // TODO: move this validation to parser options dedicated object
+        private void ValidateParserOptions(ICommandParserOptions options)
+        {
+            if (options.FlagCharacters == null || options.FlagCharacters.Length < 1)
+            {
+                throw new BadImplementationException($"{nameof(options.FlagCharacters)}  cannot be null or empty.", typeof(ICommandParserOptions));
+            }
+
+            if (options.SwitchCharacters == null || options.SwitchCharacters.Length < 1)
+            {
+                throw new BadImplementationException($"{nameof(options.SwitchCharacters)}  cannot be null or empty.", typeof(ICommandParserOptions));
+            }
+
+            if ((options.OptionArgumentMode == CommandOptionArgumentMode.Joined) && Char.IsWhiteSpace(options.OptionArgumentJoinCharacater))
+            {
+                throw new BadImplementationException($"In {nameof(CommandOptionArgumentMode.Joined)} mode {nameof(options.OptionArgumentJoinCharacater)} cannot be white character.", typeof(ICommandParserOptions));
+            }
+
+            if (options.AllowFlagsAsOneArgument && options.OptionArgumentMode == CommandOptionArgumentMode.Merged)
+            {
+                throw new BadImplementationException($"When {nameof(options.OptionArgumentMode)} is set to \"{nameof(CommandOptionArgumentMode.Merged)}\", {nameof(options.AllowFlagsAsOneArgument)} cannot be set to TRUE because this could led to ambiguous syntax.", typeof(ICommandParserOptions));
+            }
+
+            if (options.UnnamedOptionsMode == UnnamedOptionsMode.Mixed && options.OptionArgumentMode == CommandOptionArgumentMode.Separated)
+            {
+                throw new BadImplementationException($"Options {nameof(options.OptionArgumentMode)}=\"{nameof(CommandOptionArgumentMode.Separated)}\" and {nameof(options.UnnamedOptionsMode)}=\"{nameof(UnnamedOptionsMode.Mixed)}\" should not be selected at the same time because this could led to ambiguous syntax.", typeof(ICommandParserOptions));
+            }
+        }
 
         /// <summary>
         ///
@@ -189,5 +225,23 @@
         {
             throw new NotImplementedException();
         }
+    }
+
+    public interface ICommandParserOptions
+    {
+        string[] FlagCharacters { get; }
+
+        string[] SwitchCharacters { get; }
+
+        CommandOptionArgumentMode OptionArgumentMode { get; }
+
+        char OptionArgumentJoinCharacater { get; }
+
+        bool AllowFlagsAsOneArgument { get; }
+
+        UnnamedOptionsMode UnnamedOptionsMode { get; }
+
+
+        CommandCaseSensitivenes CommandsSensitivenes { get; }
     }
 }
