@@ -10,6 +10,7 @@
     internal class ModelBuilder
     {
         public string CommandName { get; private set; }
+        public string CommandDescription { get; private set; }
 
         private readonly Type _modelType;
 
@@ -21,8 +22,16 @@
             this._modelType = modelType;
             this.ValidateModel(modelType);
 
-            // TODO: cache help data
+            this.ReadHelpInformation();
             // TODO: cache parsing data
+        }
+
+        private void ReadHelpInformation()
+        {
+            CommandDescriptionAttribute att = this._modelType.GetCustomAttribute<CommandDescriptionAttribute>();
+            this.CommandDescription = att?.Description ?? "* Description not available *";
+
+            // TODO: more elements to be read - switches, arguments, enumerations, description, syntaxes, etc - to be stored in dedicated HelpContainer for future use
         }
 
         private void ValidateModel(Type modelType)

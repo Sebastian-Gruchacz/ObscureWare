@@ -9,15 +9,19 @@
         public TestCommands(IConsole console)
         {
             ComsoleContext context = new ComsoleContext();
+            var options = new CommandParserOptions
+                {
+                    FlagCharacters = new string[] {@"\", "-"},
+                    SwitchCharacters = new string[] {@"-", "--"},
+                    OptionArgumentMode = CommandOptionArgumentMode.Separated,
+                    //OptionArgumentJoinCharacater = ':', // not used because of: CommandOptionArgumentMode.Separated
+                    AllowFlagsAsOneArgument = false,
+                    CommandsSensitivenes = CommandCaseSensitivenes.Insensitive,
+                    UnnamedOptionsMode = UnnamedOptionsMode.EndOnly, // TODO: let the command decide ?
+                };
 
-            var engine = CommandEngine.BuildEngineForManualSelection(typeof(DirCommand), typeof(ClsCommand));
-            engine.FlagCharacters = new string[] { @"\", "-" };
-            engine.SwitchCharacters = new string[] { @"-", "--" };
-            engine.OptionArgumentMode = CommandOptionArgumentMode.Separated;
-            //engine.OptionArgumentJoinCharacater = ':'; // not used because of: CommandOptionArgumentMode.Separated
-            engine.AllowFlagsAsOneArgument = false;
-            engine.CommandsSensitivenes = CommandCaseSensitivenes.Insensitive;
-            engine.UnnamedOptionsMode = UnnamedOptionsMode.EndOnly; // TODO: let the command decide ?
+            var engine = CommandEngine.BuildEngineForManualSelection(options, typeof(DirCommand), typeof(ClsCommand));
+
             //engine.Styles = new CommandEngineStyles
             //{
             //    // custom styles go here
