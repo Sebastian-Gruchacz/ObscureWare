@@ -63,6 +63,7 @@
     <Compile Include="Model\MandatoryAttribute.cs" />
     <Compile Include="Internals\ModelBuilder.cs" />
     <Compile Include="Internals\OutputManager.cs" />
+    <Compile Include="Internals\HelpPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\TargetTypesAttribute.cs" />
     <Compile Include="UnnamedOptionsMode.cs" />

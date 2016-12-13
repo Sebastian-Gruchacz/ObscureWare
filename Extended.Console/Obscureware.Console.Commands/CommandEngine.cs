@@ -5,17 +5,16 @@
 
     using ObscureWare.Console;
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
 
     public class CommandEngine
     {
         private CommandEngineStyles _styles;
-        private static readonly string[] InlineHelpCommands = new[] { "?", "help", "h" };
-
         private readonly CommandManager _commandManager;
-        private CommandCaseSensitivenes _commandsSensitivenes = CommandCaseSensitivenes.Insensitive;
-
+        private HelpPrinter _helpPrinter;
+        private ICommandParserOptions _options;
 
         // NO default public constructor - by design
         private CommandEngine(Type[] commands, ICommandParserOptions options)
@@ -30,7 +29,17 @@
             this._commandManager = new CommandManager(commands) { CommandsSensitivenes = this.Options.CommandsSensitivenes };
         }
 
-        public ICommandParserOptions Options { get; set; }
+        public ICommandParserOptions Options
+        {
+            get { return this._options; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(value));
+
+                this._options = value;
+                this.OnOptionsChanged();
+            }
+        }
 
         /// <summary>
         /// Specifies styles used by CommandEngine to color the output and help.
@@ -43,7 +52,27 @@
                 if (value == null) throw new ArgumentNullException(nameof(value));
 
                 this._styles = value;
+                this.OnStylesChanged();
             }
+        }
+
+        private void OnStylesChanged()
+        {
+            if (this.Options != null && this.Styles != null)
+            {
+                this._helpPrinter = new HelpPrinter(this.Options, this.Styles);
+            }
+
+            // TODO: more
+        }
+
+        private void OnOptionsChanged()
+        {
+            if (this.Options != null && this.Styles != null)
+            {
+                this._helpPrinter = new HelpPrinter(this.Options, this.Styles);
+            }
+            // TODO: more...
         }
 
         // https://en.wikipedia.org/wiki/Command-line_interface
@@ -62,7 +91,7 @@
 
             // ...
             string cmdName = commandLineArguments[0];
-            if (this.IsGlobalHelpRequested(cmdName))
+            if (this._helpPrinter.IsGlobalHelpRequested(cmdName))
             {
                 this.PrintGlobalHelp(consoleInstance, commandLineArguments.Skip(1));
                 return false;
@@ -72,15 +101,15 @@
             if (cmd == null)
             {
                 consoleInstance.WriteLine(this.Styles.Warning, "Unknown command.");
-                this.PrintHelpOnHelp(consoleInstance);
+                this._helpPrinter.PrintHelpOnHelp(consoleInstance);
                 return false;
             }
 
             if (commandLineArguments.Length > 1) // TODO: first or any? And ignore all the other syntax...
             {
-                if (this.IsCommandHelpRequested(commandLineArguments[1]))
+                if (this._helpPrinter.IsCommandHelpRequested(commandLineArguments[1]))
                 {
-                    this.PrintCommandHelp(cmd.Command, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
+                    this.PrintCommandHelp(consoleInstance, cmd, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
                     return false;
                 }
             }
@@ -102,61 +131,14 @@
             return true;
         }
 
-
-
-        private bool IsGlobalHelpRequested(string cmdName)
+        private void PrintGlobalHelp(IConsole console, IEnumerable<string> arguments)
         {
-            // TODO: more options
-            return cmdName.Equals("help", StringComparison.InvariantCultureIgnoreCase);
+            this._helpPrinter.PrintGlobalHelp(console, this._commandManager.GetAll(), arguments);
         }
 
-
-
-        private bool IsCommandHelpRequested(string commandLineArgument)
+        private void PrintCommandHelp(IConsole console, CommandInfo cmd, IEnumerable<string> skip)
         {
-            // TODO: implement using InlineHelpCommands
-            return false;
-        }
-
-        private void PrintGlobalHelp(IConsole console, IEnumerable<string> skip)
-        {
-            console.WriteLine(this.Styles.HelpHeader, "Available commands:");
-
-            foreach (var cmdInfo in this._commandManager.GetAll())
-            {
-                console.WriteLine(this.Styles.HelpDefinition, cmdInfo.ModelBuilder.CommandName);
-
-                // TODO: expose and print description in nice way...
-            }
-
-            console.WriteLine();
-            console.WriteLine(this.Styles.Default, $"All command names are case {this.Options.CommandsSensitivenes.ToString().ToLower()}.");
-            console.WriteText(this.Styles.Default, "To receive syntax help about particular command use \"");
-            console.WriteText(this.Styles.HelpDefinition, "<commandName> -h");
-            console.WriteLine(this.Styles.Default, "\" syntax.");
-            console.WriteLine();
-        }
-
-        private void PrintHelpOnHelp(IConsole console)
-        {
-            console.WriteText(this.Styles.Default, "To get list of available commands type ");
-            var availableCommands = InlineHelpCommands.Select(cm => this.Options.SwitchCharacters.First() + cm).ToArray();
-            for (int i = 0; i < availableCommands.Length; i++)
-            {
-                if (i > 0)
-                {
-                    console.WriteText(this.Styles.Default, i == availableCommands.Length - 1 ? " or " : ", ");
-                }
-
-                console.WriteText(this.Styles.HelpDefinition, availableCommands[i]);
-            }
-
-            console.WriteLine(this.Styles.Default, ".");
-        }
-
-        private void PrintCommandHelp(IConsoleCommand cmd, IEnumerable<string> skip)
-        {
-            throw new NotImplementedException();
+            this._helpPrinter.PrintCommandHelp(console, cmd.ModelBuilder);
         }
 
         private object BuildModelForCommand(CommandInfo cmdInfo, IEnumerable<string> arguments)
