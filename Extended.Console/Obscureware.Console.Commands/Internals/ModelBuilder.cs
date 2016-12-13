@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     using Model;
@@ -37,11 +38,23 @@
             // TODO: validate model type
         }
 
-        public CommandModel BuildModel(IEnumerable<string> arguments)
+        public CommandModel BuildModel(IEnumerable<string> arguments, ICommandParserOptions options)
         {
+            var model = Activator.CreateInstance(this._modelType) as CommandModel;
+            string[] args = arguments.ToArray();
+            int argIndex = 0;
+            while (argIndex < args.Length)
+            {
+
+
+
+                argIndex++;
+            }
+
+
             // TODO: full implementation
 
-            return Activator.CreateInstance(this._modelType) as CommandModel;
+            return model;
         }
 
 
