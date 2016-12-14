@@ -1,6 +1,7 @@
 namespace Obscureware.Console.Operations
 {
     using System;
+    using System.Globalization;
 
     public static class Extensions
     {
@@ -33,6 +34,36 @@ namespace Obscureware.Console.Operations
                 retVal = retVal + colNum * (int)Math.Pow(26, col.Length - (iChar + 1));
             }
             return retVal;
+        }
+
+        private static readonly string[] Sufixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+        /// <summary>
+        /// Converts number of bytes into user friendly format of KB, MB, GB etc.
+        /// </summary>
+        /// <param name="byteCount">Count of bytes</param>
+        /// <param name="culture">Optional culture for number formatting</param>
+        /// <returns></returns>
+        public static string ToFriendlyXBytesText(this long byteCount, CultureInfo culture = null)
+        {
+            // http://stackoverflow.com/questions/281640/how-do-i-get-a-human-readable-file-size-in-bytes-abbreviation-using-net
+
+            if (byteCount == 0)
+            {
+                return $"{0} {Sufixes[0]}";
+            }
+
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+
+            if (place >= Sufixes.Length)
+            {
+                throw new ArgumentException($"Unexpectedly large number, objects larger than 1023{Sufixes[Sufixes.Length - 1]} are not expected to exists in the entire universe!",
+                    nameof(byteCount));
+            }
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+
+            return $"{(Math.Sign(byteCount) * num).ToString(culture ?? CultureInfo.InvariantCulture),1} {Sufixes[place]}";
         }
     }
 }

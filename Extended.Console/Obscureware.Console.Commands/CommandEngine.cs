@@ -35,6 +35,7 @@
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
+                value.ValidateParserOptions();
 
                 this._options = value;
                 this.OnOptionsChanged();
@@ -68,15 +69,14 @@
 
         private void OnOptionsChanged()
         {
+            this._commandManager.CommandsSensitivenes = this.Options.CommandsSensitivenes;
+
             if (this.Options != null && this.Styles != null)
             {
                 this._helpPrinter = new HelpPrinter(this.Options, this.Styles);
             }
             // TODO: more...
         }
-
-        // https://en.wikipedia.org/wiki/Command-line_interface
-
 
         /// <summary></summary>
         /// <param name="context">Shared context object, that will be</param>
@@ -148,8 +148,6 @@
 
         private object BuildModelForCommand(CommandInfo cmdInfo, IEnumerable<string> arguments)
         {
-            this.Options.ValidateParserOptions();
-
             return cmdInfo.ModelBuilder.BuildModel(arguments, this.Options);
         }
 

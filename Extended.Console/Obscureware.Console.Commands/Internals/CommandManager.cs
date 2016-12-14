@@ -7,8 +7,25 @@
     internal class CommandManager
     {
         private readonly Dictionary<string, CommandInfo> _commands;
+        private StringComparison selectedComparison = StringComparison.InvariantCulture;
 
-        public CommandCaseSensitivenes CommandsSensitivenes { get; set; }
+        private CommandCaseSensitivenes commandsSensitivenes;
+
+        /// <summary>
+        /// Gets or sets whether command names are case sensitive or not.
+        /// </summary>
+        public CommandCaseSensitivenes CommandsSensitivenes
+        {
+            get
+            {
+                return this.commandsSensitivenes;
+            }
+            set
+            {
+                this.commandsSensitivenes = value;
+                this.selectedComparison = (value == CommandCaseSensitivenes.Sensitive) ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase;
+            }
+        }
 
         public CommandManager(Type[] commands)
         {
@@ -17,12 +34,10 @@
 
         public CommandInfo FindCommand(string cmdName)
         {
+
             return this._commands
                 .SingleOrDefault(pair =>
-                    pair.Key.Equals(cmdName,
-                        (this.CommandsSensitivenes == CommandCaseSensitivenes.Sensitive)
-                            ? StringComparison.InvariantCulture
-                            : StringComparison.InvariantCultureIgnoreCase))
+                    pair.Key.Equals(cmdName, this.selectedComparison))
                 .Value;
         }
 

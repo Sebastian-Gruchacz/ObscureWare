@@ -1,9 +1,11 @@
 ﻿namespace ConsoleApplication1.Commands
 {
     using System;
+    using System.Globalization;
     using System.IO;
     using Obscureware.Console.Commands;
     using Obscureware.Console.Commands.Model;
+    using Obscureware.Console.Operations;
     using Obscureware.Console.Operations.Tables;
 
     [CommandModel(typeof(DirCommandModel))]
@@ -39,8 +41,7 @@
             DataTable<string> filesTable = new DataTable<string>(
                 new ColumnInfo("Name", ColumnAlignment.Left),
                 new ColumnInfo("Size", ColumnAlignment.Right),
-                new ColumnInfo("Last Modification", ColumnAlignment.Right)
-                );
+                new ColumnInfo("Last Modification", ColumnAlignment.Right));
 
             var baseDir = new DirectoryInfo(basePath);
             if (parameters.IncludeFolders)
@@ -48,17 +49,29 @@
                 var dirs = baseDir.GetDirectories(filter, SearchOption.TopDirectoryOnly);
                 foreach (var dirInfo in dirs)
                 {
-                    filesTable.AddRow(dirInfo.FullName, new []{ dirInfo.Name, "<DIR>", Directory.GetLastWriteTime(dirInfo.FullName).ToShortDateString()});
+                    filesTable.AddRow(
+                        dirInfo.FullName, 
+                        new []
+                            {
+                                dirInfo.Name,
+                                "<DIR>",
+                                Directory.GetLastWriteTime(dirInfo.FullName).ToShortDateString()
+                            });
                 }
             }
 
             var files = baseDir.GetFiles(filter, SearchOption.TopDirectoryOnly);
             foreach (var fileInfo in files)
             {
-                filesTable.AddRow(fileInfo.FullName, new [] { fileInfo.Name, fileInfo.Length.ToString(), File.GetLastWriteTime(fileInfo.FullName).ToShortDateString() });
+                filesTable.AddRow(
+                    fileInfo.FullName, 
+                    new []
+                        {
+                            fileInfo.Name,
+                            fileInfo.Length.ToFriendlyXBytesText(CultureInfo.CurrentUICulture),
+                            File.GetLastWriteTime(fileInfo.FullName).ToShortDateString()
+                        });
             }
-
-            // TODO: add number to xBytes string for Length
 
             output.PrintSimpleTable(filesTable);
         }
