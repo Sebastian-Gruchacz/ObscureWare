@@ -5,17 +5,17 @@
 
     using ObscureWare.Console;
     using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
 
     public class CommandEngine
     {
-        private CommandEngineStyles _styles;
         private readonly CommandManager _commandManager;
+        private CommandEngineStyles _styles;
         private HelpPrinter _helpPrinter;
         private ICommandParserOptions _options;
 
+        // TODO: move console to constructor and inject to dependants instead of through functions.
         // NO default public constructor - by design
         private CommandEngine(Type[] commands, ICommandParserOptions options)
         {
@@ -63,7 +63,7 @@
                 this._helpPrinter = new HelpPrinter(this.Options, this.Styles);
             }
 
-            // TODO: more
+            // TODO: more?
         }
 
         private void OnOptionsChanged()

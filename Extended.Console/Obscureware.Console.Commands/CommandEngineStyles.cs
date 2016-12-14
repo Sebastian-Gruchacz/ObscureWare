@@ -14,7 +14,7 @@ namespace Obscureware.Console.Commands
             {
                 return new CommandEngineStyles
                 {
-                    Default = new ConsoleFontColor(Color.LightGray, Color.Black),
+                    Default = new ConsoleFontColor(Color.DarkGray, Color.Black),
                     Error = new ConsoleFontColor(Color.DarkRed, Color.Black),
                     Warning = new ConsoleFontColor(Color.Orange, Color.Black),
 
@@ -26,6 +26,8 @@ namespace Obscureware.Console.Commands
                 };
             }
         }
+
+        // TODO: split this class into specialized classes / interfaces (help styles, messaging styles, table styles etc.)
 
         public ConsoleFontColor HelpSyntax { get; set; }
 
