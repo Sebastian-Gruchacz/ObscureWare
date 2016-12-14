@@ -48,6 +48,7 @@
     <Compile Include="Internals\ConvertersManager.cs" />
     <Compile Include="Internals\Converters\ArgumentConverter.cs" />
     <Compile Include="Internals\Converters\ArgumentConverterTargetTypeAttribute.cs" />
+    <Compile Include="Internals\Converters\BoolArgumentConverter.cs" />
     <Compile Include="Internals\Converters\ByteArgumentConverter.cs" />
     <Compile Include="Internals\Converters\DateTimeArgumentConverter.cs" />
     <Compile Include="Internals\Converters\DecimalArgumentConverter.cs" />
@@ -59,6 +60,9 @@
     <Compile Include="Internals\Converters\Int64ArgumentConverter.cs" />
     <Compile Include="Internals\Converters\StringArgumentConverter.cs" />
     <Compile Include="Internals\Converters\TimeSpanArgumentConverter.cs" />
+    <Compile Include="Internals\Parsers\CustomValueSwitchParser.cs" />
+    <Compile Include="Internals\Parsers\EnumSwitchParser.cs" />
+    <Compile Include="Internals\Parsers\BaseSwitchPropertyParser.cs" />
     <Compile Include="Internals\Parsers\FlagPropertyParser.cs" />
     <Compile Include="Internals\InsensitiveStringComparer.cs" />
     <Compile Include="Internals\Parsers\BasePropertyParser.cs" />
@@ -86,9 +90,7 @@
     <Compile Include="Internals\OutputManager.cs" />
     <Compile Include="Internals\HelpPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\TargetTypesAttribute.cs" />
     <Compile Include="UnnamedOptionsMode.cs" />
-    <Compile Include="Model\ValueFlagType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Obscureware.Console.Operations\Obscureware.Console.Operations.csproj">

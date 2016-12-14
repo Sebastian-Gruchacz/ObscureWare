@@ -18,16 +18,16 @@
             this.TargetProperty = propertyInfo;
         }
 
-        public void Apply(CommandModel model, string[] args, ref int argIndex)
+        public void Apply(ICommandParserOptions options, CommandModel model, string[] args, ref int argIndex)
         {
             if (model.GetType() != this.TargetProperty.DeclaringType)
             {
                 throw new InvalidOperationException("Incompatible model type.");
             }
 
-            this.DoApply(model, args, ref argIndex);
+            this.DoApply(options, model, args, ref argIndex);
         }
 
-        protected abstract void DoApply(CommandModel model, string[] args, ref int argIndex);
+        protected abstract void DoApply(ICommandParserOptions options, CommandModel model, string[] args, ref int argIndex);
     }
 }

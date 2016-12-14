@@ -4,14 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-
+    using Converters;
     using Model;
     using Parsers;
 
     internal class ModelBuilder
     {
-        private readonly Dictionary<string, BasePropertyParser> _flagParsers = new Dictionary<string, BasePropertyParser>();
-        private readonly Dictionary<string, BasePropertyParser> _switchParsers = new Dictionary<string, BasePropertyParser>();
+        private readonly Dictionary<string, FlagPropertyParser> _flagParsers = new Dictionary<string, FlagPropertyParser>();
+        private readonly Dictionary<string, BaseSwitchPropertyParser> _switchParsers = new Dictionary<string, BaseSwitchPropertyParser>();
         private readonly List<UnnamedPropertyParser> _unnamedParsers = new List<UnnamedPropertyParser>();
 
         private readonly Type _modelType;
@@ -71,8 +71,57 @@
                 }
 
                 // Is Switch
+                CommandSwitchAttribute switchAttribute = attributes.SingleOrDefault(att => att is CommandSwitchAttribute) as CommandSwitchAttribute;
+                if (switchAttribute != null)
+                {
+                    var parser = this.BuildSwitchParser(propertyInfo, switchAttribute, attributes);
+                    if (parser == null)
+                    {
+                        throw new BadImplementationException($"Could not find proper SwitchParser for property \"{propertyInfo.Name}\"", this._modelType);
+                    }
 
+                    foreach (var literal in switchAttribute.CommandLiterals)
+                    {
+                        var aLiteral = literal.Trim();
 
+                        if (this._switchParsers.ContainsKey(aLiteral))
+                        {
+                            throw new BadImplementationException($"Flag argument literal \"{literal}\" has been declared more than once in the {this._modelType.FullName}.", this._modelType);
+                        }
+
+                        this._switchParsers.Add(aLiteral, parser);
+                    }
+                }
+
+                // Is Valued Flag - named, free value
+                CommandValueFlagAttribute valueAtt = attributes.SingleOrDefault(att => att is CommandValueFlagAttribute) as CommandValueFlagAttribute;
+                if (valueAtt != null)
+                {
+                    var converter = this._convertersManager.GetConverterFor(propertyInfo.PropertyType);
+                    if (converter == null)
+                    {
+                        throw new BadImplementationException($"Could not find required ArgumentConverter for type \"{propertyInfo.PropertyType.FullName}\" for ValueArgument \"{propertyInfo.Name}\".", this._modelType);
+                    }
+
+                    var parser = this.BuildValueOptionParser(propertyInfo, valueAtt, attributes, converter);
+                    if (parser == null)
+                    {
+                        throw new BadImplementationException($"Could not find proper SwitchParser for property \"{propertyInfo.Name}\"", this._modelType);
+                    }
+
+                    // value parser is mainly compatible with switch-one
+                    foreach (var literal in valueAtt.CommandLiterals)
+                    {
+                        var aLiteral = literal.Trim();
+
+                        if (this._switchParsers.ContainsKey(aLiteral))
+                        {
+                            throw new BadImplementationException($"Flag argument literal \"{literal}\" has been declared more than once in the {this._modelType.FullName}.", this._modelType);
+                        }
+
+                        this._switchParsers.Add(aLiteral, parser);
+                    }
+                }
 
                 // Is unnamed argument
                 CommandUnnamedOptionAttribute nonPosAtt = attributes.SingleOrDefault(att => att is CommandUnnamedOptionAttribute) as CommandUnnamedOptionAttribute;
@@ -83,9 +132,25 @@
                     {
                         throw new BadImplementationException($"Could not find required ArgumentConverter for type \"{propertyInfo.PropertyType.FullName}\" for unnamed Argument at index [{nonPosAtt.ArgumentIndex}].", this._modelType);
                     }
+
                     this._unnamedParsers.Add(new UnnamedPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo, converter));
                 }
             }
+        }
+
+        private BaseSwitchPropertyParser BuildValueOptionParser(PropertyInfo propertyInfo, CommandValueFlagAttribute valueAtt, object[] attributes, ArgumentConverter converter)
+        {
+            return new CustomValueSwitchParser(propertyInfo, valueAtt, converter);
+        }
+
+        private BaseSwitchPropertyParser BuildSwitchParser(PropertyInfo propertyInfo, CommandSwitchAttribute switchAttribute, object[] otherAttributes)
+        {
+            if (switchAttribute.SwitchBaseType.IsEnum)
+            {
+                return new EnumSwitchParser(propertyInfo, switchAttribute);
+            }
+
+            return null;
         }
 
         private void ReadHelpInformation()
@@ -131,7 +196,7 @@
                         return null;
                     }
 
-                    propertyParser.Apply(model, args, ref argIndex);
+                    propertyParser.Apply(options, model, args, ref argIndex);
                 }
                 else
                 {
@@ -142,14 +207,13 @@
                         return null;
                     }
 
-                    propertyParser.Apply(model, args, ref argIndex);
+                    propertyParser.Apply(options, model, args, ref argIndex);
                 }
 
                 argIndex++;
             }
 
-
-            // TODO: full implementation
+            // TODO: validate mandatory options and unnamed arguments
 
             return model;
         }
@@ -161,9 +225,9 @@
             {
                 foreach (var flagPrefix in options.FlagCharacters)
                 {
-                    string cleanFlag = argSyntax.Replace(flagPrefix, "");
+                    string cleanFlag = argSyntax.Replace(flagPrefix, ""); // TODO: - remove at front only!
 
-                    BasePropertyParser parser;
+                    FlagPropertyParser parser;
                     if (this._flagParsers.TryGetValue(cleanFlag, out parser))
                     {
                         return parser;
@@ -178,10 +242,18 @@
                 }
 
                 // TODO: implement, with above exception this will be easier...
+
+                // TODO: add multi-flag parser here
             }
 
 
             // Switches
+            foreach (var switchPrefix in options.SwitchCharacters)
+            {
+                string cleanFlag = argSyntax.Replace(switchPrefix, "");  // TODO: - remove at front only!
+                BaseSwitchPropertyParser parser = this._switchParsers.FirstOrDefault(p => p.Key.Equals(cleanFlag)).Value;
+                return parser;
+            }
 
             return null;
         }

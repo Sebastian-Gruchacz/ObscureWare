@@ -14,7 +14,7 @@
         }
 
         /// <inheritdoc />
-        protected override void DoApply(CommandModel model, string[] args, ref int argIndex)
+        protected override void DoApply(ICommandParserOptions options, CommandModel model, string[] args, ref int argIndex)
         {
             this.TargetProperty.SetValue(model, true);
         }

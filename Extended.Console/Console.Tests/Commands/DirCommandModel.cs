@@ -17,12 +17,14 @@
         [CommandSwitch(typeof(DirectoryListMode), "m", DefaultValue = DirectoryListMode.CurrentDir)]
         [CommandDescription("Specifies which predefined directory location shall be listed.")]
         // TODO: list help for switches.
+        // TODO: more switch types?
+        // TODO: runtime support switch auto-complete. Sourced through ModelBuilder & Parser
         public DirectoryListMode Mode { get; set; }
 
         [Mandatory(false)]
-        [CommandValueFlag(ValueFlagType.Text, "f", "F")]
-        //[CommandUnnamedOption(0)]
+        [CommandValueFlag("f", "F")]
         [CommandDescription("Specifies filter for enumerated files. Does not apply to folders listing.")]
+        // TODO: runtime support for some values / unnamed values autocompletion? sourced through command itself...
         public string Filter { get; set; }
     }
 

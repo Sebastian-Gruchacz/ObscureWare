@@ -28,9 +28,9 @@
         }
 
         /// <inheritdoc />
-        protected override void DoApply(CommandModel model, string[] args, ref int argIndex)
+        protected override void DoApply(ICommandParserOptions options, CommandModel model, string[] args, ref int argIndex)
         {
-            this.TargetProperty.SetValue(model, this._converter.TryConvert(args[argIndex], CultureInfo.CurrentUICulture)); // TODO: proper Engine / console culture everywhere
+            this.TargetProperty.SetValue(model, this._converter.TryConvert(args[argIndex], CultureInfo.CurrentUICulture)); // TODO: proper Engine / console culture everywhere, passing
         }
     }
 }
