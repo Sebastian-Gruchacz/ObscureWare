@@ -15,5 +15,7 @@ namespace Obscureware.Console.Commands
         void Clear();
 
         void PrintSimpleTable<T>(DataTable<T> filesTable);
+
+        void PrintWarning(string message);
     }
 }

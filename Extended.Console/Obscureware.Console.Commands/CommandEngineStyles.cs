@@ -22,7 +22,8 @@ namespace Obscureware.Console.Commands
                     HelpBody = new ConsoleFontColor(Color.LightGray, Color.Black),
                     HelpDefinition = new ConsoleFontColor(Color.White, Color.Black),
                     HelpDescription = new ConsoleFontColor(Color.LightGray, Color.Black),
-                    HelpSyntax = new ConsoleFontColor(Color.White, Color.DarkBlue)
+                    HelpSyntax = new ConsoleFontColor(Color.White, Color.DarkBlue),
+                    Prompt = new ConsoleFontColor(Color.Yellow, Color.DarkBlue)
                 };
             }
         }
@@ -44,5 +45,7 @@ namespace Obscureware.Console.Commands
         public ConsoleFontColor Error { get; set; }
 
         public ConsoleFontColor Default { get; set; }
+
+        public ConsoleFontColor Prompt { get;  set; }
     }
 }

@@ -48,10 +48,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ChangeDirCommand.cs" />
+    <Compile Include="Commands\ChangeDirCommandModel.cs" />
+    <Compile Include="Commands\ChangeDirUpCommand.cs" />
+    <Compile Include="Commands\ChangeDirUpCommandModel.cs" />
     <Compile Include="Commands\ClsCommand.cs" />
     <Compile Include="Commands\ClsCommandModel.cs" />
     <Compile Include="CommandsDemo.cs" />
-    <Compile Include="ComsoleContext.cs" />
+    <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="Commands\ExitCommandModel.cs" />
+    <Compile Include="ConsoleContext.cs" />
     <Compile Include="Commands\DirCommand.cs" />
     <Compile Include="Commands\DirCommandModel.cs" />
     <Compile Include="Commands\DirectoryListMode.cs" />

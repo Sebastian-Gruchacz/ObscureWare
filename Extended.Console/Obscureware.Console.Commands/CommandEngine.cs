@@ -24,9 +24,9 @@
                 throw new ArgumentNullException(nameof(options));
             }
 
+            this._commandManager = new CommandManager(commands);
             this.Options = options;
             this.Styles = CommandEngineStyles.DefaultStyles; // use default even if user not defines any
-            this._commandManager = new CommandManager(commands) { CommandsSensitivenes = this.Options.CommandsSensitivenes };
         }
 
         public ICommandParserOptions Options
@@ -127,13 +127,49 @@
             {
                 cmd.Command.Execute(context, outputManager, model); // skip only cmdName itself
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // TODO: print error
+                consoleInstance.WriteLine(this.Styles.Error, "An exception occurred during command execution:");
+                consoleInstance.WriteLine(this.Styles.Error, ex.ToString());
+
+                // TODO: log also to file?
                 return false;
             }
 
             return true;
+        }
+
+        public void Run(ICommandEngineContext context, IConsole consoleInstnace)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+            if (consoleInstnace == null)
+            {
+                throw new ArgumentNullException(nameof(consoleInstnace));
+            }
+
+            while (!context.ShallTerminate)
+            {
+                this.DisplayPrompt(consoleInstnace, context.GetCurrentPrompt()); // TODO: perhaps multi-color prompt support?
+
+                string cmdString = consoleInstnace.ReadLine();
+                if (string.IsNullOrWhiteSpace(cmdString))
+                {
+                    continue;
+                }
+
+                string[] arguments = CommandLineUtilities.SplitCommandLine(cmdString).ToArray();
+                this.ExecuteCommand(context, consoleInstnace, arguments);
+            }
+        }
+
+        private void DisplayPrompt(IConsole consoleInstnace, string promptText)
+        {
+            consoleInstnace.WriteLine();
+            consoleInstnace.WriteText(this.Styles.Prompt, promptText);
+            consoleInstnace.SetColors(this.Styles.Default);
         }
 
         private void PrintGlobalHelp(IConsole console, IEnumerable<string> arguments)

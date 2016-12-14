@@ -38,5 +38,10 @@
         {
             this._tablePrinter.PrintAsSimpleTable(filesTable, this._engineStyles.HelpHeader, this._engineStyles.HelpDefinition);
         }
+
+        public void PrintWarning(string message)
+        {
+            this._consoleInstance.WriteLine(this._engineStyles.Error, message);
+        }
     }
 }
