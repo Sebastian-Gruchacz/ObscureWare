@@ -48,7 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ChangeDirCommand.cs" />
+    <Compile Include="Commands\ChangeDirCommandModel.cs" />
     <Compile Include="Commands\ChangeDirUpCommand.cs" />
+    <Compile Include="Commands\ChangeDirUpCommandModel.cs" />
     <Compile Include="Commands\ClsCommand.cs" />
     <Compile Include="Commands\ClsCommandModel.cs" />
     <Compile Include="CommandsDemo.cs" />
