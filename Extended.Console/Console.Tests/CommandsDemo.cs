@@ -21,7 +21,7 @@
                 };
 
             var engine = CommandEngine.BuildEngineForManualSelection(options,
-                typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand));
+                typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand), typeof(ChangeDirCommand));
 
             //engine.Styles = new CommandEngineStyles
             //{
