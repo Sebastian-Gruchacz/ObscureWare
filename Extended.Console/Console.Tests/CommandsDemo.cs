@@ -8,7 +8,7 @@
     {
         public TestCommands(IConsole console)
         {
-            ComsoleContext context = new ComsoleContext();
+            ConsoleContext context = new ConsoleContext();
             var options = new CommandParserOptions
                 {
                     FlagCharacters = new string[] {@"\", "-"},
@@ -20,7 +20,8 @@
                     UnnamedOptionsMode = UnnamedOptionsMode.EndOnly, // TODO: let the command decide ?
                 };
 
-            var engine = CommandEngine.BuildEngineForManualSelection(options, typeof(DirCommand), typeof(ClsCommand));
+            var engine = CommandEngine.BuildEngineForManualSelection(options,
+                typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand));
 
             //engine.Styles = new CommandEngineStyles
             //{
@@ -32,6 +33,10 @@
             engine.ExecuteCommand(context, console, new[] { "diraa" });
             engine.ExecuteCommand(context, console, new[] { "help" });
             engine.ExecuteCommand(context, console, new[] { "dir", "-h" });
+
+
+            // now manual testing ;-)
+            engine.Run(context, console);
         }
     }
 }
