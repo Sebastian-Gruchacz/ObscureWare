@@ -5,17 +5,17 @@
 
     using ObscureWare.Console;
     using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
 
     public class CommandEngine
     {
-        private CommandEngineStyles _styles;
         private readonly CommandManager _commandManager;
+        private CommandEngineStyles _styles;
         private HelpPrinter _helpPrinter;
         private ICommandParserOptions _options;
 
+        // TODO: move console to constructor and inject to dependants instead of through functions.
         // NO default public constructor - by design
         private CommandEngine(Type[] commands, ICommandParserOptions options)
         {
@@ -63,7 +63,7 @@
                 this._helpPrinter = new HelpPrinter(this.Options, this.Styles);
             }
 
-            // TODO: more
+            // TODO: more?
         }
 
         private void OnOptionsChanged()
@@ -97,10 +97,15 @@
                 return false;
             }
 
+            if (string.IsNullOrWhiteSpace(cmdName))
+            {
+                return false; // just ignore
+            }
+
             CommandInfo cmd = this._commandManager.FindCommand(cmdName);
             if (cmd == null)
             {
-                consoleInstance.WriteLine(this.Styles.Warning, "Unknown command.");
+                consoleInstance.WriteLine(this.Styles.Warning, $"Unknown command => \"{cmdName}\".");
                 this._helpPrinter.PrintHelpOnHelp(consoleInstance);
                 return false;
             }
@@ -116,7 +121,7 @@
 
             // This might crash-throw if invalid types defined. Fine.
             var model = this.BuildModelForCommand(cmd, commandLineArguments.Skip(1));
-            var outputManager = new OutputManager(consoleInstance);
+            var outputManager = new OutputManager(consoleInstance, this.Styles);
 
             try
             {

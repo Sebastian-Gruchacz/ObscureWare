@@ -9,11 +9,11 @@
     /// <summary>
     /// Base class for printing content of the <see cref="DataTable{T}"/>. Contains base routines for measurement.
     /// </summary>
-    public abstract class DataTablePrinter
+    public  class DataTablePrinter // TODO: abstract and then simple table printer
     {
         private readonly IConsole _console;
 
-        protected DataTablePrinter(IConsole console)
+        public DataTablePrinter(IConsole console)
         {
             this._console = console;
         }
@@ -138,8 +138,8 @@
 
         public DataTable<T> BuildTable<T>(string[] header, IEnumerable<T> dataSource, Func<T, string[]> dataGenerator)
         {
-            DataTable<T> table = new DataTable<T>();
-            table.Columns = (new string[] { @"A.Id" }.Concat(header).ToArray()).ToDictionary(h => h, h => new ColumnInfo(h, ColumnAlignment.Left));
+            DataTable<T> table = new DataTable<T>(
+                new[] { "A.Id" }.Concat(header).Select(head => new ColumnInfo(head)).ToArray());
 
             uint i = 1;
             foreach (T src in dataSource)

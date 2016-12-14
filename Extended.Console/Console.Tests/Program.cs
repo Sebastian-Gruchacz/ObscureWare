@@ -6,6 +6,8 @@ using System.Reflection;
 
 namespace ConsoleApplication1
 {
+    using Obscureware.Console.Operations;
+
     internal static class Program
     {
         private static void Main(string[] args)

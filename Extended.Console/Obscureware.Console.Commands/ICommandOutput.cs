@@ -2,6 +2,8 @@
 
 namespace Obscureware.Console.Commands
 {
+    using Operations.Tables;
+
     public interface ICommandOutput
     {
         /// <summary>
@@ -11,5 +13,7 @@ namespace Obscureware.Console.Commands
         void PrintResultLines(IEnumerable<string> results);
 
         void Clear();
+
+        void PrintSimpleTable<T>(DataTable<T> filesTable);
     }
 }

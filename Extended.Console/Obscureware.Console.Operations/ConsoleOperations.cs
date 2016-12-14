@@ -1,10 +1,12 @@
-﻿namespace ObscureWare.Console
+﻿namespace Obscureware.Console.Operations
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Drawing;
     using System.Linq;
+    using ObscureWare.Console;
+    using Tables;
 
     public class ConsoleOperations
     {
@@ -105,14 +107,14 @@
         {
             if (text.Length == boxWidth)
             {
-                Console.Write(text);
+                System.Console.Write(text);
             }
             else
             {
                 string[] parts = text.Split(new string[] { @" ", @"\t" }, StringSplitOptions.RemoveEmptyEntries); // both split and clean
                 if (parts.Length == 1)
                 {
-                    Console.Write(text); // we cannot do anything about one long word...
+                    System.Console.Write(text); // we cannot do anything about one long word...
                 }
                 else
                 {
@@ -120,30 +122,30 @@
                     int remainingBlanks = boxWidth - cleanedLength;
                     if (remainingBlanks > cleanedLength / 2)
                     {
-                        Console.Write(text); // text is way too short to expand it, keep to the left
+                        System.Console.Write(text); // text is way too short to expand it, keep to the left
                     }
                     else
                     {
-                        int longerSpacesCount = (int) Math.Floor((decimal) remainingBlanks/(parts.Length - 1));
+                        int longerSpacesCount = (int)Math.Floor((decimal)remainingBlanks / (parts.Length - 1));
                         if (longerSpacesCount > 1)
                         {
-                            decimal remainingLowerSpacesJoins = remainingBlanks - (longerSpacesCount*(parts.Length - 1));
+                            decimal remainingLowerSpacesJoins = remainingBlanks - (longerSpacesCount * (parts.Length - 1));
                             if (remainingLowerSpacesJoins > 0)
                             {
                                 int longerQty = parts.Length - longerSpacesCount;
-                                Console.Write(
+                                System.Console.Write(
                                     string.Join(new string(' ', longerSpacesCount), parts.Take(longerQty + 1)) +
                                     string.Join(new string(' ', longerSpacesCount - 1), parts.Skip(longerQty + 1)));
                             }
                             else
                             {
                                 // all gaps equal
-                                Console.Write(string.Join(new string(' ', longerSpacesCount), parts));
+                                System.Console.Write(string.Join(new string(' ', longerSpacesCount), parts));
                             }
                         }
                         else
                         {
-                            Console.Write(
+                            System.Console.Write(
                                 string.Join(new string(' ', 2), parts.Take(remainingBlanks + 1)) +
                                 string.Join(new string(' ', 1), parts.Skip(remainingBlanks + 1)));
                         }
@@ -238,7 +240,7 @@
         {
             if (rebuildColumnSizes)
             {
-                for (int i = 0; i < textColumns.Length; ++i )
+                for (int i = 0; i < textColumns.Length; ++i)
                 {
                     var columnInfo = textColumns[i];
                     columnInfo.UpdateWithNewValues(rows.Select(row => row[i]).ToArray());
@@ -257,20 +259,23 @@
         /// <summary>
         /// Prints data as simple, frame-less table
         /// </summary>
-        /// <param name="header"></param>
+        /// <param name="columns"></param>
         /// <param name="rows"></param>
         /// <param name="tableHeaderColor"></param>
         /// <param name="tableRowColor"></param>
-        public void PrintAsSimpleTable(string[] header, string[][] rows, ConsoleFontColor tableHeaderColor, ConsoleFontColor tableRowColor)
+        public void PrintAsSimpleTable(ColumnInfo[] columns, string[][] rows, ConsoleFontColor tableHeaderColor, ConsoleFontColor tableRowColor)
         {
-            int[] rowSizes = this.CalculateRequiredRowSizes(header, rows);
-            int expectedWidth = rowSizes.Sum();
-            if (expectedWidth <= this._console.WindowWidth)
+            this.CalculateRequiredRowSizes(columns, rows);
+
+            int spacingWidth = columns.Length - 1;
+            int totalAvailableWidth = this._console.WindowWidth - 1; // -1 for ENDL - need to not overflow, to avoid empty lines
+            int maxRequiredWidth = columns.Select(col => col.CurrentLength).Sum() + spacingWidth;
+            if (maxRequiredWidth < totalAvailableWidth)
             {
                 // cool, table fits to the screen
                 int index = 0;
-                string formatter = string.Join(" ", rowSizes.Select(size => $"{{{index++},-{size}}}"));
-                this._console.WriteLine(tableHeaderColor, string.Format(formatter, header));
+                string formatter = string.Join(" ", columns.Select(col => $"{{{index++},{col.CurrentLength * (int)col.Alignment}}}"));
+                this._console.WriteLine(tableHeaderColor, string.Format(formatter, columns.Select(col => col.Header).ToArray()));
                 foreach (string[] row in rows)
                 {
                     // TODO: add missing cells...
@@ -279,51 +284,84 @@
             }
             else
             {
-                float scale = (float) this._console.WindowWidth / (float)expectedWidth;
-                for (int i = 0; i < rowSizes.Length; i++)
+                int availableWidth = totalAvailableWidth - spacingWidth;
+                float scale = (float)this._console.WindowWidth / (float)maxRequiredWidth;
+                for (int i = 0; i < columns.Length; i++)
                 {
-                    rowSizes[i] = (int)Math.Floor(rowSizes[i] * scale); // TODO:probably round would be as good... gonna check
+                    // TODO:probably round would be as good... gonna check
+                    int newLength = (int)Math.Floor(columns[i].CurrentLength * scale);
+                    if (newLength < columns[i].MinLength)
+                    {
+                        newLength = Math.Min(availableWidth, columns[i].MinLength); // if all columns have minWidth and overflow the screen - some will not be displayed at all...
+                        columns[i].CurrentLength = newLength;
+                    }
+
+                    availableWidth -= newLength;
+                    if (availableWidth < 0)
+                    {
+                        newLength = newLength - (Math.Abs(availableWidth));
+                        availableWidth = 0;
+                    }
+                    columns[i].CurrentLength = Math.Max(0, newLength);
                 }
 
                 int index = 0;
-                string formatter = string.Join(" ", rowSizes.Select(size => $"{{{index++},-{size - 1}}}"));
-                this._console.WriteLine(tableHeaderColor, string.Format(formatter, header));
+                string formatter = string.Join(" ", columns.Select(col => $"{{{index++},{(col.CurrentLength) * (int)col.Alignment}}}"));
+                this._console.WriteLine(tableHeaderColor, string.Format(formatter, columns.Select(col => col.Header.Substring(0, Math.Min(col.Header.Length, col.CurrentLength))).ToArray<string>()));
                 foreach (string[] row in rows)
                 {
-                    string[] result = new string[rowSizes.Length];
-                    for (int i = 0; i < rowSizes.Length; i++)
+                    string[] result = new string[columns.Length];
+                    for (int i = 0; i < columns.Length; i++)
                     {
                         if (row.Length > i) // taking care for assymetric array, btw
                         {
-                            if (row[i].Length <= rowSizes[i] - 1)
+                            if (row[i].Length <= columns[i].CurrentLength)
                             {
                                 result[i] = row[i];
                             }
                             else
                             {
-                                result[i] = row[i].Substring(0, rowSizes[i] - 1);
+                                result[i] = row[i].Substring(0, columns[i].CurrentLength);
                             }
                         }
                     }
+
                     this._console.WriteLine(tableRowColor, string.Format(formatter, result));
+                }
+            }
+        }
+
+        private void CalculateRequiredRowSizes(ColumnInfo[] columns, string[][] rows)
+        {
+            // headers room
+            for (int i = 0; i < columns.Length; ++i)
+            {
+                columns[i].CurrentLength = Math.Max(columns[i].CurrentLength, columns[i].MinLength);
+
+                foreach (string[] row in rows)
+                {
+                    if (i < row.Length) // some data might be missing, headers no
+                    {
+                        columns[i].CurrentLength = Math.Max(columns[i].CurrentLength, (row[i]?.Length) ?? 1);
+                    }
                 }
             }
         }
 
         private int[] CalculateRequiredRowSizes(string[] header, string[][] rows)
         {
-            int [] result = new int[header.Length];
+            int[] result = new int[header.Length];
 
             // headers room
             for (int i = 0; i < header.Length; ++i)
             {
-                result[i] = Math.Max(result[i], header[i].Length + 1); // + 1 for column spacing
+                result[i] = Math.Max(result[i], header[i].Length);
 
                 foreach (string[] row in rows)
                 {
                     if (i < row.Length) // some data might be missing, headers no
                     {
-                        result[i] = Math.Max(result[i], (row[i]?.Length + 1) ?? 1); // + 1 for column spacing
+                        result[i] = Math.Max(result[i], (row[i]?.Length) ?? 1);
                     }
                 }
             }
@@ -333,13 +371,13 @@
 
         public void PrintAsSimpleTable<T>(DataTable<T> table, ConsoleFontColor tableHeaderColor, ConsoleFontColor tableRowColor)
         {
-            this.PrintAsSimpleTable(table.Header, table.GetRows().ToArray(), tableHeaderColor, tableRowColor);
+            this.PrintAsSimpleTable(table.Columns.Values.ToArray(), table.GetRows().ToArray(), tableHeaderColor, tableRowColor);
         }
 
         public DataTable<T> BuildTable<T>(string[] header, IEnumerable<T> dataSource, Func<T, string[]> dataGenerator)
         {
-            DataTable<T> table = new DataTable<T>();
-            table.Header = new string[] { @"A.Id" }.Concat(header).ToArray();
+            DataTable<T> table = new DataTable<T>(
+                new []{ "A.Id" }.Concat(header).Select(head => new ColumnInfo(head)).ToArray());
 
             uint i = 1;
             foreach (T src in dataSource)

@@ -21,23 +21,43 @@
             this._allInlineHelpOptions = BaseInlineHelpCommands.SelectMany(txt => this._options.FlagCharacters.Select(f => f + txt)).ToArray();
         }
 
+        /// <summary>
+        /// Returns true, if given command is Global-Help command
+        /// </summary>
+        /// <param name="cmdName"></param>
+        /// <returns></returns>
         public bool IsGlobalHelpRequested(string cmdName)
         {
-            // TODO: more options available???
+            // TODO: reject registration of commands that would be in conflict with build-in commands like "help"
+            // TODO: more command options available???
             return cmdName.Equals("help", StringComparison.InvariantCultureIgnoreCase);
         }
 
+        /// <summary>
+        /// Returns true, if user requested help about command details.
+        /// </summary>
+        /// <param name="firstArgument"></param>
+        /// <returns></returns>
         public bool IsCommandHelpRequested(string firstArgument)
         {
+            // TODO: also improve syntax for both "help <command>" and "<command> -help" (or "/?" is configured such). Update help message in PrintGlobalHelp()
             return this._allInlineHelpOptions.Contains(firstArgument); // TODO: sensitiveness comparer
         }
 
-
+        /// <summary>
+        /// Prints full (?) help about particular command.
+        /// </summary>
+        /// <param name="console"></param>
+        /// <param name="cmdModelBuilder"></param>
         public void PrintCommandHelp(IConsole console, ModelBuilder cmdModelBuilder)
         {
-            throw new NotImplementedException();
+            console.WriteLine(this._styles.Error, $"Function {nameof(this.PrintCommandHelp)} is not yet implemented.");
         }
 
+        /// <summary>
+        /// Prints generic help information.
+        /// </summary>
+        /// <param name="console"></param>
         public void PrintHelpOnHelp(IConsole console)
         {
             if (console == null)
@@ -62,7 +82,7 @@
         }
 
         /// <summary>
-        ///
+        /// Prints global help and list of available commands.
         /// </summary>
         /// <param name="console"></param>
         /// <param name="commands"></param>
@@ -85,13 +105,16 @@
                 console.WriteText(this._styles.HelpDefinition, cmdInfo.ModelBuilder.CommandName + "\t\t");
                 console.WriteLine(this._styles.HelpDescription, cmdInfo.ModelBuilder.CommandDescription);
 
-                // TODO: expose and print description in nice way - justified paragraph or else...
+                // TODO: expose and print description in nice way - justified paragraph or else... Tables?
             }
 
             console.WriteLine();
             console.WriteLine(this._styles.Default, $"All command names are case {this._options.CommandsSensitivenes.ToString().ToLower()}.");
             console.WriteText(this._styles.Default, "To receive syntax help about particular command use \"");
-            console.WriteText(this._styles.HelpDefinition, "<commandName> -h");
+            console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.SwitchCharacters.First()}h");
+
+            // TODO: add alternative syntax
+
             console.WriteLine(this._styles.Default, "\" syntax.");
             console.WriteLine();
         }

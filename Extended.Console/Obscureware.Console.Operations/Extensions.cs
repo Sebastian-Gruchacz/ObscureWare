@@ -1,4 +1,4 @@
-namespace ObscureWare.Console
+namespace Obscureware.Console.Operations
 {
     using System;
 

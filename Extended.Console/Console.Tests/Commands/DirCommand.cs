@@ -1,10 +1,10 @@
 ﻿namespace ConsoleApplication1.Commands
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using Obscureware.Console.Commands;
     using Obscureware.Console.Commands.Model;
+    using Obscureware.Console.Operations.Tables;
 
     [CommandModel(typeof(DirCommandModel))]
     public class DirCommand : IConsoleCommand
@@ -35,21 +35,32 @@
         {
             string filter = string.IsNullOrWhiteSpace(parameters.Filter) ? "*.*" : parameters.Filter;
             string basePath = Environment.CurrentDirectory;
-            List<string> results = new List<string>();
 
-            //TODO use Directory/FileInfo to get more data and filename only
+            DataTable<string> filesTable = new DataTable<string>(
+                new ColumnInfo("Name", ColumnAlignment.Left),
+                new ColumnInfo("Size", ColumnAlignment.Right),
+                new ColumnInfo("Last Modification", ColumnAlignment.Right)
+                );
+
+            var baseDir = new DirectoryInfo(basePath);
             if (parameters.IncludeFolders)
             {
-                var dirs = Directory.GetDirectories(basePath, filter, SearchOption.TopDirectoryOnly);
-                results.AddRange(dirs);
+                var dirs = baseDir.GetDirectories(filter, SearchOption.TopDirectoryOnly);
+                foreach (var dirInfo in dirs)
+                {
+                    filesTable.AddRow(dirInfo.FullName, new []{ dirInfo.Name, "<DIR>", Directory.GetLastWriteTime(dirInfo.FullName).ToShortDateString()});
+                }
             }
 
-            var files = Directory.GetFiles(basePath, filter, SearchOption.TopDirectoryOnly);
-            results.AddRange(files);
+            var files = baseDir.GetFiles(filter, SearchOption.TopDirectoryOnly);
+            foreach (var fileInfo in files)
+            {
+                filesTable.AddRow(fileInfo.FullName, new [] { fileInfo.Name, fileInfo.Length.ToString(), File.GetLastWriteTime(fileInfo.FullName).ToShortDateString() });
+            }
 
-            // TODO: add more columns and print as a table
+            // TODO: add number to xBytes string for Length
 
-            output.PrintResultLines(results); // TODO: formatting selection...
+            output.PrintSimpleTable(filesTable);
         }
     }
 }
