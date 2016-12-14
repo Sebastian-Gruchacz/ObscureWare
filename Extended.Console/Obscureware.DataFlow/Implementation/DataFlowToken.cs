@@ -5,6 +5,7 @@ namespace Obscureware.DataFlow.Implementation
     using System.Collections.Generic;
     using System.Linq;
 
+    [Serializable]
     public class DataFlowToken : Hashtable
     {
         public Guid TokenId { get; private set; }

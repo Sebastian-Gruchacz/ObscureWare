@@ -45,8 +45,11 @@
     <Compile Include="CommandLineUtilities.cs" />
     <Compile Include="ICommandParserOptions.cs" />
     <Compile Include="ICommandEngineContext.cs" />
+    <Compile Include="Internals\Parsers\FlagPropertyParser.cs" />
     <Compile Include="Internals\InsensitiveStringComparer.cs" />
+    <Compile Include="Internals\BasePropertyParser.cs" />
     <Compile Include="Internals\SensitiveStringComparer.cs" />
+    <Compile Include="Internals\Parsers\UnnamedPropertyParser.cs" />
     <Compile Include="Model\CommandDescriptionAttribute.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="CommandEngineStyles.cs" />

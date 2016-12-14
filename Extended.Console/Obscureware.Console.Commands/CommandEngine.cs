@@ -123,6 +123,12 @@
             var model = this.BuildModelForCommand(cmd, commandLineArguments.Skip(1));
             var outputManager = new OutputManager(consoleInstance, this.Styles);
 
+            if (model == null)
+            {
+                // bad syntax
+                return false;
+            }
+
             try
             {
                 cmd.Command.Execute(context, outputManager, model); // skip only cmdName itself

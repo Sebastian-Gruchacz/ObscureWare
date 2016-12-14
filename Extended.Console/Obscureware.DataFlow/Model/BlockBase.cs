@@ -33,7 +33,10 @@ namespace Obscureware.DataFlow.Model
 
         private TransformManyBlock<DataFlowToken, DataFlowToken> _transformation;
         private FlowExceptionManager _flowExceptionManager = new FlowExceptionManager();
+
+        // TODO: remove this init and adapt! Better share token with IFlow than create new.
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
         protected IDataFlowLogger FlowLogger { get; private set; }
 
         /// <summary>

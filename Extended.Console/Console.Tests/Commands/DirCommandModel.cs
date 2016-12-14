@@ -8,7 +8,7 @@
     public class DirCommandModel : CommandModel
     {
         [Mandatory(false)]
-        [CommandFlag(false, "d", "D")]
+        [CommandFlag("d", "D")]
         // TODO: Name Attribute? Or just use activation letters for help/syntax display?
         [CommandDescription("When set specifies whether directories shall be listed too.")]
         public bool IncludeFolders { get; set; }
@@ -25,4 +25,6 @@
         [CommandDescription("Specifies filter for enumerated files. Does not apply to folders listing.")]
         public string Filter { get; set; }
     }
+
+    // TODO: add sorting
 }

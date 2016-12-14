@@ -28,10 +28,10 @@
             //    // custom styles go here
             //};
 
-            bool executedProperly = engine.ExecuteCommand(context, console, new[] {"dir", @"\f", "-m", "CurrentDir", "*.*" });
+            bool executedProperly = engine.ExecuteCommand(context, console, new[] {"dir", @"\d", "-m", "CurrentDir", "*.*" });
             //engine.ExecuteCommand(context, console, new[] { "cls" });
             engine.ExecuteCommand(context, console, new[] { "diraa" });
-            engine.ExecuteCommand(context, console, new[] { "help" });
+            engine.ExecuteCommand(context, console, new[] { "-help" });
             engine.ExecuteCommand(context, console, new[] { "dir", "-h" });
 
 

@@ -9,7 +9,12 @@
 
         public string GetCurrentPrompt()
         {
-            return $"{Environment.CurrentDirectory}\\";
+            string dir = Environment.CurrentDirectory;
+            if (!dir.EndsWith("\\"))
+            {
+                dir += "\\";
+            }
+            return dir;
         }
     }
 }

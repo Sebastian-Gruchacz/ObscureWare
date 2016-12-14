@@ -9,7 +9,7 @@ namespace ObscureWare.Console
     /// <summary>
     /// Class used to manage system's Console colors
     /// </summary>
-    public class ConsoleColorsHelper
+    public class ConsoleColorsHelper : IDisposable
     {
         private const int STD_OUTPUT_HANDLE = -11;                       // per WinBase.h
         internal readonly IntPtr InvalidHandleValue = new IntPtr(-1);    // per WinBase.h
@@ -334,5 +334,11 @@ namespace ObscureWare.Console
         // ReSharper restore InconsistentNaming
 
         #endregion
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // TODO:  ReleaseHandle:  this._hConsoleOutput
+        }
     }
 }
