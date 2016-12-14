@@ -1,4 +1,4 @@
-﻿namespace Obscureware.Console.Commands.Internals
+﻿namespace Obscureware.Console.Commands.Internals.Parsers
 {
     using System;
     using System.Reflection;
@@ -8,14 +8,14 @@
     {
         public PropertyInfo TargetProperty { get; private set; }
 
-        protected BasePropertyParser(PropertyInfo flagProperty)
+        protected BasePropertyParser(PropertyInfo propertyInfo)
         {
-            if (flagProperty == null)
+            if (propertyInfo == null)
             {
-                throw new ArgumentNullException(nameof(flagProperty));
+                throw new ArgumentNullException(nameof(propertyInfo));
             }
 
-            this.TargetProperty = flagProperty;
+            this.TargetProperty = propertyInfo;
         }
 
         public void Apply(CommandModel model, string[] args, ref int argIndex)

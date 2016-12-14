@@ -15,6 +15,7 @@
         private readonly List<UnnamedPropertyParser> _unnamedParsers = new List<UnnamedPropertyParser>();
 
         private readonly Type _modelType;
+        private readonly ConvertersManager _convertersManager = new ConvertersManager();
 
         public string CommandName { get; private set; }
         public string CommandDescription { get; private set; }
@@ -62,7 +63,7 @@
 
                         if (this._flagParsers.ContainsKey(aLiteral))
                         {
-                            throw new BadImplementationException($"Flag argument literal \"{literal}\" has been declared more than once in the {this._modelType.FullName}.", (this._modelType));
+                            throw new BadImplementationException($"Flag argument literal \"{literal}\" has been declared more than once in the {this._modelType.FullName}.", this._modelType);
                         }
 
                         this._flagParsers.Add(aLiteral, parser);
@@ -77,7 +78,12 @@
                 CommandUnnamedOptionAttribute nonPosAtt = attributes.SingleOrDefault(att => att is CommandUnnamedOptionAttribute) as CommandUnnamedOptionAttribute;
                 if (nonPosAtt != null)
                 {
-                    this._unnamedParsers.Add(new UnnamedPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo));
+                    var converter = this._convertersManager.GetConverterFor(propertyInfo.PropertyType);
+                    if (converter == null)
+                    {
+                        throw new BadImplementationException($"Could not find required ArgumentConverter for type \"{propertyInfo.PropertyType.FullName}\" for unnamed Argument at index [{nonPosAtt.ArgumentIndex}].", this._modelType);
+                    }
+                    this._unnamedParsers.Add(new UnnamedPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo, converter));
                 }
             }
         }
