@@ -50,7 +50,7 @@
                 foreach (var dirInfo in dirs)
                 {
                     filesTable.AddRow(
-                        dirInfo.FullName, 
+                        dirInfo.FullName,
                         new []
                             {
                                 dirInfo.Name,
@@ -64,7 +64,7 @@
             foreach (var fileInfo in files)
             {
                 filesTable.AddRow(
-                    fileInfo.FullName, 
+                    fileInfo.FullName,
                     new []
                         {
                             fileInfo.Name,

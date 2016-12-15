@@ -2,6 +2,7 @@
 {
     using System;
 
+    [Serializable]
     internal class BadImplementationException : Exception
     {
         /// <summary>

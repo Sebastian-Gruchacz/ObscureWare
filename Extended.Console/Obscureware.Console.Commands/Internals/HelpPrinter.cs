@@ -8,10 +8,13 @@
     internal class HelpPrinter
     {
         private static readonly string[] BaseInlineHelpCommands = new[] { "?", "help", "h" };
+        private static readonly IEqualityComparer<string> SensitiveComparer = new SensitiveStringComparer();
+        private static readonly IEqualityComparer<string> InsensitiveComparer = new InsensitiveStringComparer();
 
         private readonly ICommandParserOptions _options;
         private readonly CommandEngineStyles _styles;
         private readonly string[] _allInlineHelpOptions;
+        private readonly IEqualityComparer<string> _commandNameComparer;
 
         public HelpPrinter(ICommandParserOptions options, CommandEngineStyles styles) // TODO: extract IHelpStyles
         {
@@ -19,6 +22,9 @@
             this._styles = styles;
 
             this._allInlineHelpOptions = BaseInlineHelpCommands.SelectMany(txt => this._options.FlagCharacters.Select(f => f + txt)).ToArray();
+            this._commandNameComparer = (options.CommandsSensitivenes == CommandCaseSensitivenes.Sensitive)
+                ? SensitiveComparer
+                : InsensitiveComparer;
         }
 
         /// <summary>
@@ -29,8 +35,7 @@
         public bool IsGlobalHelpRequested(string cmdName)
         {
             // TODO: reject registration of commands that would be in conflict with build-in commands like "help"
-            // TODO: more command options available???
-            return cmdName.Equals("help", StringComparison.InvariantCultureIgnoreCase);
+            return this._allInlineHelpOptions.Contains(cmdName, this._commandNameComparer);
         }
 
         /// <summary>
@@ -41,7 +46,7 @@
         public bool IsCommandHelpRequested(string firstArgument)
         {
             // TODO: also improve syntax for both "help <command>" and "<command> -help" (or "/?" is configured such). Update help message in PrintGlobalHelp()
-            return this._allInlineHelpOptions.Contains(firstArgument); // TODO: sensitiveness comparer
+            return this._allInlineHelpOptions.Contains(firstArgument, this._commandNameComparer);
         }
 
         /// <summary>
@@ -113,7 +118,7 @@
             console.WriteText(this._styles.Default, "To receive syntax help about particular command use \"");
             console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.SwitchCharacters.First()}h");
 
-            // TODO: add alternative syntax
+            // TODO: add alternative syntax: -help <commandName>
 
             console.WriteLine(this._styles.Default, "\" syntax.");
             console.WriteLine();

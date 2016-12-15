@@ -7,5 +7,6 @@ namespace ConsoleApplication1.Commands
     [CommandDescription(@"Moves Current Directory one level up.")]
     public class ChangeDirUpCommandModel : CommandModel
     {
+
     }
 }
