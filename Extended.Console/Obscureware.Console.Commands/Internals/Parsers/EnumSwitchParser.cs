@@ -8,7 +8,7 @@
     {
         private readonly Type _enumType;
 
-        public EnumSwitchParser(PropertyInfo propertyInfo, CommandSwitchAttribute switchAttribute) : base(propertyInfo)
+        public EnumSwitchParser(PropertyInfo propertyInfo, CommandSwitchAttribute switchAttribute) : base(propertyInfo, switchAttribute.CommandLiterals)
         {
             this._enumType = switchAttribute.SwitchBaseType;
         }

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BadImplementationException.cs" />
     <Compile Include="CommandLineUtilities.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="ICommandParserOptions.cs" />
     <Compile Include="ICommandEngineContext.cs" />
     <Compile Include="Internals\ConvertersManager.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Internals\Parsers\FlagPropertyParser.cs" />
     <Compile Include="Internals\InsensitiveStringComparer.cs" />
     <Compile Include="Internals\Parsers\BasePropertyParser.cs" />
+    <Compile Include="Internals\Parsers\CommandsSyntaxHelpers.cs" />
     <Compile Include="Internals\SensitiveStringComparer.cs" />
     <Compile Include="Internals\Parsers\UnnamedPropertyParser.cs" />
     <Compile Include="Model\CommandDescriptionAttribute.cs" />

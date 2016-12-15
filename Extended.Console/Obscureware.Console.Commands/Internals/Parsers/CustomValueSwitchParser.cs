@@ -10,7 +10,7 @@ namespace Obscureware.Console.Commands.Internals.Parsers
     {
         private readonly ArgumentConverter _converter;
 
-        public CustomValueSwitchParser(PropertyInfo propertyInfo, CommandValueFlagAttribute valueAtt, ArgumentConverter converter) : base(propertyInfo)
+        public CustomValueSwitchParser(PropertyInfo propertyInfo, CommandValueFlagAttribute valueAtt, ArgumentConverter converter) : base(propertyInfo, valueAtt.CommandLiterals)
         {
             this._converter = converter;
         }

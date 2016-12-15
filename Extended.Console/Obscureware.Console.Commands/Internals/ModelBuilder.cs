@@ -225,7 +225,7 @@
             {
                 foreach (var flagPrefix in options.FlagCharacters)
                 {
-                    string cleanFlag = argSyntax.Replace(flagPrefix, ""); // TODO: - remove at front only!
+                    string cleanFlag = argSyntax.CutLeftAny(flagPrefix);
 
                     FlagPropertyParser parser;
                     if (this._flagParsers.TryGetValue(cleanFlag, out parser))
@@ -250,7 +250,7 @@
             // Switches
             foreach (var switchPrefix in options.SwitchCharacters)
             {
-                string cleanFlag = argSyntax.Replace(switchPrefix, "");  // TODO: - remove at front only!
+                string cleanFlag = argSyntax.CutLeftAny(switchPrefix);
                 BaseSwitchPropertyParser parser = this._switchParsers.FirstOrDefault(p => p.Key.Equals(cleanFlag)).Value;
                 return parser;
             }
