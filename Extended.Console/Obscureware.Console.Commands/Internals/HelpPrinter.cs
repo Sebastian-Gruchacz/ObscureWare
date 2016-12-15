@@ -3,6 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using Obscureware.Console.Commands.Internals.Parsers;
+
     using ObscureWare.Console;
 
     internal class HelpPrinter
@@ -20,8 +23,7 @@
         {
             this._options = options;
             this._styles = styles;
-
-            this._allInlineHelpOptions = BaseInlineHelpCommands.SelectMany(txt => this._options.FlagCharacters.Select(f => f + txt)).ToArray();
+            this._allInlineHelpOptions = CommandsSyntaxHelpers.Combine(this._options.FlagCharacters, BaseInlineHelpCommands, ((s, s1) => s + s1)).ToArray();
             this._commandNameComparer = (options.CommandsSensitivenes == CommandCaseSensitivenes.Sensitive)
                 ? SensitiveComparer
                 : InsensitiveComparer;
@@ -70,7 +72,7 @@
                 throw new ArgumentNullException(nameof(console));
             }
 
-            var availableHelpCommands = BaseInlineHelpCommands.Select(cm => this._options.SwitchCharacters.First() + cm).ToArray();
+            var availableHelpCommands = CommandsSyntaxHelpers.Combine(this._options.SwitchCharacters, BaseInlineHelpCommands, ((s, s1) => s + s1)).ToArray();
 
             console.WriteText(this._styles.Default, "To get list of available commands type ");
             for (int i = 0; i < availableHelpCommands.Length; i++)

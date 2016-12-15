@@ -7,12 +7,18 @@ namespace Obscureware.Console.Commands.Internals.Parsers
 
     internal abstract class BaseSwitchPropertyParser : BasePropertyParser
     {
+        private readonly string[] _switchLetters;
+
         private readonly uint _expectedArguments;
 
         /// <inheritdoc />
-        protected BaseSwitchPropertyParser(PropertyInfo propertyInfo, uint expectedArguments = 1)
+        protected BaseSwitchPropertyParser(PropertyInfo propertyInfo, string[] switchLetters, uint expectedArguments = 1)
             : base(propertyInfo)
         {
+            if (switchLetters == null) throw new ArgumentNullException(nameof(switchLetters));
+            if (switchLetters.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(switchLetters));
+
+            this._switchLetters = switchLetters;
             this._expectedArguments = expectedArguments;
         }
 
@@ -47,8 +53,10 @@ namespace Obscureware.Console.Commands.Internals.Parsers
                 }
 
                 string firstArg = this.SafelyGetNextArg(args, ref argIndex);
+                string[] combinations = CommandsSyntaxHelpers.Combine(options.SwitchCharacters, this._switchLetters, (s, s1) => s + s1).ToArray();
+                string remainder = firstArg.CutLeftAny(combinations);
 
-                throw new NotImplementedException();
+                this.DoApplySwitch(model, new []{ remainder });
             }
 
         }
