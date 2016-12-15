@@ -72,17 +72,15 @@
                 throw new ArgumentNullException(nameof(console));
             }
 
-            var availableHelpCommands = CommandsSyntaxHelpers.Combine(this._options.SwitchCharacters, BaseInlineHelpCommands, ((s, s1) => s + s1)).ToArray();
-
             console.WriteText(this._styles.Default, "To get list of available commands type ");
-            for (int i = 0; i < availableHelpCommands.Length; i++)
+            for (int i = 0; i < this._allInlineHelpOptions.Length; i++)
             {
                 if (i > 0)
                 {
-                    console.WriteText(this._styles.Default, i == availableHelpCommands.Length - 1 ? " or " : ", ");
+                    console.WriteText(this._styles.Default, i == this._allInlineHelpOptions.Length - 1 ? " or " : ", ");
                 }
 
-                console.WriteText(this._styles.HelpDefinition, availableHelpCommands[i]);
+                console.WriteText(this._styles.HelpDefinition, this._allInlineHelpOptions[i]);
             }
 
             console.WriteLine(this._styles.Default, ".");
@@ -118,12 +116,9 @@
             console.WriteLine();
             console.WriteLine(this._styles.Default, $"All command names are case {this._options.CommandsSensitivenes.ToString().ToLower()}.");
             console.WriteText(this._styles.Default, "To receive syntax help about particular command use \"");
-            console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.SwitchCharacters.First()}{BaseInlineHelpCommands.SelectRandom()}");
+            console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()}");
             console.WriteText(this._styles.Default, "\" or \"");
-            console.WriteText(this._styles.HelpDefinition, $"{this._options.SwitchCharacters.First()}{BaseInlineHelpCommands.SelectRandom()} <commandName>");
-
-            // TODO: add alternative syntax: -help <commandName>
-
+            console.WriteText(this._styles.HelpDefinition, $"{this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()} <commandName>");
             console.WriteLine(this._styles.Default, "\" syntax.");
             console.WriteLine();
         }
