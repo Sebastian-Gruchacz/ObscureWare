@@ -10,10 +10,10 @@ namespace Obscureware.Console.Commands.Internals.Parsers
         private readonly uint _expectedArguments;
 
         /// <inheritdoc />
-        protected BaseSwitchPropertyParser(PropertyInfo propertyInfo, uint expectedArguments = 1) : base(propertyInfo)
+        protected BaseSwitchPropertyParser(PropertyInfo propertyInfo, uint expectedArguments = 1)
+            : base(propertyInfo)
         {
             this._expectedArguments = expectedArguments;
-            // TODO: more parameters for switch perhaps, Converter?
         }
 
         protected override void DoApply(ICommandParserOptions options, CommandModel model, string[] args, ref int argIndex)
@@ -30,17 +30,25 @@ namespace Obscureware.Console.Commands.Internals.Parsers
 
                 this.DoApplySwitch(model, optionArguments);
             }
-            else
+            else if (options.OptionArgumentMode == CommandOptionArgumentMode.Joined)
             {
-                if (this._expectedArguments != 1)
-                {
-                    throw new BadImplementationException("Options in Merged or Joined mode could only be pairs. Those modes not support more than one value for option.", this.GetType());
-                }
-
                 string firstArg = this.SafelyGetNextArg(args, ref argIndex);
                 string[] parts = firstArg.Split(options.OptionArgumentJoinCharacater);
 
                 this.DoApplySwitch(model, parts.Skip(1).ToArray()); // will support multi-values as well...
+            }
+            else
+            {
+                if (this._expectedArguments != 1)
+                {
+                    throw new BadImplementationException(
+                        "Options in Merged mode can only have one value. This mode could not support more.",
+                        this.GetType());
+                }
+
+                string firstArg = this.SafelyGetNextArg(args, ref argIndex);
+
+                throw new NotImplementedException();
             }
 
         }
