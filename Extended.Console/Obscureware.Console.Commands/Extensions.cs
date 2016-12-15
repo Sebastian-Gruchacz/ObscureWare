@@ -1,5 +1,10 @@
 ﻿namespace Obscureware.Console.Commands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices.ComTypes;
+
     public static class Extensions
     {
         /// <summary>
@@ -19,6 +24,20 @@
             }
 
             return baseText;
+        }
+
+        private static readonly Random Rnd = new Random();
+
+        /// <summary>
+        /// Picks one element from collection randomly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static T SelectRandom<T>(this ICollection<T> collection)
+        {
+            int index = Rnd.Next(0, collection.Count);
+            return collection.Skip(index).First();
         }
     }
 }

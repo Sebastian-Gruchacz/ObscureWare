@@ -118,7 +118,9 @@
             console.WriteLine();
             console.WriteLine(this._styles.Default, $"All command names are case {this._options.CommandsSensitivenes.ToString().ToLower()}.");
             console.WriteText(this._styles.Default, "To receive syntax help about particular command use \"");
-            console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.SwitchCharacters.First()}h");
+            console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.SwitchCharacters.First()}{BaseInlineHelpCommands.SelectRandom()}");
+            console.WriteText(this._styles.Default, "\" or \"");
+            console.WriteText(this._styles.HelpDefinition, $"{this._options.SwitchCharacters.First()}{BaseInlineHelpCommands.SelectRandom()} <commandName>");
 
             // TODO: add alternative syntax: -help <commandName>
 
