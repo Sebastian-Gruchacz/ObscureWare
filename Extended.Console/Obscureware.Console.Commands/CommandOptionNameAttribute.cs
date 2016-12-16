@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UnnamedOptionsMode.cs" company="Obscureware Solutions">
+// <copyright file="CommandOptionNameAttribute.cs" company="Obscureware Solutions">
 // MIT License
 //
 // Copyright(c) 2016 Sebastian Gruchacz
@@ -23,15 +23,26 @@
 // SOFTWARE.
 // </copyright>
 // <summary>
-//   Defines the UnnamedOptionsMode enumeration.
+//   Defines the CommandOptionNameAttribute enumeration.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands
 {
-    public enum UnnamedOptionsMode
-    {
-        EndOnly,
+    using System;
 
-        Mixed
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class CommandOptionNameAttribute : Attribute
+    {
+        public CommandOptionNameAttribute(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            }
+
+            this.Name = name;
+        }
+
+        public string Name { get; private set; }
     }
 }

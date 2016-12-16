@@ -101,7 +101,9 @@ namespace Obscureware.Console.Commands.Internals
             this._console.WriteText(this._styles.Default, "\t");
 
             var syntax = cmdModelBuilder.GetSyntax().ToArray();
-            var options = string.Join(" ", syntax.Select(s => s.GetSyntaxString(this._options)));
+            var options = string.Join(" ", syntax.OrderBy(s => s.IsMandatory).Select(s => s.GetSyntaxString(this._options)));
+
+            // TODO: move switchless to the end and sort!
 
             this._console.WriteLine(this._styles.HelpSyntax, $"{cmdModelBuilder.CommandName} {options}");
 
@@ -113,7 +115,7 @@ namespace Obscureware.Console.Commands.Internals
                 {
                     var mandatoryIndicator = syntaxInfo.IsMandatory ? "*" : "";
 
-                    if (syntaxInfo.OptionType != SyntaxOptionType.Unnamed)
+                    if (syntaxInfo.OptionType != SyntaxOptionType.Switchless)
                     {
                         var literals = string.Join(" ", syntaxInfo.Literals);
 
@@ -131,7 +133,7 @@ namespace Obscureware.Console.Commands.Internals
 
                 this._console.WriteLine(this._styles.Default, "");
                 this._console.WriteLine(this._styles.Default, "Options denoted with \"*\" character are mandatory. In the syntax they are in pointy brackets.");
-                this._console.WriteLine(this._styles.Default, "All option switches are case sensitive until option states case alternatives.");
+                this._console.WriteLine(this._styles.Default, "All option switches are case sensitive until option explicitly states case alternatives.");
 
                 if (this._options.AllowFlagsAsOneArgument && syntax.Count(s => s.OptionType == SyntaxOptionType.Flag) > 1)
                 {
@@ -139,6 +141,16 @@ namespace Obscureware.Console.Commands.Internals
                     string allFlagsText = string.Concat(syntax.Where(s => s.OptionType == SyntaxOptionType.Flag).Select(s => s.Literals.First()));
                     this._console.WriteText(this._styles.HelpDefinition,$"{this._options.FlagCharacters.First()}{allFlagsText}");
                     this._console.WriteText(this._styles.Default, "");
+                }
+
+                if (this._options.SwitchlessOptionsMode == SwitchlessOptionsMode.Mixed && syntax.Count(s => s.OptionType == SyntaxOptionType.Switchless) > 0)
+                {
+                    this._console.WriteLine(this._styles.Default, "All options that do not have option selector can be placed anywhere between other options (and their values). Only order is important.");
+                    this._console.WriteLine(this._styles.Default, "Actual order of all OTHER option switches is unimportant.");
+                }
+                else
+                {
+                    this._console.WriteLine(this._styles.Default, "Actual order of all option switches is unimportant.");
                 }
             }
 

@@ -11,14 +11,14 @@
 
         private readonly string[] _validValues;
 
-        public EnumSwitchParser(PropertyInfo propertyInfo, CommandSwitchAttribute switchAttribute) : base(propertyInfo, switchAttribute.CommandLiterals)
+        public EnumSwitchParser(PropertyInfo propertyInfo, CommandOptionSwitchAttribute optionSwitchAttribute) : base(propertyInfo, optionSwitchAttribute.CommandLiterals)
         {
-            if (switchAttribute == null)
+            if (optionSwitchAttribute == null)
             {
-                throw new ArgumentNullException(nameof(switchAttribute));
+                throw new ArgumentNullException(nameof(optionSwitchAttribute));
             }
 
-            this._enumType = switchAttribute.SwitchBaseType;
+            this._enumType = optionSwitchAttribute.SwitchBaseType;
             this._validValues = Enum.GetNames(this._enumType);
         }
 

@@ -17,7 +17,7 @@
                     //OptionArgumentJoinCharacater = ':', // not used because of: CommandOptionArgumentMode.Separated
                     AllowFlagsAsOneArgument = false,
                     CommandsSensitivenes = CommandCaseSensitivenes.Insensitive,
-                    UnnamedOptionsMode = UnnamedOptionsMode.EndOnly, // TODO: let the command decide ?
+                    SwitchlessOptionsMode = SwitchlessOptionsMode.EndOnly, // TODO: let the command decide ?
                 };
 
             var engine =

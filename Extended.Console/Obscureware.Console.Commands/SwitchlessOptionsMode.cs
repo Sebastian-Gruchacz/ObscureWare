@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="OptionNameAttribute.cs" company="Obscureware Solutions">
+// <copyright file="SwitchlessOptionsMode.cs" company="Obscureware Solutions">
 // MIT License
 //
 // Copyright(c) 2016 Sebastian Gruchacz
@@ -23,26 +23,15 @@
 // SOFTWARE.
 // </copyright>
 // <summary>
-//   Defines the OptionNameAttribute enumeration.
+//   Defines the SwitchlessOptionsMode enumeration.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands
 {
-    using System;
-
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class OptionNameAttribute : Attribute
+    public enum SwitchlessOptionsMode
     {
-        public OptionNameAttribute(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
-            }
+        EndOnly,
 
-            this.Name = name;
-        }
-
-        public string Name { get; private set; }
+        Mixed
     }
 }

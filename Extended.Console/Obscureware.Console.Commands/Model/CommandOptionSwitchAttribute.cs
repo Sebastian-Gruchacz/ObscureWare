@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class CommandSwitchAttribute : Attribute
+    public class CommandOptionSwitchAttribute : Attribute
     {
         public Type SwitchBaseType { get; private set; }
 
@@ -10,7 +10,7 @@
 
         public object DefaultValue { get; set; }
 
-        public CommandSwitchAttribute(Type switchBaseType, params string[] commandLiterals)
+        public CommandOptionSwitchAttribute(Type switchBaseType, params string[] commandLiterals)
         {
             if (switchBaseType == null) throw new ArgumentNullException(nameof(switchBaseType));
             if (commandLiterals == null) throw new ArgumentNullException(nameof(commandLiterals));

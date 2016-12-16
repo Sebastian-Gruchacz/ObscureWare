@@ -44,7 +44,7 @@ namespace Obscureware.Console.Commands
 
         bool AllowFlagsAsOneArgument { get; }
 
-        UnnamedOptionsMode UnnamedOptionsMode { get; }
+        SwitchlessOptionsMode SwitchlessOptionsMode { get; }
 
         CommandCaseSensitivenes CommandsSensitivenes { get; }
 

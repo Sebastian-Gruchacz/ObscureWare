@@ -42,7 +42,7 @@
                     return options.SwitchCharacters.First();
                 case SyntaxOptionType.CustomValueSwitch:
                     return options.SwitchCharacters.First();
-                case SyntaxOptionType.Unnamed:
+                case SyntaxOptionType.Switchless:
                     return "";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SyntaxOptionType));
@@ -59,7 +59,7 @@
                     return this.GetSwitchSyntax(options);
                 case SyntaxOptionType.CustomValueSwitch:
                     return this.GetCustomSwitchSyntax(options);
-                case SyntaxOptionType.Unnamed:
+                case SyntaxOptionType.Switchless:
                     return $"\"{this.OptionName}\"";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SyntaxOptionType));
@@ -111,6 +111,6 @@
 
         CustomValueSwitch,
 
-        Unnamed
+        Switchless
     }
 }

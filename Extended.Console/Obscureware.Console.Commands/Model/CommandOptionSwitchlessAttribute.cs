@@ -2,11 +2,11 @@
 {
     using System;
 
-    public class CommandUnnamedOptionAttribute : Attribute
+    public class CommandOptionSwitchlessAttribute : Attribute
     {
         public int ArgumentIndex { get; set; }
 
-        public CommandUnnamedOptionAttribute(int argumentIndex)
+        public CommandOptionSwitchlessAttribute(int argumentIndex)
         {
             this.ArgumentIndex = argumentIndex;
         }

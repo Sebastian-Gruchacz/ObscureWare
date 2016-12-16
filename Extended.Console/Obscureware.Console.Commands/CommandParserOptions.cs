@@ -42,7 +42,7 @@ namespace Obscureware.Console.Commands
 
         public bool AllowFlagsAsOneArgument { get; set; } = false;
 
-        public UnnamedOptionsMode UnnamedOptionsMode { get; set; } = UnnamedOptionsMode.EndOnly;
+        public SwitchlessOptionsMode SwitchlessOptionsMode { get; set; } = SwitchlessOptionsMode.EndOnly;
 
         public CommandCaseSensitivenes CommandsSensitivenes { get; set; } = CommandCaseSensitivenes.Insensitive;
 
@@ -78,9 +78,9 @@ namespace Obscureware.Console.Commands
                 throw new BadImplementationException($"When {nameof(this.OptionArgumentMode)} is set to \"{nameof(CommandOptionArgumentMode.Merged)}\", {nameof(this.AllowFlagsAsOneArgument)} cannot be set to TRUE because this could led to ambiguous syntax.", typeof(CommandParserOptions));
             }
 
-            if (this.UnnamedOptionsMode == UnnamedOptionsMode.Mixed && this.OptionArgumentMode == CommandOptionArgumentMode.Separated)
+            if (this.SwitchlessOptionsMode == SwitchlessOptionsMode.Mixed && this.OptionArgumentMode == CommandOptionArgumentMode.Separated)
             {
-                throw new BadImplementationException($"Options {nameof(this.OptionArgumentMode)}=\"{nameof(CommandOptionArgumentMode.Separated)}\" and {nameof(this.UnnamedOptionsMode)}=\"{nameof(UnnamedOptionsMode.Mixed)}\" should not be selected at the same time because this could led to ambiguous syntax.", typeof(CommandParserOptions));
+                throw new BadImplementationException($"Options {nameof(this.OptionArgumentMode)}=\"{nameof(CommandOptionArgumentMode.Separated)}\" and {nameof(this.SwitchlessOptionsMode)}=\"{nameof(SwitchlessOptionsMode.Mixed)}\" should not be selected at the same time because this could led to ambiguous syntax.", typeof(CommandParserOptions));
             }
         }
 
