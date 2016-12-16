@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ICommandOutput.cs" company="Obscureware Solutions">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ICommandEngine.cs" company="Obscureware Solutions">
 // MIT License
 //
 // Copyright(c) 2016 Sebastian Gruchacz
@@ -23,26 +23,26 @@
 // SOFTWARE.
 // </copyright>
 // <summary>
-//   Defines the ICommandOutput interface.
+//   Defines the ICommandEngine type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands
 {
-    using System.Collections.Generic;
-    using Operations.Tables;
-
-    public interface ICommandOutput
+    /// <summary>
+    /// The CommandEngine interface.
+    /// </summary>
+    public interface ICommandEngine
     {
+        /// <summary>Executes single command line - already parsed into pieces.</summary>
+        /// <param name="context">Shared context object, that will be passed to the commands</param>
+        /// <param name="commandLine">Command line to be executed</param>
+        /// <returns>TRUE if command has been successfully executed.</returns>
+        bool ExecuteCommand(ICommandEngineContext context, string commandLine);
+
         /// <summary>
-        /// Prints to the output given lines using Result Styling
+        /// Starts user-interactive session
         /// </summary>
-        /// <param name="results"></param>
-        void PrintResultLines(IEnumerable<string> results);
-
-        void Clear();
-
-        void PrintSimpleTable<T>(DataTable<T> filesTable);
-
-        void PrintWarning(string message);
+        /// <param name="context">Shared context object, that will be passed to the commands</param>
+        void Run(ICommandEngineContext context);
     }
 }

@@ -16,9 +16,27 @@
 
         private readonly Type _modelType;
         private readonly ConvertersManager _convertersManager = new ConvertersManager();
+        //private readonly List<PropertyInfo> _mandatoryProperties = new List<PropertyInfo>();
+        private readonly List<SyntaxInfo> _syntax = new List<SyntaxInfo>();
 
+        /// <summary>
+        /// Gets name of the command
+        /// </summary>
         public string CommandName { get; private set; }
+
+        /// <summary>
+        /// Gets description of the command.
+        /// </summary>
         public string CommandDescription { get; private set; }
+
+        /// <summary>
+        /// Obtains "precompilled" syntax info
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<SyntaxInfo> GetSyntax()
+        {
+            return this._syntax;
+        }
 
         public ModelBuilder(Type modelType, string commandName)
         {
@@ -31,8 +49,17 @@
             this._modelType = modelType;
             this.ValidateModel(modelType);
 
-            this.ReadHelpInformation();
+            this.ReadCoreHelpInformation();
             this.BuildParsingProperties();
+        }
+
+        private void BuildSyntaxInfo()
+        {
+            // syntax attribute
+
+            // other help attribute
+
+            // check is mandatory
         }
 
         private void BuildParsingProperties()
@@ -40,24 +67,43 @@
             var properties = this._modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
             foreach (var propertyInfo in properties)
             {
+                if (propertyInfo.Name.Equals(nameof(CommandModel.RawParameters)))
+                {
+                    continue;
+                }
+
                 var attributes = propertyInfo.GetCustomAttributes(inherit: true);
 
-                // description attribute
+                var optionNameAtt = attributes.SingleOrDefault(att => att is CommandOptionNameAttribute) as CommandOptionNameAttribute;
+                if (optionNameAtt == null)
+                {
+                    throw new BadImplementationException($"Model property \"{propertyInfo.Name}\" misses mandatory {nameof(CommandOptionNameAttribute)}.", this._modelType);
+                }
 
-                // syntax attribute
-
-                // other help attribute
+                var syntaxInfo = new SyntaxInfo(propertyInfo, optionNameAtt.Name);
+                this._syntax.Add(syntaxInfo);
 
                 // mandatory attribute
-                // TODO: build mandatory list for parsing check-hashmap
+                var mandatoryAtt = attributes.SingleOrDefault(att => att is MandatoryAttribute) as MandatoryAttribute;
+                if (mandatoryAtt != null && mandatoryAtt.IsParameterMandatory)
+                {
+                    //this._mandatoryProperties.Add(propertyInfo);
+                    syntaxInfo.IsMandatory = true;
+                }
+
+                // description attribute
+                var descriptionAtt = attributes.SingleOrDefault(att => att is CommandDescriptionAttribute) as CommandDescriptionAttribute;
+                syntaxInfo.Description = descriptionAtt != null ? descriptionAtt.Description : "*** description not available ***";
 
                 // Is Flag
-                CommandFlagAttribute flagAtt = attributes.SingleOrDefault(att => att is CommandFlagAttribute) as CommandFlagAttribute;
-                if (flagAtt != null)
+                CommandOptionFlagAttribute optionFlagAtt = attributes.SingleOrDefault(att => att is CommandOptionFlagAttribute) as CommandOptionFlagAttribute;
+                if (optionFlagAtt != null)
                 {
                     var parser = new FlagPropertyParser(propertyInfo);
+                    syntaxInfo.Literals = optionFlagAtt.CommandLiterals;
+                    syntaxInfo.OptionType = SyntaxOptionType.Flag;
 
-                    foreach (var literal in flagAtt.CommandLiterals)
+                    foreach (var literal in optionFlagAtt.CommandLiterals)
                     {
                         var aLiteral = literal.Trim();
 
@@ -71,16 +117,20 @@
                 }
 
                 // Is Switch
-                CommandSwitchAttribute switchAttribute = attributes.SingleOrDefault(att => att is CommandSwitchAttribute) as CommandSwitchAttribute;
-                if (switchAttribute != null)
+                CommandOptionSwitchAttribute optionSwitchAttribute = attributes.SingleOrDefault(att => att is CommandOptionSwitchAttribute) as CommandOptionSwitchAttribute;
+                if (optionSwitchAttribute != null)
                 {
-                    var parser = this.BuildSwitchParser(propertyInfo, switchAttribute, attributes);
+                    var parser = this.BuildSwitchParser(propertyInfo, optionSwitchAttribute, attributes);
                     if (parser == null)
                     {
                         throw new BadImplementationException($"Could not find proper SwitchParser for property \"{propertyInfo.Name}\"", this._modelType);
                     }
 
-                    foreach (var literal in switchAttribute.CommandLiterals)
+                    syntaxInfo.Literals = optionSwitchAttribute.CommandLiterals;
+                    syntaxInfo.OptionType = SyntaxOptionType.Switch;
+                    syntaxInfo.SwitchValues = parser.GetValidValues().ToArray();
+
+                    foreach (var literal in optionSwitchAttribute.CommandLiterals)
                     {
                         var aLiteral = literal.Trim();
 
@@ -94,8 +144,8 @@
                 }
 
                 // Is Valued Flag - named, free value
-                CommandValueFlagAttribute valueAtt = attributes.SingleOrDefault(att => att is CommandValueFlagAttribute) as CommandValueFlagAttribute;
-                if (valueAtt != null)
+                CommandOptionCustomValueSwitchAttribute optionCustomValueAtt = attributes.SingleOrDefault(att => att is CommandOptionCustomValueSwitchAttribute) as CommandOptionCustomValueSwitchAttribute;
+                if (optionCustomValueAtt != null)
                 {
                     var converter = this._convertersManager.GetConverterFor(propertyInfo.PropertyType);
                     if (converter == null)
@@ -103,14 +153,17 @@
                         throw new BadImplementationException($"Could not find required ArgumentConverter for type \"{propertyInfo.PropertyType.FullName}\" for ValueArgument \"{propertyInfo.Name}\".", this._modelType);
                     }
 
-                    var parser = this.BuildValueOptionParser(propertyInfo, valueAtt, attributes, converter);
+                    var parser = this.BuildValueOptionParser(propertyInfo, optionCustomValueAtt, attributes, converter);
                     if (parser == null)
                     {
                         throw new BadImplementationException($"Could not find proper SwitchParser for property \"{propertyInfo.Name}\"", this._modelType);
                     }
 
+                    syntaxInfo.Literals = optionCustomValueAtt.CommandLiterals;
+                    syntaxInfo.OptionType = SyntaxOptionType.CustomValueSwitch;
+
                     // value parser is mainly compatible with switch-one
-                    foreach (var literal in valueAtt.CommandLiterals)
+                    foreach (var literal in optionCustomValueAtt.CommandLiterals)
                     {
                         var aLiteral = literal.Trim();
 
@@ -124,9 +177,11 @@
                 }
 
                 // Is unnamed argument
-                CommandUnnamedOptionAttribute nonPosAtt = attributes.SingleOrDefault(att => att is CommandUnnamedOptionAttribute) as CommandUnnamedOptionAttribute;
+                CommandOptionSwitchlessAttribute nonPosAtt = attributes.SingleOrDefault(att => att is CommandOptionSwitchlessAttribute) as CommandOptionSwitchlessAttribute;
                 if (nonPosAtt != null)
                 {
+                    syntaxInfo.OptionType = SyntaxOptionType.Switchless;
+
                     var converter = this._convertersManager.GetConverterFor(propertyInfo.PropertyType);
                     if (converter == null)
                     {
@@ -138,22 +193,22 @@
             }
         }
 
-        private BaseSwitchPropertyParser BuildValueOptionParser(PropertyInfo propertyInfo, CommandValueFlagAttribute valueAtt, object[] attributes, ArgumentConverter converter)
+        private BaseSwitchPropertyParser BuildValueOptionParser(PropertyInfo propertyInfo, CommandOptionCustomValueSwitchAttribute optionCustomValueAtt, object[] attributes, ArgumentConverter converter)
         {
-            return new CustomValueSwitchParser(propertyInfo, valueAtt, converter);
+            return new CustomValueSwitchParser(propertyInfo, optionCustomValueAtt, converter);
         }
 
-        private BaseSwitchPropertyParser BuildSwitchParser(PropertyInfo propertyInfo, CommandSwitchAttribute switchAttribute, object[] otherAttributes)
+        private BaseSwitchPropertyParser BuildSwitchParser(PropertyInfo propertyInfo, CommandOptionSwitchAttribute optionSwitchAttribute, object[] otherAttributes)
         {
-            if (switchAttribute.SwitchBaseType.IsEnum)
+            if (optionSwitchAttribute.SwitchBaseType.IsEnum)
             {
-                return new EnumSwitchParser(propertyInfo, switchAttribute);
+                return new EnumSwitchParser(propertyInfo, optionSwitchAttribute);
             }
 
             return null;
         }
 
-        private void ReadHelpInformation()
+        private void ReadCoreHelpInformation()
         {
             CommandDescriptionAttribute att = this._modelType.GetCustomAttribute<CommandDescriptionAttribute>();
             this.CommandDescription = att?.Description ?? "* Description not available *";

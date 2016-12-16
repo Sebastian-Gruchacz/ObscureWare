@@ -1,6 +1,7 @@
 namespace Obscureware.Console.Commands.Internals.Parsers
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Reflection;
     using Converters;
@@ -10,7 +11,7 @@ namespace Obscureware.Console.Commands.Internals.Parsers
     {
         private readonly ArgumentConverter _converter;
 
-        public CustomValueSwitchParser(PropertyInfo propertyInfo, CommandValueFlagAttribute valueAtt, ArgumentConverter converter) : base(propertyInfo, valueAtt.CommandLiterals)
+        public CustomValueSwitchParser(PropertyInfo propertyInfo, CommandOptionCustomValueSwitchAttribute optionCustomValueAtt, ArgumentConverter converter) : base(propertyInfo, optionCustomValueAtt.CommandLiterals)
         {
             this._converter = converter;
         }
@@ -23,9 +24,16 @@ namespace Obscureware.Console.Commands.Internals.Parsers
                 throw new ArgumentException("Value cannot be an empty collection.", nameof(switchArguments));
             }
             string valueText = switchArguments[0];
+
             object value = this._converter.TryConvert(valueText, CultureInfo.CurrentUICulture);
 
             this.TargetProperty.SetValue(model, value);
+        }
+
+        /// <inheritdoc />
+        public override IEnumerable<string> GetValidValues()
+        {
+            yield break; // custom values switch does not have predefined values, ofcourse.
         }
     }
 }

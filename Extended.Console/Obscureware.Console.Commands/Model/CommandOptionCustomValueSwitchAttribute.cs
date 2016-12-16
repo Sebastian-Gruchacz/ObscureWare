@@ -3,14 +3,14 @@
     using System;
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class CommandFlagAttribute : Attribute
+    public class CommandOptionCustomValueSwitchAttribute : Attribute
     {
         /// <summary>
         /// Gets strings / letters that will enable this flag.
         /// </summary>
         public string[] CommandLiterals { get; private set; }
 
-        public CommandFlagAttribute(params string[] commandLiterals)
+        public CommandOptionCustomValueSwitchAttribute(params string[] commandLiterals)
         {
             this.CommandLiterals = commandLiterals;
         }

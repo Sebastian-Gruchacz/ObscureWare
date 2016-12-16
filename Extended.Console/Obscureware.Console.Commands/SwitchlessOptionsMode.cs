@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ICommandOutput.cs" company="Obscureware Solutions">
+// <copyright file="SwitchlessOptionsMode.cs" company="Obscureware Solutions">
 // MIT License
 //
 // Copyright(c) 2016 Sebastian Gruchacz
@@ -23,26 +23,15 @@
 // SOFTWARE.
 // </copyright>
 // <summary>
-//   Defines the ICommandOutput interface.
+//   Defines the SwitchlessOptionsMode enumeration.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands
 {
-    using System.Collections.Generic;
-    using Operations.Tables;
-
-    public interface ICommandOutput
+    public enum SwitchlessOptionsMode
     {
-        /// <summary>
-        /// Prints to the output given lines using Result Styling
-        /// </summary>
-        /// <param name="results"></param>
-        void PrintResultLines(IEnumerable<string> results);
+        EndOnly,
 
-        void Clear();
-
-        void PrintSimpleTable<T>(DataTable<T> filesTable);
-
-        void PrintWarning(string message);
+        Mixed
     }
 }

@@ -1,10 +1,13 @@
-namespace Obscureware.Console.Commands
+namespace Obscureware.Console.Commands.Internals
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
+    /// <summary>
+    /// http://stackoverflow.com/questions/298830/split-string-containing-command-line-parameters-into-string-in-c-sharp/298990#298990
+    /// </summary>
     public static class CommandLineUtilities
     {
         /// <summary>
@@ -51,7 +54,6 @@ namespace Obscureware.Console.Commands
         /// </summary>
         /// <param name="commandLine"></param>
         /// <returns></returns>
-        /// <remarks>http://stackoverflow.com/questions/298830/split-string-containing-command-line-parameters-into-string-in-c-sharp/298990#298990</remarks>
         public static IEnumerable<string> SplitCommandLine(string commandLine)
         {
             var inQuotes = false;

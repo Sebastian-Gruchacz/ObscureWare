@@ -1,6 +1,7 @@
 ﻿namespace Obscureware.Console.Commands.Internals.Parsers
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using Model;
 
@@ -8,9 +9,17 @@
     {
         private readonly Type _enumType;
 
-        public EnumSwitchParser(PropertyInfo propertyInfo, CommandSwitchAttribute switchAttribute) : base(propertyInfo, switchAttribute.CommandLiterals)
+        private readonly string[] _validValues;
+
+        public EnumSwitchParser(PropertyInfo propertyInfo, CommandOptionSwitchAttribute optionSwitchAttribute) : base(propertyInfo, optionSwitchAttribute.CommandLiterals)
         {
-            this._enumType = switchAttribute.SwitchBaseType;
+            if (optionSwitchAttribute == null)
+            {
+                throw new ArgumentNullException(nameof(optionSwitchAttribute));
+            }
+
+            this._enumType = optionSwitchAttribute.SwitchBaseType;
+            this._validValues = Enum.GetNames(this._enumType);
         }
 
         /// <inheritdoc />
@@ -25,6 +34,12 @@
             object enumValue = Enum.Parse(this._enumType, enumText, true); // might fail, TODO: Try finding something better than exception during parsing suer input...
 
             this.TargetProperty.SetValue(model, enumValue);
+        }
+
+        /// <inheritdoc />
+        public override IEnumerable<string> GetValidValues()
+        {
+            return this._validValues;
         }
     }
 }

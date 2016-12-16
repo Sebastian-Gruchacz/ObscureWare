@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ICommandOutput.cs" company="Obscureware Solutions">
+// <copyright file="CommandOptionNameAttribute.cs" company="Obscureware Solutions">
 // MIT License
 //
 // Copyright(c) 2016 Sebastian Gruchacz
@@ -23,26 +23,26 @@
 // SOFTWARE.
 // </copyright>
 // <summary>
-//   Defines the ICommandOutput interface.
+//   Defines the CommandOptionNameAttribute enumeration.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands
 {
-    using System.Collections.Generic;
-    using Operations.Tables;
+    using System;
 
-    public interface ICommandOutput
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class CommandOptionNameAttribute : Attribute
     {
-        /// <summary>
-        /// Prints to the output given lines using Result Styling
-        /// </summary>
-        /// <param name="results"></param>
-        void PrintResultLines(IEnumerable<string> results);
+        public CommandOptionNameAttribute(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            }
 
-        void Clear();
+            this.Name = name;
+        }
 
-        void PrintSimpleTable<T>(DataTable<T> filesTable);
-
-        void PrintWarning(string message);
+        public string Name { get; private set; }
     }
 }
