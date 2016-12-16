@@ -54,7 +54,7 @@
             foreach (var commandType in commands)
             {
                 Tuple<ModelBuilder, IConsoleCommand> cmd = builder.ValidateAndBuildCommand(commandType);
-                result.Add(cmd.Item1.CommandName.ToUpper(), new CommandInfo(cmd.Item2, cmd.Item1));
+                result.Add(cmd.Item1.CommandName, new CommandInfo(cmd.Item2, cmd.Item1));
             }
 
             return result;

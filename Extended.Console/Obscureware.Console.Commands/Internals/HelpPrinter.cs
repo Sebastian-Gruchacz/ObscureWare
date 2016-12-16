@@ -8,7 +8,7 @@
 
     using ObscureWare.Console;
 
-    internal class HelpPrinter
+    internal class HelpPrinter : IKeyWordProvider
     {
         private static readonly string[] BaseInlineHelpCommands = new[] { "?", "help", "h" };
         private static readonly IEqualityComparer<string> SensitiveComparer = new SensitiveStringComparer();
@@ -121,6 +121,16 @@
             console.WriteText(this._styles.HelpDefinition, $"{this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()} <commandName>");
             console.WriteLine(this._styles.Default, "\" syntax.");
             console.WriteLine();
+        }
+
+        public IEnumerable<string> GetCommandKeyWords()
+        {
+            return BaseInlineHelpCommands;
+        }
+
+        public IEnumerable<string> GetOptionKeyWords()
+        {
+            return BaseInlineHelpCommands;
         }
     }
 }

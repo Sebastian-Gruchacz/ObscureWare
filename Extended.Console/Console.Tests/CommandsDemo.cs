@@ -20,23 +20,28 @@
                     UnnamedOptionsMode = UnnamedOptionsMode.EndOnly, // TODO: let the command decide ?
                 };
 
-            var engine = CommandEngine.BuildEngineForManualSelection(options,
-                typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand), typeof(ChangeDirCommand));
+            var engine =
+                CommandEngineBuilder.Build()
+                    .WithCommands(typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand), typeof(ChangeDirCommand))
+                    .WithOptions(options)
+                    .UsingStyles(CommandEngineStyles.DefaultStyles)
+                    .ConstructForConsole(console);
+
 
             //engine.Styles = new CommandEngineStyles
             //{
             //    // custom styles go here
             //};
 
-            bool executedProperly = engine.ExecuteCommand(context, console, new[] {"dir", @"\d", "-m", "CurrentDir", "*.*" });
-            //engine.ExecuteCommand(context, console, new[] { "cls" });
-            engine.ExecuteCommand(context, console, new[] { "diraa" });
-            engine.ExecuteCommand(context, console, new[] { "-help" });
-            engine.ExecuteCommand(context, console, new[] { "dir", "-h" });
+            bool executedProperly = engine.ExecuteCommand(context, @"dir \d -m CurrentDir -f *.* }");
+            //engine.ExecuteCommand(context, console, "cls" );
+            engine.ExecuteCommand(context, @"diraa");
+            engine.ExecuteCommand(context, @"-help");
+            engine.ExecuteCommand(context, @"dir -h");
 
 
             // now manual testing ;-)
-            engine.Run(context, console);
+            engine.Run(context);
         }
     }
 }

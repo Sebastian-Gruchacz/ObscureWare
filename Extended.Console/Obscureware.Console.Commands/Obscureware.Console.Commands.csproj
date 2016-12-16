@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BadImplementationException.cs" />
     <Compile Include="CommandLineUtilities.cs" />
+    <Compile Include="CommandEngineBuilder.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ICommandParserOptions.cs" />
     <Compile Include="ICommandEngineContext.cs" />
@@ -61,6 +62,8 @@
     <Compile Include="Internals\Converters\Int64ArgumentConverter.cs" />
     <Compile Include="Internals\Converters\StringArgumentConverter.cs" />
     <Compile Include="Internals\Converters\TimeSpanArgumentConverter.cs" />
+    <Compile Include="ICommandEngine.cs" />
+    <Compile Include="Internals\IKeyWordProvider.cs" />
     <Compile Include="Internals\Parsers\CustomValueSwitchParser.cs" />
     <Compile Include="Internals\Parsers\EnumSwitchParser.cs" />
     <Compile Include="Internals\Parsers\BaseSwitchPropertyParser.cs" />
@@ -71,7 +74,7 @@
     <Compile Include="Internals\SensitiveStringComparer.cs" />
     <Compile Include="Internals\Parsers\UnnamedPropertyParser.cs" />
     <Compile Include="Model\CommandDescriptionAttribute.cs" />
-    <Compile Include="CommandEngine.cs" />
+    <Compile Include="Internals\CommandEngine.cs" />
     <Compile Include="CommandEngineStyles.cs" />
     <Compile Include="Model\CommandFlagAttribute.cs" />
     <Compile Include="CommandCaseSensitivenes.cs" />
@@ -104,7 +107,9 @@
       <Name>ObscureWare.Console</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="License.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
