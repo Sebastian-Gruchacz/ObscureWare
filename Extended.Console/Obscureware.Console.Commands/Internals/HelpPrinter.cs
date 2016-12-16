@@ -1,12 +1,38 @@
-﻿namespace Obscureware.Console.Commands.Internals
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="HelpPrinter.cs" company="Obscureware Solutions">
+// MIT License
+//
+// Copyright(c) 2016 Sebastian Gruchacz
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// </copyright>
+// <summary>
+//   Defines the HelpPrinter type, used to display help messages - lists of commands and syntaxes...
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+namespace Obscureware.Console.Commands.Internals
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using Obscureware.Console.Commands.Internals.Parsers;
-
     using ObscureWare.Console;
+    using Parsers;
 
     internal class HelpPrinter : IKeyWordProvider
     {
@@ -22,6 +48,19 @@
 
         public HelpPrinter(ICommandParserOptions options, CommandEngineStyles styles, IConsole console) // TODO: extract IHelpStyles
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+            if (styles == null)
+            {
+                throw new ArgumentNullException(nameof(styles));
+            }
+            if (console == null)
+            {
+                throw new ArgumentNullException(nameof(console));
+            }
+
             this._options = options;
             this._styles = styles;
             this._console = console;
@@ -38,29 +77,52 @@
         /// <returns></returns>
         public bool IsGlobalHelpRequested(string cmdName)
         {
-            // TODO: reject registration of commands that would be in conflict with build-in commands like "help"
             return this._allInlineHelpOptions.Contains(cmdName, this._commandNameComparer);
         }
 
         /// <summary>
         /// Returns true, if user requested help about command details.
         /// </summary>
-        /// <param name="firstArgument"></param>
+        /// <param name="arguments"></param>
         /// <returns></returns>
-        public bool IsCommandHelpRequested(string firstArgument)
+        public bool IsCommandHelpRequested(IEnumerable<string> arguments)
         {
-            // TODO: also improve syntax for both "help <command>" and "<command> -help" (or "/?" is configured such). Update help message in PrintGlobalHelp()
-            return this._allInlineHelpOptions.Contains(firstArgument, this._commandNameComparer);
+            return arguments.Any(arg => this._allInlineHelpOptions.Contains(arg, this._commandNameComparer));
         }
 
         /// <summary>
         /// Prints full (?) help about particular command.
         /// </summary>
-        /// <param name="console"></param>
         /// <param name="cmdModelBuilder"></param>
-        public void PrintCommandHelp(IConsole console, ModelBuilder cmdModelBuilder)
+        public void PrintCommandHelp(ModelBuilder cmdModelBuilder)
         {
-            console.WriteLine(this._styles.Error, $"Function {nameof(this.PrintCommandHelp)} is not yet implemented.");
+            this._console.WriteLine(this._styles.Error, $"Function {nameof(this.PrintCommandHelp)} is not yet fully implemented.");
+            this._console.WriteLine(this._styles.HelpBody, "Syntax:");
+            this._console.WriteText(this._styles.Default, "\t");
+
+            var syntax = cmdModelBuilder.GetSyntax().ToArray();
+            var options = string.Join(" ", syntax.Select(s => s.GetSyntaxString(this._options)));
+
+            this._console.WriteLine(this._styles.HelpSyntax, $"{cmdModelBuilder.CommandName} {options}");
+
+            this._console.WriteLine(this._styles.Default, "");
+            this._console.WriteLine(this._styles.HelpBody, "Where:");
+            foreach (var syntaxInfo in syntax)
+            {
+                var literals = string.Join(" ", syntaxInfo.Literals);
+                var mandatoryIndicator = syntaxInfo.IsMandatory ? "*" : "";
+
+                this._console.WriteText(this._styles.HelpDefinition, $"\t{literals}\t{syntaxInfo.OptionName}{mandatoryIndicator}\t");
+                this._console.WriteLine(this._styles.HelpDescription, syntaxInfo.Description);
+
+                // TODO: more description for values of switches etc or custom lines for each property
+            }
+
+            this._console.WriteLine(this._styles.Default, "");
+            this._console.WriteLine(this._styles.Default, "Options denoted with \"*\" character are mandatory. In the syntax they are in pointy brackets.");
+            this._console.WriteLine(this._styles.Default, "All option switches are case sensitive until option states case alternatives.");
+
+            this._console.WriteLine(this._styles.Default, "");
         }
 
         /// <summary>

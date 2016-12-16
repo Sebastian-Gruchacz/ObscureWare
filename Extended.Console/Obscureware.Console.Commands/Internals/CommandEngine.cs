@@ -23,7 +23,7 @@
 // SOFTWARE.
 // </copyright>
 // <summary>
-//   Defines the ICommandEngine type.
+//   Defines the ICommandEngine implementation.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands.Internals
@@ -77,7 +77,7 @@ namespace Obscureware.Console.Commands.Internals
         }
 
         /// <inheritdoc />
-        public bool ExecuteCommand(object context, string commandLine)
+        public bool ExecuteCommand(ICommandEngineContext context, string commandLine)
         {
             if (context == null)
             {
@@ -86,7 +86,7 @@ namespace Obscureware.Console.Commands.Internals
 
             if (string.IsNullOrWhiteSpace(commandLine))
             {
-                return true;
+                return true; // just ignore empty command, it's fine to do nothing ;-)
             }
 
             string[] commandLineArguments = CommandLineUtilities.SplitCommandLine(commandLine).ToArray();
@@ -95,15 +95,24 @@ namespace Obscureware.Console.Commands.Internals
             string cmdName = commandLineArguments[0];
             if (this._helpPrinter.IsGlobalHelpRequested(cmdName))
             {
-                // TODO: Global, or command help?
+                // Global, or command help?
+                if (commandLineArguments.Length > 1)
+                {
+                    cmdName = commandLineArguments[1];
+                    CommandInfo command = this._commandManager.FindCommand(cmdName);
+                    if (command != null)
+                    {
+                        this.PrintCommandHelp(command, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
+                        return true;
+                    }
+                    else
+                    {
+                        this._console.WriteLine(this._styles.Warning, $"Unknown command => \"{cmdName}\".");
+                    }
+                }
 
-                this.PrintGlobalHelp(this._console, commandLineArguments.Skip(1));
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(cmdName))
-            {
-                return false; // just ignore
+                this.PrintGlobalHelp(commandLineArguments.Skip(1));
+                return true;
             }
 
             CommandInfo cmd = this._commandManager.FindCommand(cmdName);
@@ -114,13 +123,13 @@ namespace Obscureware.Console.Commands.Internals
                 return false;
             }
 
-            // TODO: first or any? And ignore all the other syntax...
             if (commandLineArguments.Length > 1)
             {
-                if (this._helpPrinter.IsCommandHelpRequested(commandLineArguments[1]))
+                // any help switch inside command line will cause displaying help instead of parsing it
+                if (this._helpPrinter.IsCommandHelpRequested(commandLineArguments))
                 {
-                    this.PrintCommandHelp(this._console, cmd, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
-                    return false;
+                    this.PrintCommandHelp(cmd, commandLineArguments.Skip(2)); // pass all remaining options only for detail-full syntax help (if available / implemented)
+                    return true;
                 }
             }
 
@@ -159,7 +168,7 @@ namespace Obscureware.Console.Commands.Internals
 
             while (!context.ShallTerminate)
             {
-                this.DisplayPrompt(this._console, context.GetCurrentPrompt()); // TODO: perhaps multi-color prompt support?
+                this.DisplayPrompt(context.GetCurrentPrompt()); // TODO: perhaps multi-color prompt support?
 
                 string cmdString = this._console.ReadLine();
                 if (string.IsNullOrWhiteSpace(cmdString))
@@ -171,21 +180,21 @@ namespace Obscureware.Console.Commands.Internals
             }
         }
 
-        private void DisplayPrompt(IConsole consoleInstnace, string promptText)
+        private void DisplayPrompt(string promptText)
         {
-            consoleInstnace.WriteLine();
-            consoleInstnace.WriteText(this._styles.Prompt, promptText);
-            consoleInstnace.SetColors(this._styles.Default);
+            this._console.WriteLine();
+            this._console.WriteText(this._styles.Prompt, promptText);
+            this._console.SetColors(this._styles.Default);
         }
 
-        private void PrintGlobalHelp(IConsole console, IEnumerable<string> arguments)
+        private void PrintGlobalHelp(IEnumerable<string> arguments)
         {
             this._helpPrinter.PrintGlobalHelp(this._commandManager.GetAll(), arguments);
         }
 
-        private void PrintCommandHelp(IConsole console, CommandInfo cmd, IEnumerable<string> skip)
+        private void PrintCommandHelp(CommandInfo cmd, IEnumerable<string> extraArguments)
         {
-            this._helpPrinter.PrintCommandHelp(console, cmd.ModelBuilder);
+            this._helpPrinter.PrintCommandHelp(cmd.ModelBuilder);
         }
 
         private object BuildModelForCommand(CommandInfo cmdInfo, IEnumerable<string> arguments)

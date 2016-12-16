@@ -16,9 +16,27 @@
 
         private readonly Type _modelType;
         private readonly ConvertersManager _convertersManager = new ConvertersManager();
+        //private readonly List<PropertyInfo> _mandatoryProperties = new List<PropertyInfo>();
+        private readonly List<SyntaxInfo> _syntax = new List<SyntaxInfo>();
 
+        /// <summary>
+        /// Gets name of the command
+        /// </summary>
         public string CommandName { get; private set; }
+
+        /// <summary>
+        /// Gets description of the command.
+        /// </summary>
         public string CommandDescription { get; private set; }
+
+        /// <summary>
+        /// Obtains "precompilled" syntax info
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<SyntaxInfo> GetSyntax()
+        {
+            return this._syntax;
+        }
 
         public ModelBuilder(Type modelType, string commandName)
         {
@@ -31,8 +49,17 @@
             this._modelType = modelType;
             this.ValidateModel(modelType);
 
-            this.ReadHelpInformation();
+            this.ReadCoreHelpInformation();
             this.BuildParsingProperties();
+        }
+
+        private void BuildSyntaxInfo()
+        {
+            // syntax attribute
+
+            // other help attribute
+
+            // check is mandatory
         }
 
         private void BuildParsingProperties()
@@ -40,22 +67,41 @@
             var properties = this._modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
             foreach (var propertyInfo in properties)
             {
+                if (propertyInfo.Name.Equals(nameof(CommandModel.RawParameters)))
+                {
+                    continue;
+                }
+
                 var attributes = propertyInfo.GetCustomAttributes(inherit: true);
 
-                // description attribute
+                var optionNameAtt = attributes.SingleOrDefault(att => att is OptionNameAttribute) as OptionNameAttribute;
+                if (optionNameAtt == null)
+                {
+                    throw new BadImplementationException($"Model property \"{propertyInfo.Name}\" misses mandatory {nameof(OptionNameAttribute)}.", this._modelType);
+                }
 
-                // syntax attribute
-
-                // other help attribute
+                var syntaxInfo = new SyntaxInfo(propertyInfo, optionNameAtt.Name);
+                this._syntax.Add(syntaxInfo);
 
                 // mandatory attribute
-                // TODO: build mandatory list for parsing check-hashmap
+                var mandatoryAtt = attributes.SingleOrDefault(att => att is MandatoryAttribute) as MandatoryAttribute;
+                if (mandatoryAtt != null && mandatoryAtt.IsParameterMandatory)
+                {
+                    //this._mandatoryProperties.Add(propertyInfo);
+                    syntaxInfo.IsMandatory = true;
+                }
+
+                // description attribute
+                var descriptionAtt = attributes.SingleOrDefault(att => att is CommandDescriptionAttribute) as CommandDescriptionAttribute;
+                syntaxInfo.Description = descriptionAtt != null ? descriptionAtt.Description : "*** description not available ***";
 
                 // Is Flag
                 CommandFlagAttribute flagAtt = attributes.SingleOrDefault(att => att is CommandFlagAttribute) as CommandFlagAttribute;
                 if (flagAtt != null)
                 {
                     var parser = new FlagPropertyParser(propertyInfo);
+                    syntaxInfo.Literals = flagAtt.CommandLiterals;
+                    syntaxInfo.OptionType = SyntaxOptionType.Flag;
 
                     foreach (var literal in flagAtt.CommandLiterals)
                     {
@@ -79,6 +125,10 @@
                     {
                         throw new BadImplementationException($"Could not find proper SwitchParser for property \"{propertyInfo.Name}\"", this._modelType);
                     }
+
+                    syntaxInfo.Literals = switchAttribute.CommandLiterals;
+                    syntaxInfo.OptionType = SyntaxOptionType.Switch;
+                    syntaxInfo.SwitchValues = parser.GetValidValues().ToArray();
 
                     foreach (var literal in switchAttribute.CommandLiterals)
                     {
@@ -109,6 +159,9 @@
                         throw new BadImplementationException($"Could not find proper SwitchParser for property \"{propertyInfo.Name}\"", this._modelType);
                     }
 
+                    syntaxInfo.Literals = valueAtt.CommandLiterals;
+                    syntaxInfo.OptionType = SyntaxOptionType.CustomValueSwitch;
+
                     // value parser is mainly compatible with switch-one
                     foreach (var literal in valueAtt.CommandLiterals)
                     {
@@ -127,6 +180,8 @@
                 CommandUnnamedOptionAttribute nonPosAtt = attributes.SingleOrDefault(att => att is CommandUnnamedOptionAttribute) as CommandUnnamedOptionAttribute;
                 if (nonPosAtt != null)
                 {
+                    syntaxInfo.OptionType = SyntaxOptionType.Unnamed;
+
                     var converter = this._convertersManager.GetConverterFor(propertyInfo.PropertyType);
                     if (converter == null)
                     {
@@ -153,7 +208,7 @@
             return null;
         }
 
-        private void ReadHelpInformation()
+        private void ReadCoreHelpInformation()
         {
             CommandDescriptionAttribute att = this._modelType.GetCustomAttribute<CommandDescriptionAttribute>();
             this.CommandDescription = att?.Description ?? "* Description not available *";

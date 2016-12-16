@@ -1,9 +1,9 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ICommandEngine.cs" company="Obscureware Solutions">
 // MIT License
-// 
+//
 // Copyright(c) 2016 Sebastian Gruchacz
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,7 +20,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.  
+// SOFTWARE.
 // </copyright>
 // <summary>
 //   Defines the ICommandEngine type.
@@ -37,7 +37,7 @@ namespace Obscureware.Console.Commands
         /// <param name="context">Shared context object, that will be passed to the commands</param>
         /// <param name="commandLine">Command line to be executed</param>
         /// <returns>TRUE if command has been successfully executed.</returns>
-        bool ExecuteCommand(object context, string commandLine);
+        bool ExecuteCommand(ICommandEngineContext context, string commandLine);
 
         /// <summary>
         /// Starts user-interactive session

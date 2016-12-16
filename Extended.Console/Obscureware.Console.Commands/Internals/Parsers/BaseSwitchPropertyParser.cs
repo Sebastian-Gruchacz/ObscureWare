@@ -1,6 +1,7 @@
 namespace Obscureware.Console.Commands.Internals.Parsers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Model;
@@ -72,5 +73,7 @@ namespace Obscureware.Console.Commands.Internals.Parsers
         }
 
         protected abstract void DoApplySwitch(CommandModel model, string[] switchArguments);
+
+        public abstract IEnumerable<string> GetValidValues();
     }
 }

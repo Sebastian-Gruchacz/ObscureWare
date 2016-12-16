@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BadImplementationException.cs" />
+    <Compile Include="CommandParserOptions.cs" />
     <Compile Include="Internals\CommandLineUtilities.cs" />
     <Compile Include="CommandEngineBuilder.cs" />
     <Compile Include="Extensions.cs" />
@@ -64,6 +65,8 @@
     <Compile Include="Internals\Converters\TimeSpanArgumentConverter.cs" />
     <Compile Include="ICommandEngine.cs" />
     <Compile Include="Internals\IKeyWordProvider.cs" />
+    <Compile Include="Internals\SyntaxInfo.cs" />
+    <Compile Include="OptionNameAttribute.cs" />
     <Compile Include="Internals\Parsers\CustomValueSwitchParser.cs" />
     <Compile Include="Internals\Parsers\EnumSwitchParser.cs" />
     <Compile Include="Internals\Parsers\BaseSwitchPropertyParser.cs" />

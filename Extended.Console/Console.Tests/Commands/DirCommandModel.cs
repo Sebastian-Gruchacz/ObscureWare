@@ -1,5 +1,6 @@
 ﻿namespace ConsoleApplication1.Commands
 {
+    using Obscureware.Console.Commands;
     using Obscureware.Console.Commands.Model;
 
     [CommandDescriptorFor(typeof(DirCommand))]
@@ -7,12 +8,14 @@
     [CommandDescription(@"Lists files withing current folder or repository state, depending on selected options.")]
     public class DirCommandModel : CommandModel
     {
+        [OptionName(@"includeFolders")]
         [Mandatory(false)]
         [CommandFlag("d", "D")]
         // TODO: Name Attribute? Or just use activation letters for help/syntax display?
-        [CommandDescription("When set specifies whether directories shall be listed too.")]
+        [CommandDescription("When set, specifies whether directories shall be listed too.")]
         public bool IncludeFolders { get; set; }
 
+        [OptionName(@"mode")]
         [Mandatory()]
         [CommandSwitch(typeof(DirectoryListMode), "m", DefaultValue = DirectoryListMode.CurrentDir)]
         [CommandDescription("Specifies which predefined directory location shall be listed.")]
@@ -21,6 +24,7 @@
         // TODO: runtime support switch auto-complete. Sourced through ModelBuilder & Parser
         public DirectoryListMode Mode { get; set; }
 
+        [OptionName(@"filter")]
         [Mandatory(false)]
         [CommandValueFlag("f", "F")]
         [CommandDescription("Specifies filter for enumerated files. Does not apply to folders listing.")]
