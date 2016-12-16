@@ -105,22 +105,44 @@ namespace Obscureware.Console.Commands.Internals
 
             this._console.WriteLine(this._styles.HelpSyntax, $"{cmdModelBuilder.CommandName} {options}");
 
-            this._console.WriteLine(this._styles.Default, "");
-            this._console.WriteLine(this._styles.HelpBody, "Where:");
-            foreach (var syntaxInfo in syntax)
+            if (syntax.Any())
             {
-                var literals = string.Join(" ", syntaxInfo.Literals);
-                var mandatoryIndicator = syntaxInfo.IsMandatory ? "*" : "";
+                this._console.WriteLine(this._styles.Default, "");
+                this._console.WriteLine(this._styles.HelpBody, "Where:");
+                foreach (var syntaxInfo in syntax)
+                {
+                    var mandatoryIndicator = syntaxInfo.IsMandatory ? "*" : "";
 
-                this._console.WriteText(this._styles.HelpDefinition, $"\t{literals}\t{syntaxInfo.OptionName}{mandatoryIndicator}\t");
-                this._console.WriteLine(this._styles.HelpDescription, syntaxInfo.Description);
+                    if (syntaxInfo.OptionType != SyntaxOptionType.Unnamed)
+                    {
+                        var literals = string.Join(" ", syntaxInfo.Literals);
 
-                // TODO: more description for values of switches etc or custom lines for each property
+                        this._console.WriteText(this._styles.HelpDefinition, $"\t{literals}\t{syntaxInfo.OptionName}{mandatoryIndicator}\t");
+                        this._console.WriteLine(this._styles.HelpDescription, syntaxInfo.Description);
+
+                        // TODO: more description for values of switches etc or custom lines for each property
+                    }
+                    else
+                    {
+                        this._console.WriteText(this._styles.HelpDefinition, $"\t\"{syntaxInfo.OptionName}\"{mandatoryIndicator}\t");
+                        this._console.WriteLine(this._styles.HelpDescription, syntaxInfo.Description);
+                    }
+                }
+
+                this._console.WriteLine(this._styles.Default, "");
+                this._console.WriteLine(this._styles.Default, "Options denoted with \"*\" character are mandatory. In the syntax they are in pointy brackets.");
+                this._console.WriteLine(this._styles.Default, "All option switches are case sensitive until option states case alternatives.");
+
+                if (this._options.AllowFlagsAsOneArgument && syntax.Count(s => s.OptionType == SyntaxOptionType.Flag) > 1)
+                {
+                    this._console.WriteText(this._styles.Default, "All flag-options being turned on can be also specified altogether, i. e. ");
+                    string allFlagsText = string.Concat(syntax.Where(s => s.OptionType == SyntaxOptionType.Flag).Select(s => s.Literals.First()));
+                    this._console.WriteText(this._styles.HelpDefinition,$"{this._options.FlagCharacters.First()}{allFlagsText}");
+                    this._console.WriteText(this._styles.Default, "");
+                }
             }
 
-            this._console.WriteLine(this._styles.Default, "");
-            this._console.WriteLine(this._styles.Default, "Options denoted with \"*\" character are mandatory. In the syntax they are in pointy brackets.");
-            this._console.WriteLine(this._styles.Default, "All option switches are case sensitive until option states case alternatives.");
+            // TODO: larger command description itself - if available
 
             this._console.WriteLine(this._styles.Default, "");
         }
