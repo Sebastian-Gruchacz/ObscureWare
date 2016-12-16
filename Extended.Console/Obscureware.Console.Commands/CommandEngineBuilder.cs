@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     using Obscureware.Console.Commands.Internals;
@@ -21,9 +22,16 @@
 
         private CommandEngineBuilder()
         {
-            _commands = new List<Type>();
+            this._commands = new List<Type>();
+            this._styles = CommandEngineStyles.DefaultStyles;
+            // TODO: this._options = CommandParserOptions.Default;
 
-            // TODO: add standard commands
+            this.AddStandardCommands();
+        }
+
+        private void AddStandardCommands()
+        {
+            // ...
         }
 
         public CommandEngineBuilder UsingStyles(CommandEngineStyles styles)
@@ -38,7 +46,7 @@
             return this;
         }
 
-        public CommandEngineBuilder WithOptions(CommandParserOptions options)
+        public CommandEngineBuilder UsingOptions(CommandParserOptions options)
         {
             if (options == null)
             {
@@ -57,8 +65,8 @@
                 throw new ArgumentNullException(nameof(asm));
             }
 
-
-            // TODO: verify and check comamnds
+            var commandTypes = asm.GetTypes().Where(t => typeof(IConsoleCommand).IsAssignableFrom(t));
+            this._commands.AddRange(commandTypes);
 
             return this;
         }
@@ -69,7 +77,6 @@
             {
                 throw new ArgumentNullException(nameof(commandTypes));
             }
-            
 
             this._commands.AddRange(commandTypes);
 
@@ -77,7 +84,11 @@
             return this;
         }
 
-
+        /// <summary>
+        /// Finally construct Engine instance when all items are ready
+        /// </summary>
+        /// <param name="console"></param>
+        /// <returns></returns>
         public ICommandEngine ConstructForConsole(IConsole console)
         {
             if (console == null)
@@ -95,10 +106,30 @@
                 throw new InvalidOperationException("Could not construct engine without providing Styles object.");
             }
 
-            // TODO: build Helper print!
-            // TODO: keyword check already !
+            var printHelper = new HelpPrinter(this._options, this._styles, console);
+            var commandManager = new CommandManager(this._commands.Distinct().ToArray());
 
-            return new CommandEngine(new CommandManager(this._commands.ToArray()), this._options, this._styles, console);
+            var keywords = printHelper.GetCommandKeyWords();
+            // TODO: here eventually construct other subsystems with keywords, and then merge them. Also validate different keywords from different subsystems...
+
+            ValidateKeywords(keywords, commandManager);
+            // TODO: switches too?
+
+            return new CommandEngine(commandManager, this._options, this._styles, printHelper, console);
+        }
+
+        /// <summary>
+        /// Verifies if any command name is in conflict with built-in commands (mostly help-related)
+        /// </summary>
+        /// <param name="keywords"></param>
+        /// <param name="commandManager"></param>
+        private static void ValidateKeywords(IEnumerable<string> keywords, CommandManager commandManager)
+        {
+            var conflictKeywords = keywords.Select(commandManager.FindCommand).Where(cmd => cmd != null).ToArray();
+            if (conflictKeywords.Any())
+            {
+                throw new BadImplementationException($"Following commands are in conflict with keywords: {string.Join(", ", conflictKeywords.GetType().Name)}", typeof(CommandManager));
+            }
         }
 
         /// <summary>

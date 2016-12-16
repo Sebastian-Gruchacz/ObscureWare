@@ -22,8 +22,9 @@
 
             var engine =
                 CommandEngineBuilder.Build()
-                    .WithCommands(typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand), typeof(ChangeDirCommand))
-                    .WithOptions(options)
+                    //.WithCommands(typeof(DirCommand), typeof(ClsCommand), typeof(ExitCommand), typeof(ChangeDirUpCommand), typeof(ChangeDirCommand))
+                    .WithCommandsFromAssembly(this.GetType().Assembly)
+                    .UsingOptions(options)
                     .UsingStyles(CommandEngineStyles.DefaultStyles)
                     .ConstructForConsole(console);
 
@@ -33,7 +34,7 @@
             //    // custom styles go here
             //};
 
-            bool executedProperly = engine.ExecuteCommand(context, @"dir \d -m CurrentDir -f *.* }");
+            bool executedProperly = engine.ExecuteCommand(context, @"dir \d -m CurrentDir -f *.*");
             //engine.ExecuteCommand(context, console, "cls" );
             engine.ExecuteCommand(context, @"diraa");
             engine.ExecuteCommand(context, @"-help");

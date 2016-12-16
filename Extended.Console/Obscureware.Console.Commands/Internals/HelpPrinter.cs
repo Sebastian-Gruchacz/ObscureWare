@@ -16,13 +16,15 @@
 
         private readonly ICommandParserOptions _options;
         private readonly CommandEngineStyles _styles;
+        private readonly IConsole _console;
         private readonly string[] _allInlineHelpOptions;
         private readonly IEqualityComparer<string> _commandNameComparer;
 
-        public HelpPrinter(ICommandParserOptions options, CommandEngineStyles styles) // TODO: extract IHelpStyles
+        public HelpPrinter(ICommandParserOptions options, CommandEngineStyles styles, IConsole console) // TODO: extract IHelpStyles
         {
             this._options = options;
             this._styles = styles;
+            this._console = console;
             this._allInlineHelpOptions = CommandsSyntaxHelpers.Combine(this._options.FlagCharacters, BaseInlineHelpCommands, ((s, s1) => s + s1)).ToArray();
             this._commandNameComparer = (options.CommandsSensitivenes == CommandCaseSensitivenes.Sensitive)
                 ? SensitiveComparer
@@ -64,63 +66,52 @@
         /// <summary>
         /// Prints generic help information.
         /// </summary>
-        /// <param name="console"></param>
-        public void PrintHelpOnHelp(IConsole console)
+        public void PrintHelpOnHelp()
         {
-            if (console == null)
-            {
-                throw new ArgumentNullException(nameof(console));
-            }
-
-            console.WriteText(this._styles.Default, "To get list of available commands type ");
+            this._console.WriteText(this._styles.Default, "To get list of available commands type ");
             for (int i = 0; i < this._allInlineHelpOptions.Length; i++)
             {
                 if (i > 0)
                 {
-                    console.WriteText(this._styles.Default, i == this._allInlineHelpOptions.Length - 1 ? " or " : ", ");
+                    this._console.WriteText(this._styles.Default, i == this._allInlineHelpOptions.Length - 1 ? " or " : ", ");
                 }
 
-                console.WriteText(this._styles.HelpDefinition, this._allInlineHelpOptions[i]);
+                this._console.WriteText(this._styles.HelpDefinition, this._allInlineHelpOptions[i]);
             }
 
-            console.WriteLine(this._styles.Default, ".");
+            this._console.WriteLine(this._styles.Default, ".");
         }
 
         /// <summary>
         /// Prints global help and list of available commands.
         /// </summary>
-        /// <param name="console"></param>
         /// <param name="commands"></param>
         /// <param name="arguments">Extra help arguments. Not used at the moment.</param>
-        public void PrintGlobalHelp(IConsole console, IEnumerable<CommandInfo> commands, IEnumerable<string> arguments)
+        public void PrintGlobalHelp(IEnumerable<CommandInfo> commands, IEnumerable<string> arguments)
         {
-            if (console == null)
-            {
-                throw new ArgumentNullException(nameof(console));
-            }
             if (commands == null)
             {
                 throw new ArgumentNullException(nameof(commands));
             }
 
-            console.WriteLine(this._styles.HelpHeader, "Available commands:");
+            this._console.WriteLine(this._styles.HelpHeader, "Available commands:");
 
             foreach (var cmdInfo in commands)
             {
-                console.WriteText(this._styles.HelpDefinition, cmdInfo.ModelBuilder.CommandName + "\t\t");
-                console.WriteLine(this._styles.HelpDescription, cmdInfo.ModelBuilder.CommandDescription);
+                this._console.WriteText(this._styles.HelpDefinition, cmdInfo.ModelBuilder.CommandName + "\t\t");
+                this._console.WriteLine(this._styles.HelpDescription, cmdInfo.ModelBuilder.CommandDescription);
 
                 // TODO: expose and print description in nice way - justified paragraph or else... Tables?
             }
 
-            console.WriteLine();
-            console.WriteLine(this._styles.Default, $"All command names are case {this._options.CommandsSensitivenes.ToString().ToLower()}.");
-            console.WriteText(this._styles.Default, "To receive syntax help about particular command use \"");
-            console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()}");
-            console.WriteText(this._styles.Default, "\" or \"");
-            console.WriteText(this._styles.HelpDefinition, $"{this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()} <commandName>");
-            console.WriteLine(this._styles.Default, "\" syntax.");
-            console.WriteLine();
+            this._console.WriteLine();
+            this._console.WriteLine(this._styles.Default, $"All command names are case {this._options.CommandsSensitivenes.ToString().ToLower()}.");
+            this._console.WriteText(this._styles.Default, "To receive syntax help about particular command use \"");
+            this._console.WriteText(this._styles.HelpDefinition, $"<commandName> {this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()}");
+            this._console.WriteText(this._styles.Default, "\" or \"");
+            this._console.WriteText(this._styles.HelpDefinition, $"{this._options.FlagCharacters.SelectRandom()}{BaseInlineHelpCommands.SelectRandom()} <commandName>");
+            this._console.WriteLine(this._styles.Default, "\" syntax.");
+            this._console.WriteLine();
         }
 
         public IEnumerable<string> GetCommandKeyWords()

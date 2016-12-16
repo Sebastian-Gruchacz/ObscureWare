@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BadImplementationException.cs" />
-    <Compile Include="CommandLineUtilities.cs" />
+    <Compile Include="Internals\CommandLineUtilities.cs" />
     <Compile Include="CommandEngineBuilder.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ICommandParserOptions.cs" />

@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CommandEngine.cs" company="Obscureware Solutions">
 // MIT License
-// 
+//
 // Copyright(c) 2016 Sebastian Gruchacz
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,7 +20,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.  
+// SOFTWARE.
 // </copyright>
 // <summary>
 //   Defines the ICommandEngine type.
@@ -50,7 +50,7 @@ namespace Obscureware.Console.Commands.Internals
         private readonly ICommandParserOptions _options;
 
         // NO default public constructor - by design
-        internal CommandEngine(CommandManager commandManager, ICommandParserOptions options, CommandEngineStyles styles, IConsole console)
+        internal CommandEngine(CommandManager commandManager, ICommandParserOptions options, CommandEngineStyles styles, HelpPrinter printHelper, IConsole console)
         {
             if (commandManager == null)
             {
@@ -73,8 +73,7 @@ namespace Obscureware.Console.Commands.Internals
             this._console = console;
             this._options = options;
             this._styles = styles;
-
-            this._helpPrinter = new HelpPrinter(this._options, this._styles); // TODO: inject from above too! it's required in builder already
+            this._helpPrinter = printHelper;
         }
 
         /// <inheritdoc />
@@ -111,12 +110,12 @@ namespace Obscureware.Console.Commands.Internals
             if (cmd == null)
             {
                 this._console.WriteLine(this._styles.Warning, $"Unknown command => \"{cmdName}\".");
-                this._helpPrinter.PrintHelpOnHelp(this._console);
+                this._helpPrinter.PrintHelpOnHelp();
                 return false;
             }
 
             // TODO: first or any? And ignore all the other syntax...
-            if (commandLineArguments.Length > 1) 
+            if (commandLineArguments.Length > 1)
             {
                 if (this._helpPrinter.IsCommandHelpRequested(commandLineArguments[1]))
                 {
@@ -181,7 +180,7 @@ namespace Obscureware.Console.Commands.Internals
 
         private void PrintGlobalHelp(IConsole console, IEnumerable<string> arguments)
         {
-            this._helpPrinter.PrintGlobalHelp(console, this._commandManager.GetAll(), arguments);
+            this._helpPrinter.PrintGlobalHelp(this._commandManager.GetAll(), arguments);
         }
 
         private void PrintCommandHelp(IConsole console, CommandInfo cmd, IEnumerable<string> skip)
