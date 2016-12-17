@@ -107,14 +107,14 @@
         {
             if (text.Length == boxWidth)
             {
-                System.Console.Write(text);
+                Console.Write(text);
             }
             else
             {
-                string[] parts = text.Split(new string[] { @" ", @"\t" }, StringSplitOptions.RemoveEmptyEntries); // both split and clean
+                string[] parts = text.Split(new[] { @" ", @"\t" }, StringSplitOptions.RemoveEmptyEntries); // both split and clean
                 if (parts.Length == 1)
                 {
-                    System.Console.Write(text); // we cannot do anything about one long word...
+                    Console.Write(text); // we cannot do anything about one long word...
                 }
                 else
                 {
@@ -122,7 +122,7 @@
                     int remainingBlanks = boxWidth - cleanedLength;
                     if (remainingBlanks > cleanedLength / 2)
                     {
-                        System.Console.Write(text); // text is way too short to expand it, keep to the left
+                        Console.Write(text); // text is way too short to expand it, keep to the left
                     }
                     else
                     {
@@ -133,19 +133,19 @@
                             if (remainingLowerSpacesJoins > 0)
                             {
                                 int longerQty = parts.Length - longerSpacesCount;
-                                System.Console.Write(
+                                Console.Write(
                                     string.Join(new string(' ', longerSpacesCount), parts.Take(longerQty + 1)) +
                                     string.Join(new string(' ', longerSpacesCount - 1), parts.Skip(longerQty + 1)));
                             }
                             else
                             {
                                 // all gaps equal
-                                System.Console.Write(string.Join(new string(' ', longerSpacesCount), parts));
+                                Console.Write(string.Join(new string(' ', longerSpacesCount), parts));
                             }
                         }
                         else
                         {
-                            System.Console.Write(
+                            Console.Write(
                                 string.Join(new string(' ', 2), parts.Take(remainingBlanks + 1)) +
                                 string.Join(new string(' ', 1), parts.Skip(remainingBlanks + 1)));
                         }
@@ -165,7 +165,7 @@
             var lines = new List<string>();
             while (offset < text.Length)
             {
-                int index = text.LastIndexOf(" ", Math.Min(text.Length, offset + boxWidth));
+                int index = text.LastIndexOf(" ", Math.Min(text.Length, offset + boxWidth)); // TODO: use CultureInfo!
                 string line = text.Substring(offset, (index - offset <= 0 ? text.Length : index) - offset);
                 offset += line.Length + 1;
                 lines.Add(line);
@@ -307,7 +307,8 @@
 
                 int index = 0;
                 string formatter = string.Join(" ", columns.Select(col => $"{{{index++},{(col.CurrentLength) * (int)col.Alignment}}}"));
-                this._console.WriteLine(tableHeaderColor, string.Format(formatter, columns.Select(col => col.Header.Substring(0, Math.Min(col.Header.Length, col.CurrentLength))).ToArray<string>()));
+                // ReSharper disable once CoVariantArrayConversion, fine I want string version
+                this._console.WriteLine(tableHeaderColor, string.Format(formatter, columns.Select(col => col.Header.Substring(0, Math.Min(col.Header.Length, col.CurrentLength))).ToArray()));
                 foreach (string[] row in rows)
                 {
                     string[] result = new string[columns.Length];
@@ -382,7 +383,7 @@
             uint i = 1;
             foreach (T src in dataSource)
             {
-                table.AddRow(src, new string[] { i.ToAlphaEnum() + '.' }.Concat(dataGenerator.Invoke(src)).ToArray());
+                table.AddRow(src, new[] { i.ToAlphaEnum() + '.' }.Concat(dataGenerator.Invoke(src)).ToArray());
                 i++;
             }
 

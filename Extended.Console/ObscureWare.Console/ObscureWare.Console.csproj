@@ -50,6 +50,7 @@
     <Compile Include="ConsoleColorsHelper.cs" />
     <Compile Include="ConsoleFontColor.cs" />
     <Compile Include="IConsole.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemConsole.cs" />
   </ItemGroup>

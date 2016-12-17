@@ -43,12 +43,13 @@ namespace Obscureware.DataFlow.Implementation
                 {
                     return default(T);
                 }
-                throw new InvalidOperationException(string.Format("No item with key {0}", searchKey));
+                throw new InvalidOperationException($"No item with key {searchKey}");
             }
             var typedObj = (T)obj;
             if (typedObj == null)
             {
-                throw new InvalidOperationException(string.Format("Object with key {0} is of type {1}, and not of type {2}", searchKey, obj.GetType(), typeof(T)));
+                throw new InvalidOperationException(
+                    $"Object with key {searchKey} is of type {obj.GetType()}, and not of type {typeof(T)}");
             }
 
             return typedObj;
@@ -64,12 +65,13 @@ namespace Obscureware.DataFlow.Implementation
                 {
                     return null;
                 }
-                throw new InvalidOperationException(string.Format("No item with key {0}", searchKey));
+                throw new InvalidOperationException($"No item with key {searchKey}");
             }
 
             if (obj.GetType() != type)
             {
-                throw new InvalidOperationException(string.Format("Object with key {0} is of type {1}, and not of type {2}", searchKey, obj.GetType(), type));
+                throw new InvalidOperationException(
+                    $"Object with key {searchKey} is of type {obj.GetType()}, and not of type {type}");
             }
 
             return obj;
@@ -94,7 +96,7 @@ namespace Obscureware.DataFlow.Implementation
             var keyname = GetKey<T>(key);
             if (this[keyname] != null)
             {
-                throw new InvalidOperationException(string.Format("Item with key {0} would be overwriten.", keyname));
+                throw new InvalidOperationException($"Item with key {keyname} would be overwritten.");
             }
 
             base.Add(keyname, obj);

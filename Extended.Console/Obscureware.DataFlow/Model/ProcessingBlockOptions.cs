@@ -1,4 +1,4 @@
-﻿namespace Obscureware.Console.Commands.Blocks
+﻿namespace Obscureware.DataFlow.Model
 {
     public class ProcessingBlockOptions
     {

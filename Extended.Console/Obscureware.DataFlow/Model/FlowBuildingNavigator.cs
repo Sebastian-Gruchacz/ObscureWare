@@ -4,7 +4,6 @@ namespace Obscureware.DataFlow.Model
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Console.Commands.Blocks;
     using DataFlow;
     using Implementation;
 

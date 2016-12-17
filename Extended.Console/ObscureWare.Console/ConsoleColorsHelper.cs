@@ -1,6 +1,35 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ConsoleColorsHelper.cs" company="Obscureware Solutions">
+// MIT License
+//
+// Copyright(c) 2015-2016 Sebastian Gruchacz
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// </copyright>
+// <summary>
+//   Provides routines used to manipulate console colors.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 namespace ObscureWare.Console
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
@@ -11,13 +40,6 @@ namespace ObscureWare.Console
     /// </summary>
     public class ConsoleColorsHelper : IDisposable
     {
-        private const int STD_OUTPUT_HANDLE = -11;                       // per WinBase.h
-        internal readonly IntPtr InvalidHandleValue = new IntPtr(-1);    // per WinBase.h
-        private readonly IntPtr _hConsoleOutput;
-
-        private readonly Dictionary<Color, ConsoleColor> _knownMappings = new Dictionary<Color, ConsoleColor>();
-        private KeyValuePair<ConsoleColor, Color>[] _colorBuffer;
-
         private const float COLOR_WEIGHT_HUE = 47.5f;
         private const float COLOR_WEIGHT_SATURATION = 28.75f;
         private const float COLOR_WEIGHT_BRIGHTNESS = 23.75f;
@@ -26,15 +48,22 @@ namespace ObscureWare.Console
         private const float COLOR_WEIGHT_GREEN = 47.75f;
         private const float COLOR_WEIGHT_BLUE = 23.75f;
 
-        private const float COLOR_PROPORTION = 100f/255f;
+        // final weight - how color weights over (under?) "luminosity"
+        private const float COLOR_PROPORTION = 100f / 255f;
+
+        private readonly IntPtr _hConsoleOutput;
+
+        private readonly ConcurrentDictionary<Color, ConsoleColor> _knownMappings = new ConcurrentDictionary<Color, ConsoleColor>();
+
+        private KeyValuePair<ConsoleColor, Color>[] _colorBuffer;
 
         /// <summary>
         /// Initializes new instance of ConsoleColorsHelper class
         /// </summary>
         public ConsoleColorsHelper()
         {
-            this._hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // 7
-            if (this._hConsoleOutput == this.InvalidHandleValue)
+            this._hConsoleOutput = NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE); // 7
+            if (this._hConsoleOutput == NativeMethods.INVALID_HANDLE)
             {
                 throw new SystemException("GetStdHandle->WinError: #" + Marshal.GetLastWin32Error());
             }
@@ -50,16 +79,14 @@ namespace ObscureWare.Console
         /// <remarks>Influenced by http://stackoverflow.com/questions/1720528/what-is-the-best-algorithm-for-finding-the-closest-color-in-an-array-to-another</remarks>
         public ConsoleColor FindClosestColor(Color color)
         {
-            // TODO: make thread safe?
-
             ConsoleColor cc;
             if (this._knownMappings.TryGetValue(color, out cc))
             {
                 return cc;
             }
 
-            cc = Enumerable.OrderBy(this._colorBuffer, kp => this.ColorMatching(color, kp.Value)).First().Key;
-            this._knownMappings.Add(color, cc);
+            cc = this._colorBuffer.OrderBy(kp => this.ColorMatching(color, kp.Value)).First().Key;
+            this._knownMappings.TryAdd(color, cc);
             return cc;
         }
 
@@ -107,7 +134,7 @@ namespace ObscureWare.Console
             ++csbe.srWindow.Bottom;
             ++csbe.srWindow.Right;
 
-            bool brc = SetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
+            bool brc = NativeMethods.SetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
             if (!brc)
             {
                 throw new SystemException("SetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
@@ -131,7 +158,7 @@ namespace ObscureWare.Console
             ++csbe.srWindow.Bottom;
             ++csbe.srWindow.Right;
 
-            bool brc = SetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
+            bool brc = NativeMethods.SetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
             if (!brc)
             {
                 throw new SystemException("SetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
@@ -147,12 +174,12 @@ namespace ObscureWare.Console
             this._knownMappings.Clear();
         }
 
-        private CONSOLE_SCREEN_BUFFER_INFO_EX GetConsoleScreenBufferInfoEx()
+        private NativeMethods.CONSOLE_SCREEN_BUFFER_INFO_EX GetConsoleScreenBufferInfoEx()
         {
-            CONSOLE_SCREEN_BUFFER_INFO_EX csbe = new CONSOLE_SCREEN_BUFFER_INFO_EX();
+            NativeMethods.CONSOLE_SCREEN_BUFFER_INFO_EX csbe = new NativeMethods.CONSOLE_SCREEN_BUFFER_INFO_EX();
             csbe.cbSize = Marshal.SizeOf(csbe); // 96 = 0x60
 
-            bool brc = GetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
+            bool brc = NativeMethods.GetConsoleScreenBufferInfoEx(this._hConsoleOutput, ref csbe);
             if (!brc)
             {
                 throw new SystemException("GetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
@@ -160,7 +187,7 @@ namespace ObscureWare.Console
             return csbe;
         }
 
-        private static void SetNewColorDefinition(ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe, ConsoleColor color, Color rgbColor)
+        private static void SetNewColorDefinition(ref NativeMethods.CONSOLE_SCREEN_BUFFER_INFO_EX csbe, ConsoleColor color, Color rgbColor)
         {
             // Eh... Ugly code here...
 
@@ -171,52 +198,52 @@ namespace ObscureWare.Console
             switch (color)
             {
                 case ConsoleColor.Black:
-                    csbe.black = new COLORREF(r, g, b);
+                    csbe.black = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkBlue:
-                    csbe.darkBlue = new COLORREF(r, g, b);
+                    csbe.darkBlue = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkGreen:
-                    csbe.darkGreen = new COLORREF(r, g, b);
+                    csbe.darkGreen = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkCyan:
-                    csbe.darkCyan = new COLORREF(r, g, b);
+                    csbe.darkCyan = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkRed:
-                    csbe.darkRed = new COLORREF(r, g, b);
+                    csbe.darkRed = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkMagenta:
-                    csbe.darkMagenta = new COLORREF(r, g, b);
+                    csbe.darkMagenta = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkYellow:
-                    csbe.darkYellow = new COLORREF(r, g, b);
+                    csbe.darkYellow = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Gray:
-                    csbe.gray = new COLORREF(r, g, b);
+                    csbe.gray = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.DarkGray:
-                    csbe.darkGray = new COLORREF(r, g, b);
+                    csbe.darkGray = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Blue:
-                    csbe.blue = new COLORREF(r, g, b);
+                    csbe.blue = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Green:
-                    csbe.green = new COLORREF(r, g, b);
+                    csbe.green = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Cyan:
-                    csbe.cyan = new COLORREF(r, g, b);
+                    csbe.cyan = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Red:
-                    csbe.red = new COLORREF(r, g, b);
+                    csbe.red = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Magenta:
-                    csbe.magenta = new COLORREF(r, g, b);
+                    csbe.magenta = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.Yellow:
-                    csbe.yellow = new COLORREF(r, g, b);
+                    csbe.yellow = new NativeMethods.COLORREF(r, g, b);
                     break;
                 case ConsoleColor.White:
-                    csbe.white = new COLORREF(r, g, b);
+                    csbe.white = new NativeMethods.COLORREF(r, g, b);
                     break;
             }
         }
@@ -246,99 +273,44 @@ namespace ObscureWare.Console
             };
         }
 
-        #region PInvoke
-
-        // ReSharper disable InconsistentNaming (PInvoke structures named accordingly to win.h definitions...)
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct COORD
-        {
-            internal short X;
-            internal short Y;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct SMALL_RECT
-        {
-            internal short Left;
-            internal short Top;
-            internal short Right;
-            internal short Bottom;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct COLORREF
-        {
-            internal uint ColorDWORD;
-
-            internal COLORREF(Color color)
-            {
-                this.ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
-            }
-
-            internal COLORREF(uint r, uint g, uint b)
-            {
-                this.ColorDWORD = r + (g << 8) + (b << 16);
-            }
-
-            internal Color GetColor()
-            {
-                return Color.FromArgb((int)(0x000000FFU & this.ColorDWORD),
-                    (int)(0x0000FF00U & this.ColorDWORD) >> 8, (int)(0x00FF0000U & this.ColorDWORD) >> 16);
-            }
-
-            internal void SetColor(Color color)
-            {
-                this.ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct CONSOLE_SCREEN_BUFFER_INFO_EX
-        {
-            internal int cbSize;
-            internal COORD dwSize;
-            internal COORD dwCursorPosition;
-            internal ushort wAttributes;
-            internal SMALL_RECT srWindow;
-            internal COORD dwMaximumWindowSize;
-            internal ushort wPopupAttributes;
-            internal bool bFullscreenSupported;
-            internal COLORREF black;
-            internal COLORREF darkBlue;
-            internal COLORREF darkGreen;
-            internal COLORREF darkCyan;
-            internal COLORREF darkRed;
-            internal COLORREF darkMagenta;
-            internal COLORREF darkYellow;
-            internal COLORREF gray;
-            internal COLORREF darkGray;
-            internal COLORREF blue;
-            internal COLORREF green;
-            internal COLORREF cyan;
-            internal COLORREF red;
-            internal COLORREF magenta;
-            internal COLORREF yellow;
-            internal COLORREF white;
-        }
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr GetStdHandle(int nStdHandle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe);
-
-        // ReSharper restore InconsistentNaming
-
-        #endregion
+        #region IDsiposable implementation
 
         /// <inheritdoc />
         public void Dispose()
         {
-            // TODO:  ReleaseHandle:  this._hConsoleOutput
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Finalizer
+        /// </summary>
+        ~ConsoleColorsHelper()
+        {
+            // NOTE: Leave out the finalizer altogether if this class doesn't 
+            // own unmanaged resources itself, but leave the other methods
+            // exactly as they are. 
+            this.Dispose(false);
+        }
+
+        /// <summary>
+        /// Actual disposing method
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+            }
+
+            // free native resources
+            if (this._hConsoleOutput != NativeMethods.INVALID_HANDLE)
+            {
+                NativeMethods.CloseHandle(this._hConsoleOutput);
+            }
+        }
+
+        #endregion IDsiposable implementation
     }
 }

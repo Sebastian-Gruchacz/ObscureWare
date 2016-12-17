@@ -1,14 +1,11 @@
-using Obscureware.DataFlow;
-
-namespace Obscureware.Console.Commands.Blocks
+namespace Obscureware.DataFlow.Model
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using DataFlow.Implementation;
-    using DataFlow.Model;
+    using Implementation;
 
     internal class ProcessingFlow : IFlow
     {
@@ -31,12 +28,12 @@ namespace Obscureware.Console.Commands.Blocks
                 }
                 if (!entryBlocks.Any())
                 {
-                    throw new InvalidOperationException("No single entry block. One block should not have incomming connection.");
+                    throw new InvalidOperationException("No single entry block. One block should not have incoming connection.");
                 }
-                if (entryBlocks.Count() > 1)
+                if (entryBlocks.Count > 1)
                 {
-                    throw new InvalidOperationException(string.Format("Multiple entry blocks {0}. Should be only one.",
-                        string.Join(",", entryBlocks.Select(o => o.ReadableId))));
+                    throw new InvalidOperationException(
+                        $"Multiple entry blocks {string.Join(",", entryBlocks.Select(o => o.ReadableId))}. Should be only one.");
                 }
 
                 return entryBlocks.Single();

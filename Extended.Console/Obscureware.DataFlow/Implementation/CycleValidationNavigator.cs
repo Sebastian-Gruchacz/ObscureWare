@@ -2,7 +2,6 @@ namespace Obscureware.DataFlow.Implementation
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Console.Commands.Blocks;
     using DataFlow;
     using Model;
 

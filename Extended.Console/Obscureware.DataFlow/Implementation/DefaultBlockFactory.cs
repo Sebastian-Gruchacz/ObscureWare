@@ -4,7 +4,6 @@ namespace Obscureware.DataFlow.Implementation
     using System.Collections.Generic;
     using System.Threading;
     using Model;
-    using Console.Commands.Blocks;
 
     public class DefaultBlockFactory : IBlockFactory
     {
@@ -58,7 +57,7 @@ namespace Obscureware.DataFlow.Implementation
             }
 
             block.Set(this.Manager, this.CancellationTokenSource);
-            block.ReadableId = id ?? this.GetDefaultIdFromType(blockType);
+            block.ReadableId = id ?? this.GetDefaultIdFromType(blockType); // TODO: fix logic in this method
 
             return block;
         }

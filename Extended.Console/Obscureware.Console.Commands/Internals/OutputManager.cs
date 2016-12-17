@@ -8,7 +8,7 @@
     {
         private readonly IConsole _consoleInstance;
         private readonly CommandEngineStyles _engineStyles;
-        private DataTablePrinter _tablePrinter;
+        private readonly DataTablePrinter _tablePrinter;
 
         public OutputManager(IConsole consoleInstance, CommandEngineStyles engineStyles)
         {

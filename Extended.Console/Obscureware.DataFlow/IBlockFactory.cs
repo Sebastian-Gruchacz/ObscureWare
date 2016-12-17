@@ -2,7 +2,6 @@ namespace Obscureware.DataFlow
 {
     using System;
     using System.Threading;
-    using Console.Commands.Blocks;
     using Model;
 
     public interface IBlockFactory

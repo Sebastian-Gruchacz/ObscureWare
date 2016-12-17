@@ -9,8 +9,6 @@
         /// <summary>Specifies the default value for the <see cref="CommandDescriptionAttribute"/> which is an empty string (""). This static field is read-only.</summary>
         public static readonly CommandDescriptionAttribute Default = new CommandDescriptionAttribute(string.Empty);
 
-        private readonly string _description;
-
         /// <summary>Initializes a new instance of the <see cref="CommandDescriptionAttribute"/> class with no parameters.</summary>
         public CommandDescriptionAttribute()
         {
@@ -23,17 +21,14 @@
         /// <param name="description">The description text.</param>
         public CommandDescriptionAttribute(string description)
         {
-            this._description = description;
+            this.Description = description;
         }
 
         /// <summary>
         /// Gets the description stored in this attribute.
         /// </summary>
         /// <returns>The description stored in this attribute.</returns>
-        public string Description
-        {
-            get { return this._description; }
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Returns whether the value of the given object is equal to the current <see cref="CommandDescriptionAttribute"/>

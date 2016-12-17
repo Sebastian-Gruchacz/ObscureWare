@@ -6,26 +6,22 @@
     using Converters;
     using Model;
 
-    internal class UnnamedPropertyParser : BasePropertyParser
+    internal class SwitchlessPropertyParser : BasePropertyParser
     {
-        private readonly int _argumentIndex;
         private readonly ArgumentConverter _converter;
 
-        public UnnamedPropertyParser(int argumentIndex, PropertyInfo propertyInfo, ArgumentConverter converter) : base(propertyInfo)
+        public SwitchlessPropertyParser(int argumentIndex, PropertyInfo propertyInfo, ArgumentConverter converter) : base(propertyInfo)
         {
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
 
-            this._argumentIndex = argumentIndex;
+            this.ArgumentIndex = argumentIndex;
             this._converter = converter;
         }
 
-        public int ArgumentIndex
-        {
-            get { return this._argumentIndex; }
-        }
+        public int ArgumentIndex { get; }
 
         /// <inheritdoc />
         protected override void DoApply(ICommandParserOptions options, CommandModel model, string[] args, ref int argIndex)

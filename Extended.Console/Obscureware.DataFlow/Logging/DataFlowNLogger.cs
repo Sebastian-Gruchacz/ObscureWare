@@ -1,7 +1,6 @@
 namespace Obscureware.DataFlow.Logging
 {
     using System;
-    using Console.Commands.Blocks;
     using Implementation;
     using NLog;
 

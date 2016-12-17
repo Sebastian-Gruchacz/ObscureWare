@@ -1,6 +1,6 @@
-namespace Obscureware.Console.Commands.Blocks
+namespace Obscureware.DataFlow
 {
-    using DataFlow.Model;
+    using Model;
 
     public interface ILink
     {

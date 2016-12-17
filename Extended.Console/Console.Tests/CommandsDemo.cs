@@ -1,6 +1,5 @@
 ﻿namespace ConsoleApplication1
 {
-    using Commands;
     using ObscureWare.Console;
     using Obscureware.Console.Commands;
 
@@ -11,8 +10,8 @@
             ConsoleContext context = new ConsoleContext();
             var options = new CommandParserOptions
                 {
-                    FlagCharacters = new string[] {@"\", "-"},
-                    SwitchCharacters = new string[] {@"-", "--"},
+                    FlagCharacters = new[] {@"\", "-"},
+                    SwitchCharacters = new[] {@"-", "--"},
                     OptionArgumentMode = CommandOptionArgumentMode.Separated,
                     //OptionArgumentJoinCharacater = ':', // not used because of: CommandOptionArgumentMode.Separated
                     AllowFlagsAsOneArgument = false,

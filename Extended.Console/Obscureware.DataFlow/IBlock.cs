@@ -1,6 +1,5 @@
-﻿namespace Obscureware.Console.Commands.Blocks
+﻿namespace Obscureware.DataFlow
 {
-    using System.Text;
     using System.Threading.Tasks;
     using System.Threading.Tasks.Dataflow;
 

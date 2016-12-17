@@ -1,7 +1,7 @@
-namespace Obscureware.Console.Commands.Blocks
+namespace Obscureware.DataFlow
 {
     using System;
-    using DataFlow.Implementation;
+    using Implementation;
 
     public interface ICondition
     {

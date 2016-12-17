@@ -7,7 +7,6 @@ namespace Obscureware.DataFlow.Model
     using System.Threading;
     using System.Threading.Tasks;
     using System.Threading.Tasks.Dataflow;
-    using Console.Commands.Blocks;
     using Implementation;
     using Logging;
 
@@ -113,10 +112,7 @@ namespace Obscureware.DataFlow.Model
                         return;
                     }
 
-                    if (this.OnAllTokensProcessed != null)
-                    {
-                        this.OnAllTokensProcessed(this, EventArgs.Empty);
-                    }
+                    this.OnAllTokensProcessed?.Invoke(this, EventArgs.Empty);
 
                     completionSource.SetResult(string.Empty);
                 });
@@ -148,10 +144,7 @@ namespace Obscureware.DataFlow.Model
 
                 if (token.HasTerminated)
                 {
-                    if (this.OnTerminatedTokenReceived != null)
-                    {
-                        this.OnTerminatedTokenReceived(this, new TerminatedTokenReceivedEventArgs(token));
-                    }
+                    this.OnTerminatedTokenReceived?.Invoke(this, new TerminatedTokenReceivedEventArgs(token));
 
                     // just pass token to the next block - ignore processing of current block
                     // we want to pass for instance to the end block that will process results
@@ -191,11 +184,11 @@ namespace Obscureware.DataFlow.Model
         {
             if (flowExceptionManager == null)
             {
-                throw new ArgumentNullException("flowExceptionManager");
+                throw new ArgumentNullException(nameof(flowExceptionManager));
             }
             if (cancellationTokenSource == null)
             {
-                throw new ArgumentNullException("cancellationTokenSource");
+                throw new ArgumentNullException(nameof(cancellationTokenSource));
             }
 
             if (this._transformation != null)

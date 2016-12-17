@@ -1,8 +1,8 @@
-namespace Obscureware.Console.Commands.Blocks
+namespace Obscureware.DataFlow.Model
 {
     using System;
     using System.Linq.Expressions;
-    using DataFlow.Implementation;
+    using Implementation;
 
     public class PredicateCondition<TTuple> : ICondition
     {
@@ -12,7 +12,7 @@ namespace Obscureware.Console.Commands.Blocks
 
         public PredicateCondition(Expression<Predicate<TTuple>> condition)
         {
-            this.SerializedCondition = string.Format("{0}.{1}", typeof(TTuple).Name, condition);
+            this.SerializedCondition = $"{typeof(TTuple).Name}.{condition}";
             var conditionOnTuple = condition.Compile();
             this.Condition = o => conditionOnTuple(o.Get<TTuple>());
         }

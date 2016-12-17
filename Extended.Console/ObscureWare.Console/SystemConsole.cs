@@ -1,8 +1,35 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SystemConsole.cs" company="Obscureware Solutions">
+// MIT License
+//
+// Copyright(c) 2015-2016 Sebastian Gruchacz
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// </copyright>
+// <summary>
+//   Defines the core SystemConsole wrapper on SystemConsole that implements IConsoleCommand interface.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 namespace ObscureWare.Console
 {
     using System;
     using System.Drawing;
-    using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
 
@@ -11,19 +38,24 @@ namespace ObscureWare.Console
     /// </summary>
     public class SystemConsole : IConsole
     {
-        private readonly ConsoleColorsHelper _consoleColorsHelper;
+        private readonly ConsoleColorsHelper _helper;
 
         /// <summary>
         /// In characters...
         /// </summary>
         public Point WindowSize { get; }
 
-        public SystemConsole(ConsoleColorsHelper helper, bool isFullScreen)
+        public SystemConsole(ConsoleColorsHelper colorsHelper, bool isFullScreen)
         {
+            if (colorsHelper == null)
+            {
+                throw new ArgumentNullException(nameof(colorsHelper));
+            }
+
+            this._helper = colorsHelper;
+
             Console.OutputEncoding = Encoding.Unicode;
             Console.InputEncoding = Encoding.Unicode;
-
-            this._consoleColorsHelper = helper ?? new ConsoleColorsHelper();
 
             if (isFullScreen)
             {
@@ -87,8 +119,8 @@ namespace ObscureWare.Console
 
         public void SetColors(Color foreColor, Color bgColor)
         {
-            Console.ForegroundColor = this._consoleColorsHelper.FindClosestColor(foreColor);
-            Console.BackgroundColor = this._consoleColorsHelper.FindClosestColor(bgColor);
+            Console.ForegroundColor = this._helper.FindClosestColor(foreColor);
+            Console.BackgroundColor = this._helper.FindClosestColor(bgColor);
         }
 
         public void Clear()
@@ -138,31 +170,17 @@ namespace ObscureWare.Console
 
         public void ReplaceConsoleColor(ConsoleColor color, Color rgbColor)
         {
-            this._consoleColorsHelper.ReplaceConsoleColor(color, rgbColor);
+            this._helper.ReplaceConsoleColor(color, rgbColor);
         }
-
-        #region PInvoke
-
-        [DllImport("user32")]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
-            int x, int y, int cx, int cy, int flags);
-
-        [DllImport("kernel32")]
-        private static extern IntPtr GetConsoleWindow();
-
-        private const int SWP_NOZORDER = 0x4;
-        private const int SWP_NOACTIVATE = 0x10;
 
         /// <summary>
         /// Sets the console window location and size in pixels
         /// </summary>
         public void SetWindowPosition(int x, int y, int width, int height)
         {
-            IntPtr hwnd = GetConsoleWindow();
-            SetWindowPos(hwnd, IntPtr.Zero, x, y, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
+            IntPtr hwnd = NativeMethods.GetConsoleWindow();
+            NativeMethods.SetWindowPos(hwnd, IntPtr.Zero, x, y, width, height, NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE);
             // no release handle?
         }
-
-        #endregion PInvoke
     }
 }

@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Reflection;
 
-    using Obscureware.Console.Commands.Internals;
+    using Internals;
 
     using ObscureWare.Console;
 

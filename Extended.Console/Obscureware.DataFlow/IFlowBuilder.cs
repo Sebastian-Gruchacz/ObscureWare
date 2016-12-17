@@ -2,7 +2,6 @@ namespace Obscureware.DataFlow
 {
     using System;
     using System.Linq.Expressions;
-    using Console.Commands.Blocks;
     using Model;
 
     public interface IFlowBuilder

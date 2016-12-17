@@ -12,7 +12,7 @@
     {
         private readonly Dictionary<string, FlagPropertyParser> _flagParsers = new Dictionary<string, FlagPropertyParser>();
         private readonly Dictionary<string, BaseSwitchPropertyParser> _switchParsers = new Dictionary<string, BaseSwitchPropertyParser>();
-        private readonly List<UnnamedPropertyParser> _unnamedParsers = new List<UnnamedPropertyParser>();
+        private readonly List<SwitchlessPropertyParser> _unnamedParsers = new List<SwitchlessPropertyParser>();
 
         private readonly Type _modelType;
         private readonly ConvertersManager _convertersManager = new ConvertersManager();
@@ -188,7 +188,7 @@
                         throw new BadImplementationException($"Could not find required ArgumentConverter for type \"{propertyInfo.PropertyType.FullName}\" for unnamed Argument at index [{nonPosAtt.ArgumentIndex}].", this._modelType);
                     }
 
-                    this._unnamedParsers.Add(new UnnamedPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo, converter));
+                    this._unnamedParsers.Add(new SwitchlessPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo, converter));
                 }
             }
         }

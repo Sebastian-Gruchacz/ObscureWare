@@ -13,7 +13,7 @@ namespace ConsoleApplication1.Commands
         public void Execute(object contextObject, ICommandOutput output, object runtimeModel)
         {
             ChangeDirCommandModel model = runtimeModel as ChangeDirCommandModel;
-            switch (model.Target.Trim()) // let it throw on null
+            switch (model?.Target.Trim())
             {
                 case "":
                 case ".":
@@ -25,7 +25,7 @@ namespace ConsoleApplication1.Commands
                     DirectoryInfo dir = new DirectoryInfo(Environment.CurrentDirectory);
                     if (dir.FullName != dir.Root.FullName)
                     {
-                        Environment.CurrentDirectory = dir.Parent.FullName;
+                        Environment.CurrentDirectory = dir.Parent?.FullName ?? dir.FullName; // stay
                     }
                     break;
                 }

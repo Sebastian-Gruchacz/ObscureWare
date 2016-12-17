@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementation\Annotations.cs" />
     <Compile Include="Model\BlockLink.cs" />
     <Compile Include="Logging\DataFlowNLogger.cs" />
     <Compile Include="Logging\DataFlowLoggerFactory.cs" />

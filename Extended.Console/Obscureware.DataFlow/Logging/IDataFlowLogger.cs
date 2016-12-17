@@ -3,7 +3,6 @@ namespace Obscureware.DataFlow.Logging
 {
     using System;
     using Implementation;
-    using Console.Commands.Blocks;
     using JetBrains.Annotations;
 
     /// <summary>

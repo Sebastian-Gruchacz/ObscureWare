@@ -75,7 +75,7 @@
     <Compile Include="Internals\Parsers\BasePropertyParser.cs" />
     <Compile Include="Internals\Parsers\CommandsSyntaxHelpers.cs" />
     <Compile Include="Internals\SensitiveStringComparer.cs" />
-    <Compile Include="Internals\Parsers\UnnamedPropertyParser.cs" />
+    <Compile Include="Internals\Parsers\SwitchlessPropertyParser.cs" />
     <Compile Include="Model\CommandDescriptionAttribute.cs" />
     <Compile Include="Internals\CommandEngine.cs" />
     <Compile Include="CommandEngineStyles.cs" />

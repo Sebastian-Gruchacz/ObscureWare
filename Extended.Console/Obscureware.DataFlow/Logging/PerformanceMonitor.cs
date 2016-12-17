@@ -13,7 +13,7 @@
     /// </summary>
     public static class PerformanceMonitor
     {
-        private static readonly ConcurrentDictionary<string, PerfInfo> _results = new ConcurrentDictionary<string, PerfInfo>();
+        private static readonly ConcurrentDictionary<string, PerfInfo> SharedResults = new ConcurrentDictionary<string, PerfInfo>();
 
         /// <summary>
         /// Register execution time under specific counter key
@@ -23,12 +23,12 @@
         public static void RegisterExecution(string key, long elapsedTicks)
         {
             PerfInfo info;
-            if (!_results.TryGetValue(key, out info))
+            if (!SharedResults.TryGetValue(key, out info))
             {
                 info = new PerfInfo(key);
-                if (!_results.TryAdd(key, info))
+                if (!SharedResults.TryAdd(key, info))
                 {
-                    _results.TryGetValue(key, out info); // receive already stored object
+                    SharedResults.TryGetValue(key, out info); // receive already stored object
                 }
             }
 
@@ -96,9 +96,12 @@
                 sw.Stop();
                 StackFrame frame = new StackFrame(1);
                 var callingMethod = frame.GetMethod();
-                var key = callingMethod.DeclaringType.Name + "."
-                          + callingMethod.Name + "; Line: " + frame.GetFileLineNumber();
-                RegisterExecution(key, sw.ElapsedTicks);
+                if (callingMethod.DeclaringType != null)
+                {
+                    var key = callingMethod.DeclaringType.Name + "."
+                              + callingMethod.Name + "; Line: " + frame.GetFileLineNumber();
+                    RegisterExecution(key, sw.ElapsedTicks);
+                }
             }
         }
 
@@ -120,9 +123,12 @@
                 sw.Stop();
                 StackFrame frame = new StackFrame(1);
                 var callingMethod = frame.GetMethod();
-                var key = callingMethod.DeclaringType.Name + "."
-                          + callingMethod.Name + "; Line: " + frame.GetFileLineNumber();
-                RegisterExecution(key, sw.ElapsedTicks);
+                if (callingMethod.DeclaringType != null)
+                {
+                    var key = callingMethod.DeclaringType.Name + "."
+                              + callingMethod.Name + "; Line: " + frame.GetFileLineNumber();
+                    RegisterExecution(key, sw.ElapsedTicks);
+                }
             }
         }
 
@@ -136,14 +142,9 @@
         {
             var comparator = new PerfInfoComparator(orderMode);
             PerfInfo[] dataSet;
-            if (vector == OrderVector.Ascending)
-            {
-                dataSet = _results.Values.Select(i => i).OrderBy(i => i, comparator).ToArray();
-            }
-            else
-            {
-                dataSet = _results.Values.Select(i => i).OrderByDescending(i => i, comparator).ToArray();
-            }
+            dataSet = vector == OrderVector.Ascending
+                ? SharedResults.Values.Select(i => i).OrderBy(i => i, comparator).ToArray()
+                : SharedResults.Values.Select(i => i).OrderByDescending(i => i, comparator).ToArray();
 
             stream.WriteLine(@"| EventName | EventCount | TotalTicks | AverageTicks | Average Time (ms) |");
             foreach (PerfInfo perfInfo in dataSet)
@@ -165,7 +166,7 @@
         /// </summary>
         public static void Clear()
         {
-            _results.Clear();
+            SharedResults.Clear();
         }
     }
 
@@ -184,7 +185,7 @@
             switch (this._orderMode)
             {
                 case OrderMode.Name:
-                    return x.Name.CompareTo(y.Name);
+                    return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
                 case OrderMode.TotalTime:
                     return x.TotalTicks.CompareTo(y.TotalTicks);
                 case OrderMode.AverageTime:
@@ -192,7 +193,7 @@
                 case OrderMode.EventCount:
                     return x.Events.CompareTo(y.TotalTicks);
                 default:
-                    throw new ArgumentOutOfRangeException("orderMode");
+                    throw new ArgumentOutOfRangeException(nameof(OrderMode));
             }
         }
     }
@@ -222,9 +223,6 @@
             this._name = name;
         }
 
-        public string Name
-        {
-            get { return this._name; }
-        }
+        public string Name => this._name;
     }
 }

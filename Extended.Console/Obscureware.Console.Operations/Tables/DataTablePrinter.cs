@@ -69,7 +69,7 @@
 
                 int index = 0;
                 string formatter = string.Join(" ", columns.Select(col => $"{{{index++},{(col.CurrentLength) * (int)col.Alignment}}}"));
-                this._console.WriteLine(tableHeaderColor, string.Format(formatter, columns.Select(col => col.Header.Substring(0, Math.Min(col.Header.Length, col.CurrentLength))).ToArray<string>()));
+                this._console.WriteLine(tableHeaderColor, string.Format(formatter, columns.Select(col => col.Header.Substring(0, Math.Min(col.Header.Length, col.CurrentLength))).ToArray()));
                 foreach (string[] row in rows)
                 {
                     string[] result = new string[columns.Length];
@@ -144,7 +144,7 @@
             uint i = 1;
             foreach (T src in dataSource)
             {
-                table.AddRow(src, new string[] { i.ToAlphaEnum() + '.' }.Concat(dataGenerator.Invoke(src)).ToArray());
+                table.AddRow(src, new[] { i.ToAlphaEnum() + '.' }.Concat(dataGenerator.Invoke(src)).ToArray());
                 i++;
             }
 

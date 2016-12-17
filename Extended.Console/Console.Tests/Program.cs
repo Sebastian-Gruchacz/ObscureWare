@@ -49,14 +49,14 @@ namespace ConsoleApplication1
                 ' ',
                 TableLargeRowContentBehavior.Ellipsis);
 
-            var headers = new string[] {"Row 1", "Longer row 2", "Third row"};
+            var headers = new[] {"Row 1", "Longer row 2", "Third row"};
             var values = new[]
             {
-                new string[] {"1", "2", "3"},
-                new string[] {"10", "223423", "3"},
-                new string[] {"1", "2", "3"},
-                new string[] {"12332 ", "22332423", "3223434234"},
-                new string[] {"1df ds fsd fsfs fsdf s", "2234  4234 23", "3 23423423"},
+                new[] {"1", "2", "3"},
+                new[] {"10", "223423", "3"},
+                new[] {"1", "2", "3"},
+                new[] {"12332 ", "22332423", "3223434234"},
+                new[] {"1df ds fsd fsfs fsdf s", "2234  4234 23", "3 23423423"},
             };
 
             ops.WriteTabelaricData(5, 5, 50, headers, values, tableStyle);
