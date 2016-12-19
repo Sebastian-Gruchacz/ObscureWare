@@ -1,7 +1,7 @@
-﻿namespace ConsoleApplication1
+﻿namespace ConsoleTests
 {
-    using ObscureWare.Console;
     using Obscureware.Console.Commands;
+    using ObscureWare.Console;
 
     public class TestCommands
     {

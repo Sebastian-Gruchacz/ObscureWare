@@ -45,11 +45,11 @@ namespace ObscureWare.Console
         private const float COLOR_WEIGHT_BRIGHTNESS = 23.75f;
 
         private const float COLOR_WEIGHT_RED = 28.5f;
-        private const float COLOR_WEIGHT_GREEN = 47.75f;
+        private const float COLOR_WEIGHT_GREEN = 28.5f;
         private const float COLOR_WEIGHT_BLUE = 23.75f;
 
         // final weight - how color weights over (under?) "luminosity"
-        private const float COLOR_PROPORTION = 100f / 255f;
+        private const float COLOR_PROPORTION = 0.5f; //100f / 255f;
 
         private readonly IntPtr _hConsoleOutput;
 
@@ -312,5 +312,15 @@ namespace ObscureWare.Console
         }
 
         #endregion IDsiposable implementation
+
+        /// <summary>
+        /// Returns actual ARGB color stored at console enumerated colors.
+        /// </summary>
+        /// <param name="cc"></param>
+        /// <returns></returns>
+        public Color GetCurrentConsoleColor(ConsoleColor cc)
+        {
+            return this._colorBuffer.Single(pair => pair.Key == cc).Value;
+        }
     }
 }

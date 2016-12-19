@@ -7,8 +7,8 @@
     <ProjectGuid>{CFB16C5C-EE36-4ACE-9513-0AD18DFF9D00}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleApplication1</RootNamespace>
-    <AssemblyName>ConsoleApplication1</AssemblyName>
+    <RootNamespace>ConsoleTests</RootNamespace>
+    <AssemblyName>ConsoleTests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -61,6 +61,7 @@
     <Compile Include="Commands\DirCommand.cs" />
     <Compile Include="Commands\DirCommandModel.cs" />
     <Compile Include="Commands\DirectoryListMode.cs" />
+    <Compile Include="InternalTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

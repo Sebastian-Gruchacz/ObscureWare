@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="ConsoleColorsHelper.cs" />
     <Compile Include="ConsoleFontColor.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

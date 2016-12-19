@@ -1,17 +1,24 @@
-﻿using ObscureWare.Console;
-using System;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-
-namespace ConsoleApplication1
+﻿namespace ConsoleTests
 {
+    using System;
+    using System.Drawing;
+    using System.Linq;
+    using System.Reflection;
     using Obscureware.Console.Operations;
+    using ObscureWare.Console;
 
     internal static class Program
     {
         private static void Main(string[] args)
         {
+            //// each test shall be run on separate run - colors conflicts and handles conflicts
+            //var tests = new InternalTests();
+            ////tests.PrintDefaultColors();
+            //tests.PrintCustomColors();
+            //return;
+
+
+
             ConsoleColorsHelper helper = new ConsoleColorsHelper();
             //helper.ReplaceConsoleColor(ConsoleColor.DarkCyan, Color.Salmon);
             helper.ReplaceConsoleColors(

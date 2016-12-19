@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obscureware.Console.Operati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obscureware.DataFlow", "Obscureware.DataFlow\Obscureware.DataFlow.csproj", "{D0BC23CA-CA9D-4884-92CF-9ACECDEEFF87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7DD9B52E-F064-48A9-ACA6-11AD70412B3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObscureWare.Console.Tests", "ObscureWare.Console.Tests\ObscureWare.Console.Tests.csproj", "{97CEFF9B-CCFC-4B26-921A-6FD142A780D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,8 +43,15 @@ Global
 		{D0BC23CA-CA9D-4884-92CF-9ACECDEEFF87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0BC23CA-CA9D-4884-92CF-9ACECDEEFF87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0BC23CA-CA9D-4884-92CF-9ACECDEEFF87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97CEFF9B-CCFC-4B26-921A-6FD142A780D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97CEFF9B-CCFC-4B26-921A-6FD142A780D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97CEFF9B-CCFC-4B26-921A-6FD142A780D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97CEFF9B-CCFC-4B26-921A-6FD142A780D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{97CEFF9B-CCFC-4B26-921A-6FD142A780D3} = {7DD9B52E-F064-48A9-ACA6-11AD70412B3F}
 	EndGlobalSection
 EndGlobal

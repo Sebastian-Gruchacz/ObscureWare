@@ -1,5 +1,6 @@
 namespace ConsoleApplication1.Commands
 {
+    using ConsoleTests;
     using Obscureware.Console.Commands;
     using Obscureware.Console.Commands.Model;
 
