@@ -1,6 +1,10 @@
 ﻿namespace ConsoleTests
 {
+    using System.Globalization;
+
     using Obscureware.Console.Commands;
+    using Obscureware.Console.Commands.Styles;
+
     using ObscureWare.Console;
 
     public class TestCommands
@@ -10,6 +14,7 @@
             ConsoleContext context = new ConsoleContext();
             var options = new CommandParserOptions
                 {
+                    UiCulture = CultureInfo.CreateSpecificCulture("en-US"), // "pl-PL"
                     FlagCharacters = new[] {@"\", "-"},
                     SwitchCharacters = new[] {@"-", "--"},
                     OptionArgumentMode = CommandOptionArgumentMode.Separated,

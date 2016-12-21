@@ -6,13 +6,16 @@
     using System.Reflection;
     using Converters;
     using Model;
+
+    using Obscureware.Console.Commands.Styles;
+
     using Parsers;
 
     internal class ModelBuilder
     {
         private readonly Dictionary<string, FlagPropertyParser> _flagParsers = new Dictionary<string, FlagPropertyParser>();
         private readonly Dictionary<string, BaseSwitchPropertyParser> _switchParsers = new Dictionary<string, BaseSwitchPropertyParser>();
-        private readonly List<SwitchlessPropertyParser> _unnamedParsers = new List<SwitchlessPropertyParser>();
+        private readonly List<SwitchlessPropertyParser> _switchlessParsers = new List<SwitchlessPropertyParser>();
 
         private readonly Type _modelType;
         private readonly ConvertersManager _convertersManager = new ConvertersManager();
@@ -30,7 +33,7 @@
         public string CommandDescription { get; private set; }
 
         /// <summary>
-        /// Obtains "precompilled" syntax info
+        /// Obtains "precompiled" syntax info
         /// </summary>
         /// <returns></returns>
         public IEnumerable<SyntaxInfo> GetSyntax()
@@ -188,7 +191,7 @@
                         throw new BadImplementationException($"Could not find required ArgumentConverter for type \"{propertyInfo.PropertyType.FullName}\" for unnamed Argument at index [{nonPosAtt.ArgumentIndex}].", this._modelType);
                     }
 
-                    this._unnamedParsers.Add(new SwitchlessPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo, converter));
+                    this._switchlessParsers.Add(new SwitchlessPropertyParser(nonPosAtt.ArgumentIndex, propertyInfo, converter));
                 }
             }
         }
@@ -212,8 +215,6 @@
         {
             CommandDescriptionAttribute att = this._modelType.GetCustomAttribute<CommandDescriptionAttribute>();
             this.CommandDescription = att?.Description ?? "* Description not available *";
-
-            // TODO: more elements to be read - switches, arguments, enumerations, description, syntaxes, etc - to be stored in dedicated HelpContainer for future use
         }
 
         private void ValidateModel(Type modelType)
@@ -226,7 +227,7 @@
 
 
 
-            // TODO: validate model type
+            // TODO: validate model type deeper - conflicting switches, missing attributes etc.
         }
 
         public CommandModel BuildModel(IEnumerable<string> arguments, ICommandParserOptions options)
@@ -242,7 +243,7 @@
                 string arg = args[argIndex].Trim();
 
                 // need to skip unnamed parameters there are just exactly like one of prefixes (i.e. - single slash or backslash)
-                if (flagSwitchPrefixes.All(p => p != arg) &&flagSwitchPrefixes.Any(p => arg.StartsWith(p)))
+                if (flagSwitchPrefixes.All(p => p != arg) && flagSwitchPrefixes.Any(p => arg.StartsWith(p)))
                 {
                     var propertyParser = this.FindProperty(options, arg);
                     if (propertyParser == null)
@@ -255,10 +256,10 @@
                 }
                 else
                 {
-                    var propertyParser = this._unnamedParsers.SingleOrDefault(p => p.ArgumentIndex == unnamedIndex++);
+                    var propertyParser = this._switchlessParsers.SingleOrDefault(p => p.ArgumentIndex == unnamedIndex++);
                     if (propertyParser == null)
                     {
-                        // TODO: write error about too many unnamed arguments
+                        // TODO: write error about too many switch-less arguments
                         return null;
                     }
 
@@ -268,7 +269,8 @@
                 argIndex++;
             }
 
-            // TODO: validate mandatory options and unnamed arguments
+            // TODO: validate that all mandatory options were provided and switch-less arguments too
+            // TODO: validate mixed / non mixed mode for switch-less parameters
 
             return model;
         }
@@ -280,7 +282,7 @@
             {
                 foreach (var flagPrefix in options.FlagCharacters)
                 {
-                    string cleanFlag = argSyntax.CutLeftAny(flagPrefix);
+                    string cleanFlag = argSyntax.CutLeftFirst(flagPrefix);
 
                     FlagPropertyParser parser;
                     if (this._flagParsers.TryGetValue(cleanFlag, out parser))
@@ -299,24 +301,19 @@
                 // TODO: implement, with above exception this will be easier...
 
                 // TODO: add multi-flag parser here
+                throw new NotImplementedException();
             }
 
 
             // Switches
             foreach (var switchPrefix in options.SwitchCharacters)
             {
-                string cleanFlag = argSyntax.CutLeftAny(switchPrefix);
+                string cleanFlag = argSyntax.CutLeftFirst(switchPrefix);
                 BaseSwitchPropertyParser parser = this._switchParsers.FirstOrDefault(p => p.Key.Equals(cleanFlag)).Value;
                 return parser;
             }
 
             return null;
-        }
-
-
-        public void PrintHelp(ICommandOutput output, CommandEngineStyles styles, IEnumerable<string> arguments)
-        {
-            // TODO: implement
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Obscureware.Console.Commands
     ///
     /// </summary>
     /// <remarks>https://en.wikipedia.org/wiki/Command-line_interface</remarks>
-    public interface ICommandParserOptions
+    public interface ICommandParserOptions : IValueParsingOptions
     {
         string[] FlagCharacters { get; }
 

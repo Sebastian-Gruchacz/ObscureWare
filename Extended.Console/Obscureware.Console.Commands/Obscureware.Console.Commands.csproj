@@ -65,6 +65,7 @@
     <Compile Include="Internals\Converters\TimeSpanArgumentConverter.cs" />
     <Compile Include="ICommandEngine.cs" />
     <Compile Include="Internals\IKeyWordProvider.cs" />
+    <Compile Include="IValueParsingOptions.cs" />
     <Compile Include="Internals\SyntaxInfo.cs" />
     <Compile Include="CommandOptionNameAttribute.cs" />
     <Compile Include="Internals\Parsers\CustomValueSwitchParser.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="Internals\Parsers\SwitchlessPropertyParser.cs" />
     <Compile Include="Model\CommandDescriptionAttribute.cs" />
     <Compile Include="Internals\CommandEngine.cs" />
-    <Compile Include="CommandEngineStyles.cs" />
+    <Compile Include="Styles\CommandEngineStyles.cs" />
     <Compile Include="Model\CommandOptionFlagAttribute.cs" />
     <Compile Include="CommandCaseSensitivenes.cs" />
     <Compile Include="Model\CommandDescriptorForAttribute.cs" />
@@ -98,6 +99,9 @@
     <Compile Include="Internals\OutputManager.cs" />
     <Compile Include="Internals\HelpPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Styles\HelpStyles.cs" />
+    <Compile Include="Styles\ICommonStyles.cs" />
+    <Compile Include="Styles\IHelpStyles.cs" />
     <Compile Include="SwitchlessOptionsMode.cs" />
   </ItemGroup>
   <ItemGroup>

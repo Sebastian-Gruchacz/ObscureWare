@@ -1,7 +1,6 @@
 ﻿namespace ConsoleApplication1.Commands
 {
     using System;
-    using System.Globalization;
     using System.IO;
     using Obscureware.Console.Commands;
     using Obscureware.Console.Commands.Model;
@@ -41,7 +40,7 @@
             DataTable<string> filesTable = new DataTable<string>(
                 new ColumnInfo("Name", ColumnAlignment.Left),
                 new ColumnInfo("Size", ColumnAlignment.Right),
-                new ColumnInfo("Last Modification", ColumnAlignment.Right));
+                new ColumnInfo("Modified", ColumnAlignment.Right));
 
             var baseDir = new DirectoryInfo(basePath);
             if (parameters.IncludeFolders)
@@ -55,7 +54,7 @@
                             {
                                 dirInfo.Name,
                                 "<DIR>",
-                                Directory.GetLastWriteTime(dirInfo.FullName).ToShortDateString()
+                                Directory.GetLastWriteTime(dirInfo.FullName).ToString(output.UiCulture.DateTimeFormat.ShortDatePattern)
                             });
                 }
             }
@@ -68,8 +67,8 @@
                     new []
                         {
                             fileInfo.Name,
-                            fileInfo.Length.ToFriendlyXBytesText(CultureInfo.CurrentUICulture),
-                            File.GetLastWriteTime(fileInfo.FullName).ToShortDateString()
+                            fileInfo.Length.ToFriendlyXBytesText(output.UiCulture),
+                            File.GetLastWriteTime(fileInfo.FullName).ToString(output.UiCulture.DateTimeFormat.ShortDatePattern)
                         });
             }
 

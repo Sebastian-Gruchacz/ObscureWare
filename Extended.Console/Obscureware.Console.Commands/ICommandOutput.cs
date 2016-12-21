@@ -29,6 +29,8 @@
 namespace Obscureware.Console.Commands
 {
     using System.Collections.Generic;
+    using System.Globalization;
+
     using Operations.Tables;
 
     public interface ICommandOutput
@@ -44,5 +46,7 @@ namespace Obscureware.Console.Commands
         void PrintSimpleTable<T>(DataTable<T> filesTable);
 
         void PrintWarning(string message);
+
+        CultureInfo UiCulture { get; }
     }
 }
