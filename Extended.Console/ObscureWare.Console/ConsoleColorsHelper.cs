@@ -62,6 +62,7 @@ namespace ObscureWare.Console
         /// </summary>
         public ConsoleColorsHelper()
         {
+            // TODO: second instance created is crashing. Find out why and how to fix it / prevent. In the worst case - hidden control instance singleton and separation of concerns. => good for testing color engine alone.
             this._hConsoleOutput = NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE); // 7
             if (this._hConsoleOutput == NativeMethods.INVALID_HANDLE)
             {

@@ -7,6 +7,8 @@
 
     using Internals;
 
+    using Obscureware.Console.Commands.Styles;
+
     using ObscureWare.Console;
 
     /// <summary>
@@ -106,7 +108,7 @@
                 throw new InvalidOperationException("Could not construct engine without providing Styles object.");
             }
 
-            var printHelper = new HelpPrinter(this._options, this._styles, console);
+            var printHelper = new HelpPrinter(this._options, this._styles.HelpStyles, console);
             var commandManager = new CommandManager(this._commands.Distinct().ToArray());
 
             var keywords = printHelper.GetCommandKeyWords();

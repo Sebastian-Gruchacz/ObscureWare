@@ -28,10 +28,16 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Obscureware.Console.Commands
 {
+    using System.Globalization;
     using System.Linq;
 
     public class CommandParserOptions : ICommandParserOptions
     {
+        public CommandParserOptions()
+        {
+            this.UiCulture = CultureInfo.CurrentUICulture; // default, can override
+        }
+
         public string[] FlagCharacters { get; set; } = new[] { @"\" };
 
         public string[] SwitchCharacters { get; set; } = new[] { @"-" };
@@ -45,6 +51,8 @@ namespace Obscureware.Console.Commands
         public SwitchlessOptionsMode SwitchlessOptionsMode { get; set; } = SwitchlessOptionsMode.EndOnly;
 
         public CommandCaseSensitivenes CommandsSensitivenes { get; set; } = CommandCaseSensitivenes.Insensitive;
+
+        public CultureInfo UiCulture { get; set; }
 
         public void ValidateParserOptions()
         {

@@ -10,7 +10,7 @@
     {
         private readonly Dictionary<Type, ArgumentConverter> _knownConverters = new Dictionary<Type, ArgumentConverter>();
 
-        public ConvertersManager() // TODO: add more Assemblies to scan for custom converters, add CultureInfo (or make as part of converter method?)
+        public ConvertersManager() // TODO: add more Assemblies to scan for custom converters
         {
             Assembly asm = this.GetType().Assembly;
             this.LoadConvertersFromAssembly(asm);

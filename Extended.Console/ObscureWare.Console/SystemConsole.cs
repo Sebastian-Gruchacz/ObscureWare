@@ -74,6 +74,13 @@ namespace ObscureWare.Console
                 Console.WindowHeight = this.WindowSize.Y;
                 Console.SetWindowPosition(0, 0);
             }
+            else
+            {
+                // set console (buffer) little bigger by default
+                // TODO: use more constructors / methods to control window / buffer / size / position. Perhaps expose dedicated control interface?
+                Console.BufferWidth = 120;
+                Console.BufferHeight = 500;
+            }
 
             this.WindowWidth = Console.WindowWidth;
             this.WindowHeight = Console.WindowHeight;

@@ -11,12 +11,6 @@
         {
             this.Command = commandInstance;
             this.ModelBuilder = modelBuilder;
-
-            // TODO: store model help printer?
-
-            // TODO: store model parser generated routines / expressions?
-
-            // Probably ModelInfo must be more complicated than just simple type, perhaps dedicated builder class?
         }
     }
 }

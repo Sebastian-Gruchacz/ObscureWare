@@ -32,6 +32,8 @@ namespace Obscureware.Console.Commands.Internals
     using System.Collections.Generic;
     using System.Linq;
 
+    using Obscureware.Console.Commands.Styles;
+
     using ObscureWare.Console;
 
     /// <summary>
@@ -135,7 +137,7 @@ namespace Obscureware.Console.Commands.Internals
 
             // This might crash-throw if invalid types defined. Fine.
             var model = this.BuildModelForCommand(cmd, commandLineArguments.Skip(1));
-            var outputManager = new OutputManager(this._console, this._styles);
+            var outputManager = new OutputManager(this._console, this._styles, this._options.UiCulture);
 
             if (model == null)
             {
