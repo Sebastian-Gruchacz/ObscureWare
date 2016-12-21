@@ -16,10 +16,10 @@
         public bool IncludeFolders { get; set; }
 
         [CommandOptionName(@"mode")]
-        [Mandatory()]
+        [Mandatory]
         [CommandOptionSwitch(typeof(DirectoryListMode), "m", DefaultValue = DirectoryListMode.CurrentDir)]
-        [CommandDescription("Specifies which predefined directory location shall be listed.")]
-        // TODO: list help for switches.
+        [CommandDescription("Specifies which predefined directory location shall be listed. Defaults to 'CurrentDir'")]
+        // TODO: list help for switches. Get from enumeration itself? Allow coloring syntax? Somehow...
         // TODO: more switch types?
         // TODO: runtime support switch auto-complete. Sourced through ModelBuilder & Parser
         public DirectoryListMode Mode { get; set; }
@@ -28,7 +28,7 @@
         [Mandatory(false)]
         [CommandOptionCustomValueSwitch("f", "F")]
         [CommandDescription("Specifies filter for enumerated files. Does not apply to folders listing.")]
-        // TODO: runtime support for some values / unnamed values autocompletion? sourced through command itself...
+        // TODO: runtime support for some values / unnamed values auto-completion? sourced through command itself...
         public string Filter { get; set; }
     }
 
