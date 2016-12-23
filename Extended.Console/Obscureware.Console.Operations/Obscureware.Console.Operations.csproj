@@ -59,9 +59,9 @@
     <Compile Include="TextColumnInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">
+    <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.Core.csproj">
       <Project>{E55BFAA2-62A4-4052-8351-548FBE5B02BA}</Project>
-      <Name>ObscureWare.Console</Name>
+      <Name>ObscureWare.Console.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

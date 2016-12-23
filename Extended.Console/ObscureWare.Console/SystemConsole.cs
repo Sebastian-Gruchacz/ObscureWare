@@ -38,21 +38,21 @@ namespace ObscureWare.Console
     /// </summary>
     public class SystemConsole : IConsole
     {
-        private readonly ConsoleColorsHelper _helper;
+        private readonly ConsoleManager _helper;
 
         /// <summary>
         /// In characters...
         /// </summary>
         public Point WindowSize { get; }
 
-        public SystemConsole(ConsoleColorsHelper colorsHelper, bool isFullScreen)
+        public SystemConsole(ConsoleManager manager, bool isFullScreen)
         {
-            if (colorsHelper == null)
+            if (manager == null)
             {
-                throw new ArgumentNullException(nameof(colorsHelper));
+                throw new ArgumentNullException(nameof(manager));
             }
 
-            this._helper = colorsHelper;
+            this._helper = manager;
 
             Console.OutputEncoding = Encoding.Unicode;
             Console.InputEncoding = Encoding.Unicode;
@@ -126,8 +126,8 @@ namespace ObscureWare.Console
 
         public void SetColors(Color foreColor, Color bgColor)
         {
-            Console.ForegroundColor = this._helper.FindClosestColor(foreColor);
-            Console.BackgroundColor = this._helper.FindClosestColor(bgColor);
+            Console.ForegroundColor = this._helper.CloseColorFinder.FindClosestColor(foreColor);
+            Console.BackgroundColor = this._helper.CloseColorFinder.FindClosestColor(bgColor);
         }
 
         public void Clear()

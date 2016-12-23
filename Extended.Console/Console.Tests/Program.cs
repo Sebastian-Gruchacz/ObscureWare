@@ -19,7 +19,7 @@
 
 
 
-            ConsoleColorsHelper helper = new ConsoleColorsHelper();
+            ConsoleManager helper = new ConsoleManager();
             //helper.ReplaceConsoleColor(ConsoleColor.DarkCyan, Color.Salmon);
             helper.ReplaceConsoleColors(
                 new Tuple<ConsoleColor, Color>(ConsoleColor.DarkCyan, Color.Chocolate),
@@ -106,7 +106,7 @@
             console.Clear();
         }
 
-        private static void PrintAllNamedColors(ConsoleColorsHelper helper, IConsole console)
+        private static void PrintAllNamedColors(ConsoleManager helper, IConsole console)
         {
             var props =
                 typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.Public)
@@ -114,7 +114,7 @@
             foreach (var propertyInfo in props)
             {
                 Color c = (Color) propertyInfo.GetValue(null);
-                ConsoleColor cc = helper.FindClosestColor(c);
+                ConsoleColor cc = helper.CloseColorFinder.FindClosestColor(c);
                 Console.ForegroundColor = cc;
                 Console.WriteLine("{0,-25} {1,-18} #{2,-8:X}", propertyInfo.Name, Enum.GetName(typeof(ConsoleColor), cc),
                     c.ToArgb());

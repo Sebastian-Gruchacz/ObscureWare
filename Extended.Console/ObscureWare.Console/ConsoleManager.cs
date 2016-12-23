@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConsoleColorsHelper.cs" company="Obscureware Solutions">
+// <copyright file="ConsoleManager.cs" company="Obscureware Solutions">
 // MIT License
 //
 // Copyright(c) 2015-2016 Sebastian Gruchacz
@@ -29,93 +29,80 @@
 namespace ObscureWare.Console
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
     using System.Runtime.InteropServices;
 
     /// <summary>
     /// Class used to manage system's Console colors
     /// </summary>
-    public class ConsoleColorsHelper : IDisposable
+    public class ConsoleManager : IDisposable
     {
-        private const float COLOR_WEIGHT_HUE = 47.5f;
-        private const float COLOR_WEIGHT_SATURATION = 28.75f;
-        private const float COLOR_WEIGHT_BRIGHTNESS = 23.75f;
-
-        private const float COLOR_WEIGHT_RED = 28.5f;
-        private const float COLOR_WEIGHT_GREEN = 28.5f;
-        private const float COLOR_WEIGHT_BLUE = 23.75f;
-
-        // final weight - how color weights over (under?) "luminosity"
-        private const float COLOR_PROPORTION = 0.5f; //100f / 255f;
-
         private readonly IntPtr _hConsoleOutput;
 
-        private readonly ConcurrentDictionary<Color, ConsoleColor> _knownMappings = new ConcurrentDictionary<Color, ConsoleColor>();
-
-        private KeyValuePair<ConsoleColor, Color>[] _colorBuffer;
+        private CloseColorFinder _closeColorFinder;
 
         /// <summary>
         /// Initializes new instance of ConsoleColorsHelper class
         /// </summary>
-        public ConsoleColorsHelper()
+        public ConsoleManager()
         {
-            // TODO: second instance created is crashing. Find out why and how to fix it / prevent. In the worst case - hidden control instance singleton and separation of concerns. => good for testing color engine alone.
+            // TODO: second instance created is crashing. Find out why and how to fix it / prevent. In the worst case - hidden control instance singleton
             this._hConsoleOutput = NativeMethods.GetStdHandle(NativeMethods.STD_OUTPUT_HANDLE); // 7
             if (this._hConsoleOutput == NativeMethods.INVALID_HANDLE)
             {
                 throw new SystemException("GetStdHandle->WinError: #" + Marshal.GetLastWin32Error());
             }
 
-            this._colorBuffer = this.GetCurrentColorset();
+            this._closeColorFinder = new CloseColorFinder(this.GetCurrentColorset());
+        }
+
+        #region IDsiposable implementation
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Tries to find the closest match for given RGB color among current set of colors used by System.Console
+        /// Finalizes an instance of the <see cref="ConsoleManager"/> class. 
         /// </summary>
-        /// <param name="color"></param>
-        /// <returns></returns>
-        /// <remarks>Influenced by http://stackoverflow.com/questions/1720528/what-is-the-best-algorithm-for-finding-the-closest-color-in-an-array-to-another</remarks>
-        public ConsoleColor FindClosestColor(Color color)
+        ~ConsoleManager()
         {
-            ConsoleColor cc;
-            if (this._knownMappings.TryGetValue(color, out cc))
-            {
-                return cc;
-            }
-
-            cc = this._colorBuffer.OrderBy(kp => this.ColorMatching(color, kp.Value)).First().Key;
-            this._knownMappings.TryAdd(color, cc);
-            return cc;
+            // NOTE: Leave out the finalizer altogether if this class doesn't 
+            // own unmanaged resources itself, but leave the other methods
+            // exactly as they are. 
+            this.Dispose(false);
         }
 
-        private float ColorMatching(Color srcColor, Color destColor)
+        /// <summary>
+        /// Actual disposing method
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
         {
-            var sh = srcColor.GetHue();
-            var ss = srcColor.GetSaturation();
-            var sb = srcColor.GetBrightness();
-            var dh = destColor.GetHue();
-            var ds = destColor.GetSaturation();
-            var db = destColor.GetBrightness();
+            if (disposing)
+            {
+                // free managed resources
+            }
 
-            var sr = srcColor.R;
-            var sg = srcColor.G;
-            var sc = srcColor.B;
-            var dr = destColor.R;
-            var dg = destColor.G;
-            var dc = destColor.B;
+            // free native resources
+            if (this._hConsoleOutput != NativeMethods.INVALID_HANDLE)
+            {
+                NativeMethods.CloseHandle(this._hConsoleOutput);
+            }
+        }
 
-            float result = (float) Math.Sqrt(
-                Math.Abs(sh - dh)/(COLOR_WEIGHT_HUE)*COLOR_PROPORTION +
-                Math.Abs(ss - ds)/(COLOR_WEIGHT_SATURATION)*COLOR_PROPORTION +
-                Math.Abs(sb - db)/(COLOR_WEIGHT_BRIGHTNESS)*COLOR_PROPORTION +
-                Math.Abs(sr - dr)/(COLOR_WEIGHT_RED)*COLOR_PROPORTION +
-                Math.Abs(sg - dg)/(COLOR_WEIGHT_GREEN)*COLOR_PROPORTION +
-                Math.Abs(sc - dc)/(COLOR_WEIGHT_BLUE)*COLOR_PROPORTION);
+        #endregion IDsiposable implementation
 
-            return result;
+        public CloseColorFinder CloseColorFinder
+        {
+            get
+            {
+                return this._closeColorFinder;
+            }
         }
 
         /// <summary>
@@ -141,7 +128,7 @@ namespace ObscureWare.Console
                 throw new SystemException("SetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
             }
 
-            this.ResetColorCache();
+            this._closeColorFinder = new CloseColorFinder(this.GetCurrentColorset());
         }
 
         /// <summary>
@@ -165,14 +152,7 @@ namespace ObscureWare.Console
                 throw new SystemException("SetConsoleScreenBufferInfoEx->WinError: #" + Marshal.GetLastWin32Error());
             }
 
-            this.ResetColorCache();
-        }
-
-        private void ResetColorCache()
-        {
-            // remove cache, new mappings are required
-            this._colorBuffer = this.GetCurrentColorset();
-            this._knownMappings.Clear();
+            this._closeColorFinder = new CloseColorFinder(this.GetCurrentColorset());
         }
 
         private NativeMethods.CONSOLE_SCREEN_BUFFER_INFO_EX GetConsoleScreenBufferInfoEx()
@@ -249,7 +229,7 @@ namespace ObscureWare.Console
             }
         }
 
-        private KeyValuePair<ConsoleColor, Color>[] GetCurrentColorset()
+        public KeyValuePair<ConsoleColor, Color>[] GetCurrentColorset()
         {
             var csbe = this.GetConsoleScreenBufferInfoEx();
 
@@ -272,56 +252,6 @@ namespace ObscureWare.Console
                 new KeyValuePair<ConsoleColor, Color>(ConsoleColor.Yellow, csbe.yellow.GetColor()),
                 new KeyValuePair<ConsoleColor, Color>(ConsoleColor.White, csbe.white.GetColor()),
             };
-        }
-
-        #region IDsiposable implementation
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Finalizer
-        /// </summary>
-        ~ConsoleColorsHelper()
-        {
-            // NOTE: Leave out the finalizer altogether if this class doesn't 
-            // own unmanaged resources itself, but leave the other methods
-            // exactly as they are. 
-            this.Dispose(false);
-        }
-
-        /// <summary>
-        /// Actual disposing method
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // free managed resources
-            }
-
-            // free native resources
-            if (this._hConsoleOutput != NativeMethods.INVALID_HANDLE)
-            {
-                NativeMethods.CloseHandle(this._hConsoleOutput);
-            }
-        }
-
-        #endregion IDsiposable implementation
-
-        /// <summary>
-        /// Returns actual ARGB color stored at console enumerated colors.
-        /// </summary>
-        /// <param name="cc"></param>
-        /// <returns></returns>
-        public Color GetCurrentConsoleColor(ConsoleColor cc)
-        {
-            return this._colorBuffer.Single(pair => pair.Key == cc).Value;
         }
     }
 }

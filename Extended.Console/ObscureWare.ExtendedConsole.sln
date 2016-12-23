@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObscureWare.Console", "ObscureWare.Console\ObscureWare.Console.csproj", "{E55BFAA2-62A4-4052-8351-548FBE5B02BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObscureWare.Console.Core", "ObscureWare.Console\ObscureWare.Console.Core.csproj", "{E55BFAA2-62A4-4052-8351-548FBE5B02BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTests", "Console.Tests\ConsoleTests.csproj", "{CFB16C5C-EE36-4ACE-9513-0AD18DFF9D00}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7DD9B52E-F064-48A9-ACA6-11AD70412B3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObscureWare.Console.Tests", "ObscureWare.Console.Tests\ObscureWare.Console.Tests.csproj", "{97CEFF9B-CCFC-4B26-921A-6FD142A780D3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{221809F2-DE01-4B42-8AA7-D31BDC08FCE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -47,7 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleColorsHelper.cs" />
+    <Compile Include="CloseColorFinder.cs" />
+    <Compile Include="ConsoleManager.cs" />
     <Compile Include="ConsoleFontColor.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IConsole.cs" />
@@ -57,6 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ObscureWare.Console.Core.NuGet.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

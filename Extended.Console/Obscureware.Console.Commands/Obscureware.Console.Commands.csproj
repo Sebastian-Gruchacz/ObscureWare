@@ -109,9 +109,9 @@
       <Project>{5C87D79C-7E55-4033-B42F-EEB926F1C8D4}</Project>
       <Name>Obscureware.Console.Operations</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">
+    <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.Core.csproj">
       <Project>{E55BFAA2-62A4-4052-8351-548FBE5B02BA}</Project>
-      <Name>ObscureWare.Console</Name>
+      <Name>ObscureWare.Console.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

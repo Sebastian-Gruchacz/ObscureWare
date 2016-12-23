@@ -77,9 +77,9 @@
       <Project>{5C87D79C-7E55-4033-B42F-EEB926F1C8D4}</Project>
       <Name>Obscureware.Console.Operations</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.csproj">
+    <ProjectReference Include="..\ObscureWare.Console\ObscureWare.Console.Core.csproj">
       <Project>{e55bfaa2-62a4-4052-8351-548fbe5b02ba}</Project>
-      <Name>ObscureWare.Console</Name>
+      <Name>ObscureWare.Console.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

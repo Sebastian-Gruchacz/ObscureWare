@@ -16,7 +16,7 @@ namespace ConsoleTests
         public void PrintDefaultColors()
         {
             string fName = "default_setup.html";
-            using (var colorHelper = new ConsoleColorsHelper())
+            using (var colorHelper = new ConsoleManager())
             {
                 PrintAllNamedColorsToHTML(colorHelper, fName);
             }
@@ -25,7 +25,7 @@ namespace ConsoleTests
         public void PrintCustomColors()
         {
             string fName = "custom_setup_01.html";
-            using (var colorHelper = new ConsoleColorsHelper())
+            using (var colorHelper = new ConsoleManager())
             {
                 colorHelper.ReplaceConsoleColors(
                     new Tuple<ConsoleColor, Color>(ConsoleColor.DarkCyan, Color.Chocolate),
@@ -37,12 +37,12 @@ namespace ConsoleTests
             }
         }
 
-        private static void PrintAllNamedColorsToHTML(ConsoleColorsHelper helper, string fName)
+        private static void PrintAllNamedColorsToHTML(ConsoleManager helper, string fName)
         {
             var props = typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.Public)
                     .Where(p => p.PropertyType == typeof(Color));
 
-            var colorsVersionAtt = typeof(ConsoleColorsHelper).Assembly.GetCustomAttributes().FirstOrDefault(att => att is AssemblyFileVersionAttribute) as AssemblyFileVersionAttribute;
+            var colorsVersionAtt = typeof(ConsoleManager).Assembly.GetCustomAttributes().FirstOrDefault(att => att is AssemblyFileVersionAttribute) as AssemblyFileVersionAttribute;
             string colorsVersion = colorsVersionAtt?.Version ?? "unknown";
 
             var dir = $"C:\\TestResults\\ConsoleColors\\{colorsVersion}\\";
@@ -64,9 +64,9 @@ namespace ConsoleTests
                     tw.WriteLine("<tr>");
 
                     Color c = (Color)propertyInfo.GetValue(null);
-                    ConsoleColor cc = helper.FindClosestColor(c);
+                    ConsoleColor cc = helper.CloseColorFinder.FindClosestColor(c);
 
-                    Color cCol = helper.GetCurrentConsoleColor(cc);
+                    Color cCol = helper.CloseColorFinder.GetCurrentConsoleColor(cc);
                     var ccName = Enum.GetName(typeof(ConsoleColor), cc);
 
                     tw.WriteLine($"<td>{propertyInfo.Name}</td><td bgcolor=\"{c.ToRgbHex()}\">{c.Name}</td><td bgcolor=\"{cCol.ToRgbHex()}\">{ccName}</td>");
