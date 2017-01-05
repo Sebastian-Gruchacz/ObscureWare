@@ -1,6 +1,6 @@
 # ObscureWare
 Various tools
 
-## COde has moved
+## Code has moved
 
-I'd divided it into functional rpojects and had moved here [Obscureware's Github](https://github.com/ObscureWare)
+I'd divided it into functional projects and had moved here [Obscureware's Github](https://github.com/ObscureWare)
